@@ -1,4 +1,5 @@
-import { Chart, ChartTypeRegistry } from 'chart.js';
+import { Chart, ChartTypeRegistry, registerables } from 'chart.js';
+Chart.register(...registerables);
 
 import { BoxModel } from './box-model';
 import m from './models/earth-energy-balance-with-ice-loop';
