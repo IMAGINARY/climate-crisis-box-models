@@ -1,7 +1,7 @@
-import { Chart, ChartTypeRegistry, ScaleOptions } from 'chart.js';
+import { Chart, ChartTypeRegistry } from 'chart.js';
 
-import { BoxModel } from '@imaginary-maths/box-model';
-import * as m from './models/earth-energy-balance-with-ice-loop';
+import { BoxModel } from './box-model';
+import m from './models/earth-energy-balance-with-ice-loop';
 
 const numRecords = 3000;
 
