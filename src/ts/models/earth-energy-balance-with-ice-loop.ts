@@ -1,4 +1,4 @@
-import { BoxModelDefinition } from '../box-model-definition';
+import { BoxModelExt } from '../box-model-definition';
 
 const stocks = [
   {
@@ -29,7 +29,7 @@ const variables = [
   },
 ];
 
-const constants = [
+const parameters = [
   {
     id: 'water depth',
     value: 1000,
@@ -54,10 +54,10 @@ const flows = [
 const secondsPerYear = 60 * 60 * 24 * 365.2425;
 const stepSize = secondsPerYear;
 
-const model: BoxModelDefinition = {
+const model: BoxModelExt = {
   stocks,
   variables,
-  constants,
+  parameters,
   flows,
   stepSize,
 };

@@ -1,7 +1,7 @@
 import Chart from 'chart.js/auto';
 import { ChartTypeRegistry } from 'chart.js';
 
-import { BoxModel } from './box-model';
+import { BoxModelEngine } from './box-model';
 import m from './models/earth-energy-balance-with-ice-loop';
 
 const numRecords = 3000;
@@ -40,7 +40,7 @@ const planetHeadContentIdx = m.stocks.findIndex(
   ({ id }) => id === 'planet heat content'
 );
 
-const boxModel = new BoxModel(m);
+const boxModel = new BoxModelEngine(m);
 
 const initialStocks = m.stocks.map(({ initialValue }) => initialValue);
 const initialRecord = boxModel.evaluateGraph(initialStocks, 0);
@@ -85,8 +85,8 @@ function addSlider(parent, constant) {
   container.append(valueSpan);
 
   slider.addEventListener('input', () => {
-    const idx = m.constants.findIndex((c) => c.id === constant.id);
-    m.constants[idx].value = Number.parseFloat(slider.value);
+    const idx = m.parameters.findIndex((c) => c.id === constant.id);
+    m.parameters[idx].value = Number.parseFloat(slider.value);
     valueSpan.innerText = slider.value;
   });
 
@@ -94,7 +94,7 @@ function addSlider(parent, constant) {
 }
 
 const sliderContainerElem = document.getElementById('slider-container');
-m.constants.forEach((c) => addSlider(sliderContainerElem, c));
+m.parameters.forEach((c) => addSlider(sliderContainerElem, c));
 
 const startButton = document.getElementById('startButton') as HTMLButtonElement;
 const stopButton = document.getElementById('stopButton') as HTMLButtonElement;

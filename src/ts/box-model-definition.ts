@@ -1,13 +1,10 @@
-import { Stock, Flow, Variable, Constant } from './box-model';
+import { Stock, BoxModel } from './box-model';
 
 export interface StockWithInitialValue extends Stock {
   initialValue: number;
 }
 
-export interface BoxModelDefinition {
+export interface BoxModelExt extends BoxModel {
   stocks: StockWithInitialValue[];
-  flows: Flow[];
-  variables: Variable[];
-  constants: Constant[];
   stepSize: number;
 }
