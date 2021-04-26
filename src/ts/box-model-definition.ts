@@ -7,4 +7,5 @@ export interface StockWithInitialValue extends Stock {
 export interface BoxModelExt extends BoxModel {
   stocks: StockWithInitialValue[];
   stepSize: number;
+  [key: string]: any;
 }
