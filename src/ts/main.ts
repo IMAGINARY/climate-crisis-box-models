@@ -66,18 +66,18 @@ function animate() {
   requestAnimationFrameId = requestAnimationFrame(animate);
 }
 
-function addSlider(parent, constant) {
+function addSlider(parent, parameter) {
   const container = document.createElement('div');
 
   const titleSpan = document.createElement('span');
-  titleSpan.innerText = constant.id;
+  titleSpan.innerText = parameter.id;
   container.appendChild(titleSpan);
 
   const slider = document.createElement('input') as HTMLInputElement;
   slider.type = 'range';
-  slider.min = `${constant.value * 0.75}`;
-  slider.max = `${constant.value * 1.25}`;
-  slider.value = `${constant.value}`;
+  slider.min = `${parameter.min}`;
+  slider.max = `${parameter.max}`;
+  slider.value = `${parameter.value}`;
   container.append(slider);
 
   const valueSpan = document.createElement('span');
@@ -85,7 +85,7 @@ function addSlider(parent, constant) {
   container.append(valueSpan);
 
   slider.addEventListener('input', () => {
-    const idx = m.parameters.findIndex((c) => c.id === constant.id);
+    const idx = m.parameters.findIndex((c) => c.id === parameter.id);
     m.parameters[idx].value = Number.parseFloat(slider.value);
     valueSpan.innerText = slider.value;
   });

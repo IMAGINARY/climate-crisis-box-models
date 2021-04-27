@@ -32,10 +32,14 @@ const variables = [
 const parameters = [
   {
     id: 'water depth',
+    min: 500,
+    max: 1500,
     value: 1000,
   },
   {
     id: 'solar emissivity',
+    min: 1000,
+    max: 2000,
     value: 1363,
   },
 ];
@@ -53,6 +57,7 @@ const flows = [
 
 const secondsPerYear = 60 * 60 * 24 * 365.2425;
 const stepSize = secondsPerYear;
+const stepsPerSecond = 60;
 
 const model: BoxModelExt = {
   stocks,
@@ -60,6 +65,7 @@ const model: BoxModelExt = {
   parameters,
   flows,
   stepSize,
+  stepsPerSecond,
 };
 
 export default model;
