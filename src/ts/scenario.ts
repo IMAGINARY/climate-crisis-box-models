@@ -1,11 +1,13 @@
 import {
   BoxModelExt,
+  BoxModelForScenario,
   ParameterWithRange,
   StockWithInitialValue,
 } from './box-model-definition';
-import BoxModelEngine from '@imaginary-maths/box-model/dist/box-model';
+import { BoxModelEngine, Record } from './box-model';
 
 export interface ScenarioView {
+  readonly simulation: Simulation;
   update(): void;
   tweenIn(): Promise<void>;
   tweenOut(): Promise<void>;
@@ -23,3 +25,11 @@ export interface ScenarioController {
   setParameter(t: number);
   reset(): void;
 }
+
+export type SimulationResult = [number, Record];
+export type SimulationResults = SimulationResult[];
+
+export type Simulation = {
+  model: BoxModelForScenario;
+  results: SimulationResults;
+};

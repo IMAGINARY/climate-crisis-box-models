@@ -16,6 +16,7 @@ export interface BoxModelExt extends BoxModel {
   parameters: ParameterWithRange[];
   stepSize: number;
   stepsPerSecond: number;
+  numSteps: number;
 }
 
 export interface ParameterWithRangeAndInitialValue extends ParameterWithRange {
@@ -25,7 +26,6 @@ export interface ParameterWithRangeAndInitialValue extends ParameterWithRange {
 export interface BoxModelForScenario extends BoxModelExt {
   stocks: StockWithInitialValue[];
   parameters: ParameterWithRangeAndInitialValue[];
-  stepSize: number;
   [key: string]: any;
 }
 

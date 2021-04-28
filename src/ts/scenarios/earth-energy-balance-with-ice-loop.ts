@@ -6,7 +6,7 @@ import {
 } from '../box-model-definition';
 
 import model from '../models/earth-energy-balance-with-ice-loop';
-
+/*
 class EarthEnergyBalanceWithIceLoopView extends BaseScenarioView {
   constructor(elem: HTMLDivElement, model: BoxModelForScenario) {
     super(elem, model);
@@ -33,3 +33,4 @@ class EarthEnergyBalanceWithIceLoopScenarioController extends BaseScenarioContro
     super(...createBaseScenarioControllerParams(elem, model));
   }
 }
+*/

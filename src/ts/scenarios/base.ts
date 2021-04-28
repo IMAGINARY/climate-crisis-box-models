@@ -1,30 +1,36 @@
 import TWEEN from '@tweenjs/tween.js';
 
-import { ScenarioController, ScenarioView } from '../scenario';
-import { BoxModelForScenario } from '../box-model-definition';
+import {
+  ScenarioController,
+  ScenarioView,
+  Simulation,
+  SimulationResult,
+} from '../scenario';
 import { BoxModelEngine } from '../box-model';
 
 export class BaseScenarioController implements ScenarioController {
-  protected model: BoxModelForScenario;
   protected view: ScenarioView;
   protected engine: BoxModelEngine;
 
-  constructor(model: BoxModelForScenario, view: ScenarioView) {
-    this.model = model;
+  private simulationIntervalId: NodeJS.Timeout | 0 = 0;
+
+  constructor(view: ScenarioView) {
     this.view = view;
-    this.engine = new BoxModelEngine(model);
+    this.engine = new BoxModelEngine(this.view.simulation.model);
   }
 
   setParameter(t: number) {
-    if (typeof this.model.parameters[0] !== 'undefined') {
-      const p = this.model.parameters[0];
+    const { model } = this.view.simulation;
+    if (typeof model.parameters[0] !== 'undefined') {
+      const p = model.parameters[0];
       const tClamped = Math.min(1, Math.max(0, t));
       p.value = p.min + tClamped * (p.max - p.min);
     }
   }
 
   reset() {
-    this.model.parameters.forEach((p) => (p.value = p.initialValue));
+    const { model } = this.view.simulation;
+    model.parameters.forEach((p) => (p.value = p.initialValue));
   }
 
   async start() {
@@ -45,17 +51,61 @@ export class BaseScenarioController implements ScenarioController {
     await this.view.tweenOut();
     this.pause();
   }
+
+  protected stepSimulation(): void {
+    const { model, results } = this.view.simulation;
+    const { stepSize, numSteps } = model;
+    let timestamp = performance.now();
+    if (results.length === 0) {
+      const stocks = model.stocks.map(({ initialValue }) => initialValue);
+      const record = this.engine.evaluateGraph(stocks, 0);
+      const result: SimulationResult = [timestamp, record];
+      results.push(result);
+    } else {
+      const timeStep = 1000 / model.stepsPerSecond;
+      let [lastTimestamp, lastRecord] = results[results.length - 1];
+      while (lastTimestamp + timeStep <= timestamp) {
+        const { t, stocks, flows } = lastRecord;
+        const newRecord = this.engine.stepExt(stocks, flows, t, stepSize);
+        const newTimestamp = lastTimestamp + timeStep;
+        const result: SimulationResult = [newTimestamp, newRecord];
+        results.push(result);
+        while (results.length > numSteps) results.shift();
+        lastTimestamp = newTimestamp;
+        lastRecord = newRecord;
+      }
+    }
+  }
+
+  protected simulate(on: boolean): void {
+    if (on) {
+      if (this.simulationIntervalId !== 0) {
+        const { model } = this.view.simulation;
+        this.stepSimulation();
+        const timeStep = 1000 / model.stepsPerSecond;
+        this.simulationIntervalId = setInterval(
+          this.stepSimulation.bind(this),
+          timeStep
+        );
+      }
+    } else {
+      if (this.simulationIntervalId !== 0) {
+        clearInterval(this.simulationIntervalId);
+      }
+      this.simulationIntervalId = 0;
+    }
+  }
 }
 
 export abstract class BaseScenarioView implements ScenarioView {
-  protected model: BoxModelForScenario;
+  public readonly simulation: Simulation;
   protected container: HTMLDivElement;
   private animationFrameRequestId: number = 0;
   private tweenPromise: Promise<void> = Promise.resolve();
 
-  protected constructor(elem, model) {
+  protected constructor(elem: HTMLDivElement, simulation: Simulation) {
     this.container = elem;
-    this.model = model;
+    this.simulation = simulation;
   }
 
   abstract update();

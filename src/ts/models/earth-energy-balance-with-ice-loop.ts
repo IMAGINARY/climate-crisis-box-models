@@ -58,6 +58,7 @@ const flows = [
 const secondsPerYear = 60 * 60 * 24 * 365.2425;
 const stepSize = secondsPerYear;
 const stepsPerSecond = 60;
+const numSteps = 3000;
 
 const model: BoxModelExt = {
   stocks,
@@ -66,6 +67,7 @@ const model: BoxModelExt = {
   flows,
   stepSize,
   stepsPerSecond,
+  numSteps,
 };
 
 export default model;
