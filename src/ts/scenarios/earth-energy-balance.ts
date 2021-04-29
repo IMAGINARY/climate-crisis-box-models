@@ -1,17 +1,21 @@
 import { BaseScenarioView, BaseScenarioController } from './base';
 import { convertToBoxModelForScenario } from '../box-model-definition';
 
-import model from '../models/earth-energy-balance-with-ice-loop';
+import { Record } from '../box-model';
+import model from '../models/earth-energy-balance';
 import { Simulation } from '../scenario';
 import { ChartTypeRegistry } from 'chart.js';
 import Chart from 'chart.js/auto';
 
 const { numSteps } = model;
-const planetHeatContentIdx = model.stocks.findIndex(
-  ({ id }) => id === 'planet heat content'
+const temperatureIdx = model.variables.findIndex(
+  ({ id }) => id === 'temperature'
 );
+function getTemperatureCelsius(r: Record) {
+  return r.variables[temperatureIdx] - 273.15;
+}
 
-class EarthEnergyBalanceWithIceLoopView extends BaseScenarioView {
+class EarthEnergyBalanceView extends BaseScenarioView {
   protected readonly data: number[];
   protected readonly chart: Chart;
   protected lastResultTimestamp: number = 0;
@@ -35,7 +39,7 @@ class EarthEnergyBalanceWithIceLoopView extends BaseScenarioView {
         .map((_, i) => -(numSteps - i - 1)),
       datasets: [
         {
-          label: 'Planet heat content',
+          label: 'Temperature',
           backgroundColor: 'rgb(255, 99, 132)',
           borderColor: 'rgb(255, 99, 132)',
           data: data,
@@ -43,6 +47,9 @@ class EarthEnergyBalanceWithIceLoopView extends BaseScenarioView {
         },
       ],
     };
+    const temperatureFormatter = new Intl.NumberFormat('de', {
+      maximumFractionDigits: 1,
+    });
     const chartConfig = {
       type: 'line' as keyof ChartTypeRegistry,
       data: chartData,
@@ -50,8 +57,11 @@ class EarthEnergyBalanceWithIceLoopView extends BaseScenarioView {
         radius: 0,
         scales: {
           y: {
-            min: 0.5 * 1e12,
-            max: 1.1 * 1.2e12,
+            min: -274,
+            max: 30,
+            ticks: {
+              callback: (value) => `${temperatureFormatter.format(value)}°C`,
+            },
           },
         },
       },
@@ -68,7 +78,7 @@ class EarthEnergyBalanceWithIceLoopView extends BaseScenarioView {
     for (let i = results.length - 1; i >= 0; i -= 1) {
       const [timestamp, record] = results[i];
       if (timestamp > this.lastResultTimestamp) {
-        newData.unshift(record.stocks[planetHeatContentIdx]);
+        newData.unshift(getTemperatureCelsius(record));
       } else {
         break;
       }
@@ -83,10 +93,10 @@ class EarthEnergyBalanceWithIceLoopView extends BaseScenarioView {
   }
 }
 
-export default class EarthEnergyBalanceWithIceLoopScenarioController extends BaseScenarioController {
+export default class EarthEnergyBalanceScenarioController extends BaseScenarioController {
   constructor(elem) {
     super(
-      new EarthEnergyBalanceWithIceLoopView(elem, {
+      new EarthEnergyBalanceView(elem, {
         model: convertToBoxModelForScenario(model),
         results: [],
       })
@@ -94,4 +104,4 @@ export default class EarthEnergyBalanceWithIceLoopScenarioController extends Bas
   }
 }
 
-export { EarthEnergyBalanceWithIceLoopScenarioController };
+export { EarthEnergyBalanceScenarioController };

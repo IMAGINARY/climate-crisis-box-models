@@ -1,4 +1,4 @@
-import EarthEnergyBalanceWithIceLoopScenarioController from './scenarios/earth-energy-balance-with-ice-loop';
+import EarthEnergyBalanceWithIceLoopScenarioController from './scenarios/earth-energy-balance';
 
 function addSlider(parent, cb, initialValue) {
   const container = document.createElement('div');
