@@ -1,83 +1,14 @@
-import Chart from 'chart.js/auto';
-import { ChartTypeRegistry } from 'chart.js';
+import EarthEnergyBalanceWithIceLoopScenarioController from './scenarios/earth-energy-balance-with-ice-loop';
 
-import { BoxModelEngine } from './box-model';
-import m from './models/earth-energy-balance-with-ice-loop';
-
-const numRecords = 3000;
-
-const chartData = {
-  labels: Array(numRecords)
-    .fill(null)
-    .map((_, i) => -(numRecords - i - 1)),
-  datasets: [
-    {
-      label: 'Planet heat content',
-      backgroundColor: 'rgb(255, 99, 132)',
-      borderColor: 'rgb(255, 99, 132)',
-      data: Array(numRecords).fill(undefined),
-      cubicInterpolationMode: 'monotone',
-    },
-  ],
-};
-const chartConfig = {
-  type: 'line' as keyof ChartTypeRegistry,
-  data: chartData,
-  options: {
-    radius: 0,
-    scales: {
-      y: {
-        min: 0.95e12,
-        max: 1.2e12,
-      },
-    },
-  },
-};
-
-const elem = document.getElementById('chart') as HTMLCanvasElement;
-const planetHeatContentChart = new Chart(elem, chartConfig);
-const planetHeadContentIdx = m.stocks.findIndex(
-  ({ id }) => id === 'planet heat content'
-);
-
-const boxModel = new BoxModelEngine(m);
-
-const initialStocks = m.stocks.map(({ initialValue }) => initialValue);
-const initialRecord = boxModel.evaluateGraph(initialStocks, 0);
-let lastRecord = initialRecord;
-let t = 0;
-
-function addRecords(num = 1) {
-  for (let i = 0; i < num; i += 1) {
-    const { stocks, flows } = lastRecord;
-    lastRecord = boxModel.stepExt(stocks, flows, t * m.stepSize, m.stepSize);
-    t += 1;
-    chartData.datasets[0].data.shift();
-    chartData.datasets[0].data.push(lastRecord.stocks[planetHeadContentIdx]);
-  }
-  planetHeatContentChart.update('resize');
-}
-
-let requestAnimationFrameId = 0;
-
-function animate() {
-  addRecords(20);
-  cancelAnimationFrame(requestAnimationFrameId);
-  requestAnimationFrameId = requestAnimationFrame(animate);
-}
-
-function addSlider(parent, parameter) {
+function addSlider(parent, cb, initialValue) {
   const container = document.createElement('div');
-
-  const titleSpan = document.createElement('span');
-  titleSpan.innerText = parameter.id;
-  container.appendChild(titleSpan);
 
   const slider = document.createElement('input') as HTMLInputElement;
   slider.type = 'range';
-  slider.min = `${parameter.min}`;
-  slider.max = `${parameter.max}`;
-  slider.value = `${parameter.value}`;
+  slider.min = '0.0';
+  slider.max = '1.0';
+  slider.step = '0.001';
+  slider.value = `${initialValue}`;
   container.append(slider);
 
   const valueSpan = document.createElement('span');
@@ -85,22 +16,50 @@ function addSlider(parent, parameter) {
   container.append(valueSpan);
 
   slider.addEventListener('input', () => {
-    const idx = m.parameters.findIndex((c) => c.id === parameter.id);
-    m.parameters[idx].value = Number.parseFloat(slider.value);
     valueSpan.innerText = slider.value;
+    cb(slider.valueAsNumber);
   });
 
   parent.appendChild(container);
 }
 
+const scenario1Div = document.getElementById('scenario1') as HTMLDivElement;
+const scenario1 = new EarthEnergyBalanceWithIceLoopScenarioController(
+  scenario1Div
+);
+const parameter1Cb = scenario1.setParameter.bind(scenario1);
+
 const sliderContainerElem = document.getElementById('slider-container');
-m.parameters.forEach((c) => addSlider(sliderContainerElem, c));
+addSlider(sliderContainerElem, parameter1Cb, scenario1.getParameter());
 
 const startButton = document.getElementById('startButton') as HTMLButtonElement;
 const stopButton = document.getElementById('stopButton') as HTMLButtonElement;
 
-startButton.addEventListener('click', () => animate());
+let shouldBePlaying = false;
 
-stopButton.addEventListener('click', () =>
-  cancelAnimationFrame(requestAnimationFrameId)
-);
+startButton.addEventListener('click', () => {
+  scenario1.play();
+  shouldBePlaying = true;
+});
+stopButton.addEventListener('click', () => {
+  scenario1.pause();
+  shouldBePlaying = false;
+});
+
+function handlePageVisibilityChange() {
+  switch (document.visibilityState) {
+    case 'visible':
+      if (shouldBePlaying) {
+        scenario1.play();
+      }
+      break;
+    case 'hidden':
+      scenario1.pause();
+      break;
+    default:
+      break;
+  }
+}
+
+document.addEventListener('visibilitychange', handlePageVisibilityChange);
+document.addEventListener('pagehide', handlePageVisibilityChange);

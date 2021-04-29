@@ -56,7 +56,8 @@ const flows = [
 ];
 
 const secondsPerYear = 60 * 60 * 24 * 365.2425;
-const stepSize = secondsPerYear;
+const subSteps = 1;
+const stepSize = (subSteps + 1) * secondsPerYear;
 const stepsPerSecond = 60;
 const numSteps = 3000;
 
@@ -68,6 +69,7 @@ const model: BoxModelExt = {
   stepSize,
   stepsPerSecond,
   numSteps,
+  subSteps,
 };
 
 export default model;

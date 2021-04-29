@@ -12,7 +12,10 @@ export class BaseScenarioController implements ScenarioController {
   protected view: ScenarioView;
   protected engine: BoxModelEngine;
 
-  private simulationIntervalId: NodeJS.Timeout | 0 = 0;
+  protected lastSimStopTimestamp: number = -1;
+  protected simulationTime: number = 0;
+  protected simulationTimeOffset: number = -1;
+  private simulationFrameId: number = 0;
 
   constructor(view: ScenarioView) {
     this.view = view;
@@ -28,6 +31,18 @@ export class BaseScenarioController implements ScenarioController {
     }
   }
 
+  getParameter() {
+    const { model } = this.view.simulation;
+    if (typeof model.parameters[0] !== 'undefined') {
+      const p = model.parameters[0];
+      const t = (p.value - p.min) / (p.max - p.min);
+      const tClamped = Math.min(1, Math.max(0, t));
+      return tClamped;
+    } else {
+      return 0;
+    }
+  }
+
   reset() {
     const { model } = this.view.simulation;
     model.parameters.forEach((p) => (p.value = p.initialValue));
@@ -40,10 +55,12 @@ export class BaseScenarioController implements ScenarioController {
   }
 
   play() {
+    this.simulate(true);
     this.view.animate(true);
   }
 
   pause() {
+    this.simulate(false);
     this.view.animate(false);
   }
 
@@ -52,47 +69,58 @@ export class BaseScenarioController implements ScenarioController {
     this.pause();
   }
 
-  protected stepSimulation(): void {
+  isPlaying() {
+    return this.simulationFrameId !== 0 && this.view.isAnimating();
+  }
+
+  protected stepSimulation(targetSimulationTime: number): void {
     const { model, results } = this.view.simulation;
     const { stepSize, numSteps } = model;
-    let timestamp = performance.now();
+    let { subSteps } = model;
+    subSteps = Math.max(0, subSteps);
     if (results.length === 0) {
       const stocks = model.stocks.map(({ initialValue }) => initialValue);
       const record = this.engine.evaluateGraph(stocks, 0);
+      const result: SimulationResult = [0, record];
+      results.push(result);
+    }
+    const timeStep = 1000 / model.stepsPerSecond;
+    let [timestamp, record] = results[results.length - 1];
+    const h = stepSize / (subSteps + 1);
+    while (timestamp + timeStep <= targetSimulationTime) {
+      for (let i = 0; i < subSteps + 1; i += 1) {
+        const { t, stocks, flows } = record;
+        record = this.engine.stepExt(stocks, flows, t, h);
+      }
+      timestamp += timeStep;
       const result: SimulationResult = [timestamp, record];
       results.push(result);
-    } else {
-      const timeStep = 1000 / model.stepsPerSecond;
-      let [lastTimestamp, lastRecord] = results[results.length - 1];
-      while (lastTimestamp + timeStep <= timestamp) {
-        const { t, stocks, flows } = lastRecord;
-        const newRecord = this.engine.stepExt(stocks, flows, t, stepSize);
-        const newTimestamp = lastTimestamp + timeStep;
-        const result: SimulationResult = [newTimestamp, newRecord];
-        results.push(result);
-        while (results.length > numSteps) results.shift();
-        lastTimestamp = newTimestamp;
-        lastRecord = newRecord;
-      }
+      while (results.length > numSteps) results.shift();
     }
   }
 
   protected simulate(on: boolean): void {
+    const now = performance.now();
     if (on) {
-      if (this.simulationIntervalId !== 0) {
-        const { model } = this.view.simulation;
-        this.stepSimulation();
-        const timeStep = 1000 / model.stepsPerSecond;
-        this.simulationIntervalId = setInterval(
-          this.stepSimulation.bind(this),
-          timeStep
-        );
+      if (this.simulationFrameId === 0) {
+        if (this.lastSimStopTimestamp === -1) {
+          this.simulationTimeOffset = now;
+        } else {
+          this.simulationTimeOffset += now - this.lastSimStopTimestamp;
+        }
+        const cb = (now) => {
+          const targetSimulationTime = now - this.simulationTimeOffset;
+          this.stepSimulation(targetSimulationTime);
+          this.simulationFrameId = requestAnimationFrame(cb);
+        };
+        cb(now);
       }
     } else {
-      if (this.simulationIntervalId !== 0) {
-        clearInterval(this.simulationIntervalId);
+      if (this.simulationFrameId !== 0) {
+        cancelAnimationFrame(this.simulationFrameId);
+        this.simulationFrameId = 0;
+        this.lastSimStopTimestamp = now;
       }
-      this.simulationIntervalId = 0;
     }
   }
 }
@@ -112,16 +140,21 @@ export abstract class BaseScenarioView implements ScenarioView {
 
   animate(on) {
     if (on) {
-      if (this.animationFrameRequestId !== 0) {
-        this.update();
-        this.animationFrameRequestId = requestAnimationFrame(
-          this.update.bind(this)
-        );
+      if (this.animationFrameRequestId === 0) {
+        const cb = () => {
+          this.update();
+          this.animationFrameRequestId = requestAnimationFrame(cb);
+        };
+        cb();
       }
     } else {
       cancelAnimationFrame(this.animationFrameRequestId);
       this.animationFrameRequestId = 0;
     }
+  }
+
+  isAnimating() {
+    return this.animationFrameRequestId !== 0;
   }
 
   protected async tweenOpacity(targetOpacity: number): Promise<void> {

@@ -16,6 +16,7 @@ export interface BoxModelExt extends BoxModel {
   parameters: ParameterWithRange[];
   stepSize: number;
   stepsPerSecond: number;
+  subSteps: number;
   numSteps: number;
 }
 
