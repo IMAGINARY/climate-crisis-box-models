@@ -1,4 +1,4 @@
-import EarthEnergyBalanceWithIceLoopScenarioController from './scenarios/earth-energy-balance';
+import ExampleScenarioController from './scenarios/ice-albedo-feedback';
 
 function addSlider(parent, cb, initialValue) {
   const container = document.createElement('div');
@@ -7,7 +7,7 @@ function addSlider(parent, cb, initialValue) {
   slider.type = 'range';
   slider.min = '0.0';
   slider.max = '1.0';
-  slider.step = '0.001';
+  slider.step = '0.01';
   slider.value = `${initialValue}`;
   container.append(slider);
 
@@ -24,9 +24,7 @@ function addSlider(parent, cb, initialValue) {
 }
 
 const scenario1Div = document.getElementById('scenario1') as HTMLDivElement;
-const scenario1 = new EarthEnergyBalanceWithIceLoopScenarioController(
-  scenario1Div
-);
+const scenario1 = new ExampleScenarioController(scenario1Div);
 const parameter1Cb = scenario1.setParameter.bind(scenario1);
 
 const sliderContainerElem = document.getElementById('slider-container');
