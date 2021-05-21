@@ -1,4 +1,4 @@
-import ExampleScenarioController from './scenarios/ice-albedo-feedback';
+import ExampleScenarioController from './scenarios/greenhouse-effect';
 
 function addSlider(parent, cb, initialValue) {
   const container = document.createElement('div');
