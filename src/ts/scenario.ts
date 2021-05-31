@@ -17,12 +17,10 @@ export interface ScenarioController {
   stop(): Promise<void>;
   isPlaying(): boolean;
 
-  /***
-   * Set the relative value of the first parameter of the model.
-   * @param t A number in [0,1] to interpolate between the model parameter's minimum and maximum.
-   */
-  setParameter(t: number);
+  setParameter(value: number);
   getParameter(): number;
+  getParameterRange(): { min: number; max: number };
+
   reset(): void;
 }
 

@@ -1,13 +1,16 @@
 import ExampleScenarioController from './scenarios/greenhouse-effect';
 
-function addSlider(parent, cb, initialValue) {
+function addSlider(parent, scenario) {
   const container = document.createElement('div');
+
+  const initialValue = scenario.getParameter();
+  const { min, max } = scenario.getParameterRange();
 
   const slider = document.createElement('input') as HTMLInputElement;
   slider.type = 'range';
-  slider.min = '0.0';
-  slider.max = '1.0';
-  slider.step = '0.01';
+  slider.min = `${min}`;
+  slider.max = `${max}`;
+  slider.step = `${0.01 * (max - min)}`;
   slider.value = `${initialValue}`;
   container.append(slider);
 
@@ -17,7 +20,7 @@ function addSlider(parent, cb, initialValue) {
 
   slider.addEventListener('input', () => {
     valueSpan.innerText = slider.value;
-    cb(slider.valueAsNumber);
+    scenario.setParameter(slider.valueAsNumber);
   });
 
   parent.appendChild(container);
@@ -28,7 +31,7 @@ const scenario1 = new ExampleScenarioController(scenario1Div);
 const parameter1Cb = scenario1.setParameter.bind(scenario1);
 
 const sliderContainerElem = document.getElementById('slider-container');
-addSlider(sliderContainerElem, parameter1Cb, scenario1.getParameter());
+addSlider(sliderContainerElem, scenario1);
 
 const startButton = document.getElementById('startButton') as HTMLButtonElement;
 const stopButton = document.getElementById('stopButton') as HTMLButtonElement;

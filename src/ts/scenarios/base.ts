@@ -22,12 +22,13 @@ export class BaseScenarioController implements ScenarioController {
     this.engine = new BoxModelEngine(this.view.simulation.model);
   }
 
-  setParameter(t: number) {
+  setParameter(value: number) {
     const { model } = this.view.simulation;
     if (typeof model.parameters[0] !== 'undefined') {
       const p = model.parameters[0];
-      const tClamped = Math.min(1, Math.max(0, t));
-      p.value = p.min + tClamped * (p.max - p.min);
+      const { min, max } = p;
+      const valueClamped = Math.min(max, Math.max(min, value));
+      p.value = valueClamped;
     }
   }
 
@@ -35,11 +36,22 @@ export class BaseScenarioController implements ScenarioController {
     const { model } = this.view.simulation;
     if (typeof model.parameters[0] !== 'undefined') {
       const p = model.parameters[0];
-      const t = (p.value - p.min) / (p.max - p.min);
-      const tClamped = Math.min(1, Math.max(0, t));
-      return tClamped;
+      const { value, min, max } = p;
+      const valueClamped = Math.min(max, Math.max(min, value));
+      return valueClamped;
     } else {
       return 0;
+    }
+  }
+
+  getParameterRange() {
+    const { model } = this.view.simulation;
+    if (typeof model.parameters[0] !== 'undefined') {
+      const p = model.parameters[0];
+      const { min, max } = p;
+      return { min, max };
+    } else {
+      return { min: 0, max: 1 };
     }
   }
 
