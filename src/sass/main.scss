@@ -1,10 +1,31 @@
 .scenario {
   position: relative;
 }
-.graph {
+.graph,
+.graph1 {
   position: absolute;
   right: 0;
   top: 0;
   width: 30%;
   margin: 2vw;
+}
+
+.graph2 {
+  position: absolute;
+  right: 0;
+  top: 310px;
+  width: 30%;
+  margin: 2vw;
+}
+
+.scenario {
+  .fade-in {
+    transition: opacity 0.5s;
+    opacity: 1;
+  }
+
+  .fade-out {
+    transition: opacity 0.5s;
+    opacity: 0;
+  }
 }

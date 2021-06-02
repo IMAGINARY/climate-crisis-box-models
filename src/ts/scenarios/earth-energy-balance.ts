@@ -1,11 +1,16 @@
-import { BaseScenarioView, BaseScenarioController } from './base';
-import { convertToBoxModelForScenario } from '../box-model-definition';
-
-import { Record } from '../box-model';
-import model from '../models/earth-energy-balance';
-import { Simulation } from '../scenario';
+import { SVG } from '@svgdotjs/svg.js';
 import { ChartTypeRegistry } from 'chart.js';
 import Chart from 'chart.js/auto';
+
+import { BaseScenario } from './base';
+import { Record } from '../box-model';
+import model from '../models/earth-energy-balance';
+import { Simulation, SimulationResult } from '../simulation';
+import { loadSvg } from '../util';
+
+// @ts-ignore
+import scenarioSvgUrl from 'url:./../../svg/scenario.svg';
+import { convertToBoxModelForScenario } from '../box-model-definition';
 
 const { numSteps } = model;
 const temperatureIdx = model.variables.findIndex(
@@ -15,20 +20,40 @@ function getTemperatureCelsius(r: Record) {
   return r.variables[temperatureIdx] - 273.15;
 }
 
-class EarthEnergyBalanceView extends BaseScenarioView {
+namespace EarthEnergyBalanceScenario {
+  export type Resources = {
+    svg: XMLDocument;
+  };
+}
+
+export default class EarthEnergyBalanceScenario extends BaseScenario {
   protected readonly data: number[];
   protected readonly chart: Chart;
-  protected lastResultTimestamp: number = 0;
+  protected readonly svg;
 
-  constructor(elem: HTMLDivElement, simulation: Simulation) {
-    super(elem, simulation);
+  constructor(
+    elem: HTMLDivElement,
+    resources: EarthEnergyBalanceScenario.Resources
+  ) {
+    super(elem, new Simulation(convertToBoxModelForScenario(model)));
+    this.svg = SVG(document.importNode(resources.svg.documentElement, true));
     const { chart, data } = this.init();
     this.data = data;
     this.chart = chart;
   }
 
+  static async loadResources(): Promise<EarthEnergyBalanceScenario.Resources> {
+    const svg = await loadSvg(scenarioSvgUrl);
+    return { svg };
+  }
+
   private init() {
+    this.container.appendChild(this.svg.node);
+
     const canvas: HTMLCanvasElement = document.createElement('canvas');
+    canvas.width = 400;
+    canvas.height = 300;
+    canvas.classList.add('graph');
     this.container.appendChild(canvas);
 
     const data = new Array(numSteps).fill(undefined);
@@ -54,11 +79,12 @@ class EarthEnergyBalanceView extends BaseScenarioView {
       type: 'line' as keyof ChartTypeRegistry,
       data: chartData,
       options: {
+        responsive: false,
         radius: 0,
         scales: {
           y: {
-            min: -274,
-            max: 30,
+            min: -275,
+            max: 15,
             ticks: {
               callback: (value) => `${temperatureFormatter.format(value)}°C`,
             },
@@ -72,36 +98,25 @@ class EarthEnergyBalanceView extends BaseScenarioView {
     return { chart, data };
   }
 
-  update() {
-    const { results } = this.simulation;
-    const newData = [];
-    for (let i = results.length - 1; i >= 0; i -= 1) {
-      const [timestamp, record] = results[i];
-      if (timestamp > this.lastResultTimestamp) {
-        newData.unshift(getTemperatureCelsius(record));
-      } else {
-        break;
-      }
-    }
-    this.data.splice(0, newData.length);
-    this.data.push(...newData);
-    if (results.length > 0) {
-      const [timestamp] = results[results.length - 1];
-      this.lastResultTimestamp = timestamp;
-    }
+  protected update(newData: SimulationResult[]) {
+    const newRecords = newData.map(([_, record]) => record);
+    this.updateChart(newRecords);
+    this.updateAlbedo();
+  }
+
+  protected updateChart(newRecords: Record[]) {
+    const newTemperatures = newRecords.map(getTemperatureCelsius);
+    this.data.splice(0, newTemperatures.length);
+    this.data.push(...newTemperatures);
     this.chart.update('resize');
   }
-}
 
-export default class EarthEnergyBalanceScenarioController extends BaseScenarioController {
-  constructor(elem) {
-    super(
-      new EarthEnergyBalanceView(elem, {
-        model: convertToBoxModelForScenario(model),
-        results: [],
-      })
-    );
+  protected updateAlbedo() {
+    const simulation = this.getSimulation();
+    const { min, max } = simulation.getParameterRange();
+    const value = simulation.getParameter();
+    const relValue = (value - min) / (max - min);
   }
 }
 
-export { EarthEnergyBalanceScenarioController };
+export { EarthEnergyBalanceScenario };

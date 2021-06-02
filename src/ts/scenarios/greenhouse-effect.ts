@@ -1,18 +1,16 @@
 import { SVG } from '@svgdotjs/svg.js';
-import { takeRightWhile } from 'lodash/findLastIndex';
-
-import { BaseScenarioView, BaseScenarioController } from './base';
-import { convertToBoxModelForScenario } from '../box-model-definition';
-// @ts-ignore
-import scenarioSvgUrl from 'url:./../../svg/scenario.svg';
-
-import { Record } from '../box-model';
-import model from '../models/greenhouse-effect';
-import { Simulation } from '../scenario';
 import { ChartTypeRegistry } from 'chart.js';
 import Chart from 'chart.js/auto';
+
+import { BaseScenario } from './base';
+import { BoxModel, Record } from '../box-model';
+import model from '../models/greenhouse-effect';
+import { Simulation, SimulationResult } from '../simulation';
 import { loadSvg } from '../util';
-import { BoxModel } from '@imaginary-maths/box-model';
+
+// @ts-ignore
+import scenarioSvgUrl from 'url:./../../svg/scenario.svg';
+import { convertToBoxModelForScenario } from '../box-model-definition';
 
 const { numSteps } = model;
 const temperatureIdx = model.variables.findIndex(
@@ -23,37 +21,29 @@ function getTemperatureCelsius(r: Record) {
   return r.variables[temperatureIdx] - 273.15;
 }
 
-const co2Idx = model.parameters.findIndex(({ id }) => id === 'co2');
-
-function getCO2(r: Record | BoxModel) {
-  return r.parameters[co2Idx];
-}
-
-namespace GreenhouseEffectView {
+namespace GreenhouseEffectScenario {
   export type Resources = {
     svg: XMLDocument;
   };
 }
 
-class GreenhouseEffectView extends BaseScenarioView {
+export default class GreenhouseEffectScenario extends BaseScenario {
   protected readonly data: number[];
   protected readonly chart: Chart;
-  protected lastResultTimestamp: number = 0;
   protected readonly svg;
 
   constructor(
     elem: HTMLDivElement,
-    simulation: Simulation,
-    resources: GreenhouseEffectView.Resources
+    resources: GreenhouseEffectScenario.Resources
   ) {
-    super(elem, simulation);
+    super(elem, new Simulation(convertToBoxModelForScenario(model)));
     this.svg = SVG(document.importNode(resources.svg.documentElement, true));
     const { chart, data } = this.init();
     this.data = data;
     this.chart = chart;
   }
 
-  static async loadResources() {
+  static async loadResources(): Promise<GreenhouseEffectScenario.Resources> {
     const svg = await loadSvg(scenarioSvgUrl);
     return { svg };
   }
@@ -109,34 +99,23 @@ class GreenhouseEffectView extends BaseScenarioView {
     return { chart, data };
   }
 
-  update() {
-    this.updateGraph();
+  protected update(newData: SimulationResult[]) {
+    const newRecords = newData.map(([_, record]) => record);
+    this.updateChart(newRecords);
     this.updateCO2();
   }
 
-  updateGraph() {
-    const { results } = this.simulation;
-    const newData = [];
-    for (let i = results.length - 1; i >= 0; i -= 1) {
-      const [timestamp, record] = results[i];
-      if (timestamp > this.lastResultTimestamp) {
-        newData.unshift(getTemperatureCelsius(record));
-      } else {
-        break;
-      }
-    }
-    this.data.splice(0, newData.length);
-    this.data.push(...newData);
-    if (results.length > 0) {
-      const [timestamp] = results[results.length - 1];
-      this.lastResultTimestamp = timestamp;
-    }
+  protected updateChart(newRecords: Record[]) {
+    const newTemperatures = newRecords.map(getTemperatureCelsius);
+    this.data.splice(0, newTemperatures.length);
+    this.data.push(...newTemperatures);
     this.chart.update('resize');
   }
 
-  updateCO2() {
-    const { model } = this.simulation;
-    const { min, max, value } = model.parameters[co2Idx];
+  protected updateCO2() {
+    const simulation = this.getSimulation();
+    const { min, max } = simulation.getParameterRange();
+    const value = simulation.getParameter();
     const relValue = (value - min) / (max - min);
     const scale = 0.5 + (3 + 0.5) * relValue;
 
@@ -145,29 +124,4 @@ class GreenhouseEffectView extends BaseScenarioView {
   }
 }
 
-namespace GreenhouseEffectScenarioController {
-  export type Resources = {
-    svg: XMLDocument;
-  };
-}
-
-export default class GreenhouseEffectScenarioController extends BaseScenarioController {
-  constructor(elem, resources: GreenhouseEffectScenarioController.Resources) {
-    super(
-      new GreenhouseEffectView(
-        elem,
-        {
-          model: convertToBoxModelForScenario(model),
-          results: [],
-        },
-        resources
-      )
-    );
-  }
-
-  static async loadResources() {
-    return GreenhouseEffectView.loadResources();
-  }
-}
-
-export { GreenhouseEffectScenarioController };
+export { GreenhouseEffectScenario };
