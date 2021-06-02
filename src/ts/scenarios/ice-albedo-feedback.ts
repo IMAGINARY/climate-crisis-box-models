@@ -334,6 +334,10 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     return { chart1, chart2 };
   }
 
+  reset() {
+    // TODO
+  }
+
   protected update(newData: SimulationResult[]) {
     const newRecords = newData.map(([_, record]) => record);
     this.updateChart1(newRecords);

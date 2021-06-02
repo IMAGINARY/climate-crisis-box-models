@@ -99,6 +99,10 @@ export default class GreenhouseEffectScenario extends BaseScenario {
     return { chart, data };
   }
 
+  reset() {
+    // TODO
+  }
+
   protected update(newData: SimulationResult[]) {
     const newRecords = newData.map(([_, record]) => record);
     this.updateChart(newRecords);

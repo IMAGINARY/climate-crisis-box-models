@@ -1,15 +1,10 @@
-import TWEEN from '@tweenjs/tween.js';
-
 import { Scenario } from '../scenario';
 import { Simulation, SimulationResult } from '../simulation';
-import { BoxModelEngine } from '../box-model';
 
 export abstract class BaseScenario implements Scenario {
   public readonly simulation: Simulation;
   protected parent: HTMLDivElement;
   protected container: HTMLDivElement;
-  private animationFrameRequestId: number = 0;
-  private tweenPromise: Promise<void> = Promise.resolve();
 
   protected constructor(elem: HTMLDivElement, simulation: Simulation) {
     this.parent = elem;
@@ -26,21 +21,23 @@ export abstract class BaseScenario implements Scenario {
     return this.simulation;
   }
 
+  hide() {
+    this.container.classList.add('invisible');
+  }
+
+  show() {
+    this.container.classList.remove('invisible');
+  }
+
   tweenIn() {
-    const promise = new Promise<void>((resolve) => {
-      this.container.addEventListener('transitionend', () => resolve());
-    });
-    this.container.classList.remove('fade-out');
-    this.container.classList.add('fade-in');
-    return promise;
+    // TODO: implement actual tween
+    this.show();
+    return Promise.resolve();
   }
 
   tweenOut() {
-    const promise = new Promise<void>((resolve) => {
-      this.container.addEventListener('transitionend', () => resolve());
-    });
-    this.container.classList.remove('fade-in');
-    this.container.classList.add('fade-out');
-    return promise;
+    // TODO: implement actual tween
+    this.hide();
+    return Promise.resolve();
   }
 }

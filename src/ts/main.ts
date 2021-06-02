@@ -1,5 +1,8 @@
 import ready from 'document-ready';
-import ExampleScenario from './scenarios/ice-albedo-feedback';
+import { EarthEnergyBalanceScenario } from './scenarios/earth-energy-balance';
+import { IceAlbedoFeedbackScenario } from './scenarios/ice-albedo-feedback';
+import { GreenhouseEffectScenario } from './scenarios/greenhouse-effect';
+import ScenarioSwitcher from './ScenarioSwitcher';
 
 function addSlider(parent, simulation) {
   const container = document.createElement('div');
@@ -32,26 +35,54 @@ function addSlider(parent, simulation) {
 }
 
 async function main() {
-  const scenario1Div = document.getElementById('scenario1') as HTMLDivElement;
-  const scenarioResources = await ExampleScenario.loadResources();
-  const scenario1 = new ExampleScenario(scenario1Div, scenarioResources);
+  const scenarioContainer = document.getElementById(
+    'scenario-container'
+  ) as HTMLDivElement;
+
+  const scenarioClasses = [
+    EarthEnergyBalanceScenario,
+    IceAlbedoFeedbackScenario,
+    GreenhouseEffectScenario,
+  ];
+  const scenarios = await Promise.all(
+    scenarioClasses.map(async (ScenarioClass) => {
+      const scenarioResources = await ScenarioClass.loadResources();
+      const scenario = new ScenarioClass(scenarioContainer, scenarioResources);
+      return scenario;
+    })
+  );
+
+  const scenarioSwitcher = new ScenarioSwitcher(scenarios);
+  scenarioSwitcher.getCurrentScenario().getSimulation().stop();
+
+  const scenarioSelectorContainer = document.getElementById(
+    'scenario-selector-container'
+  );
+  scenarios.forEach((_, idx) => {
+    const button = document.createElement('button') as HTMLButtonElement;
+    button.innerText = `Scenario ${idx}`;
+    button.onclick = () => scenarioSwitcher.switchTo(idx);
+    scenarioSelectorContainer.appendChild(button);
+  });
 
   const sliderContainerElem = document.getElementById('slider-container');
-  addSlider(sliderContainerElem, scenario1.getSimulation());
+  scenarios.forEach((s) => addSlider(sliderContainerElem, s.getSimulation()));
 
   const startButton = document.getElementById(
-    'startButton'
+    'playButton'
   ) as HTMLButtonElement;
-  const stopButton = document.getElementById('stopButton') as HTMLButtonElement;
+  const stopButton = document.getElementById(
+    'pauseButton'
+  ) as HTMLButtonElement;
 
   let shouldBePlaying = false;
 
   startButton.addEventListener('click', () => {
-    scenario1.getSimulation().play();
+    scenarioSwitcher.getCurrentScenario().getSimulation().play();
     shouldBePlaying = true;
   });
   stopButton.addEventListener('click', () => {
-    scenario1.getSimulation().pause();
+    scenarioSwitcher.getCurrentScenario().getSimulation().pause();
     shouldBePlaying = false;
   });
 
@@ -59,11 +90,11 @@ async function main() {
     switch (document.visibilityState) {
       case 'visible':
         if (shouldBePlaying) {
-          scenario1.getSimulation().play();
+          scenarioSwitcher.getCurrentScenario().getSimulation().play();
         }
         break;
       case 'hidden':
-        scenario1.getSimulation().pause();
+        scenarioSwitcher.getCurrentScenario().getSimulation().pause();
         break;
       default:
         break;
