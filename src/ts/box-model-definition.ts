@@ -34,7 +34,7 @@ export function convertToBoxModelForScenario(
   m: BoxModelExt
 ): BoxModelForScenario {
   const result = cloneDeep(m);
-  result.parameters.map(
+  result.parameters = result.parameters.map(
     (p: ParameterWithRange): ParameterWithRangeAndInitialValue => ({
       ...p,
       initialValue: p.value,
