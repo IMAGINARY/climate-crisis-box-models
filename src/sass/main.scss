@@ -24,6 +24,7 @@
 
   .scenario {
     grid-area: 1 / 1 / 2 / 2;
+    position: relative;
 
     .fade-in {
       transition: opacity 0.5s;
@@ -33,6 +34,14 @@
     .fade-out {
       transition: opacity 0.5s;
       opacity: 0;
+    }
+
+    .label {
+      position: absolute;
+      top: 0;
+      left: 0;
+      margin: 5px;
+      z-index: 1000;
     }
   }
 }
