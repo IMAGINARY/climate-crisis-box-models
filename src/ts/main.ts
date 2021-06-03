@@ -58,9 +58,9 @@ async function main() {
   const scenarioSelectorContainer = document.getElementById(
     'scenario-selector-container'
   );
-  scenarios.forEach((_, idx) => {
+  scenarios.forEach((ScenarioClass, idx) => {
     const button = document.createElement('button') as HTMLButtonElement;
-    button.innerText = `Scenario ${idx}`;
+    button.innerText = ScenarioClass.constructor.name;
     button.onclick = () => scenarioSwitcher.switchTo(idx);
     scenarioSelectorContainer.appendChild(button);
   });
