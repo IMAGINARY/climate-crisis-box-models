@@ -73,10 +73,24 @@ export class Simulation extends EventEmitter {
   }
 
   reset() {
+    if (this.isPlaying()) {
+      this.simulate(false);
+    }
+
     const { model } = this;
     model.parameters.forEach((p) => (p.value = p.initialValue));
+
+    this.lastSimStopTimestamp = -1;
+    this.simulationTime = 0;
+    this.simulationTimeOffset = -1;
+
     this.lastResult = null;
+
     this.emit('reset');
+
+    if (this.isPlaying()) {
+      this.simulate(true);
+    }
   }
 
   start() {
