@@ -13,7 +13,10 @@ export abstract class BaseScenario implements Scenario {
     this.parent.appendChild(this.container);
     this.simulation = simulation;
     this.simulation.on('results', (results) => this.update(results));
+    this.simulation.on('reset', () => this.reset());
   }
+
+  abstract reset();
 
   protected abstract update(newResults: SimulationResult[]);
 

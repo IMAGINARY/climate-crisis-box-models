@@ -1,4 +1,5 @@
 import { BoxModelExt } from '../box-model-definition';
+import { SECONDS_PER_YEAR } from '../constants';
 
 const stocks = [
   {
@@ -80,9 +81,8 @@ const parameters = [
   },
 ];
 
-const secondsPerYear = 60 * 60 * 24 * 365.2425;
 const subSteps = 1;
-const stepSize = (subSteps + 1) * secondsPerYear;
+const stepSize = (subSteps + 1) * SECONDS_PER_YEAR;
 const stepsPerSecond = 60;
 const numSteps = 3000;
 

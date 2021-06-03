@@ -1,25 +1,20 @@
 import { SVG } from '@svgdotjs/svg.js';
-import { ChartTypeRegistry } from 'chart.js';
-import Chart from 'chart.js/auto';
 
 import { BaseScenario } from './base';
-import { BoxModel, Record } from '../box-model';
 import model from '../models/greenhouse-effect';
 import { Simulation, SimulationResult } from '../simulation';
-import { loadSvg } from '../util';
+import {
+  createTemperatureCelsiusExtractor,
+  createYearExtractor,
+  loadSvg,
+} from '../util';
 
 // @ts-ignore
 import scenarioSvgUrl from 'url:./../../svg/scenario.svg';
 import { convertToBoxModelForScenario } from '../box-model-definition';
-
-const { numSteps } = model;
-const temperatureIdx = model.variables.findIndex(
-  ({ id }) => id === 'gnd temperature'
-);
-
-function getTemperatureCelsius(r: Record) {
-  return r.variables[temperatureIdx] - 273.15;
-}
+import TemperatureVsTimeChart, {
+  TemperatureVsTimeChartOptions,
+} from '../charts/temperature-vs-time';
 
 namespace GreenhouseEffectScenario {
   export type Resources = {
@@ -28,8 +23,7 @@ namespace GreenhouseEffectScenario {
 }
 
 export default class GreenhouseEffectScenario extends BaseScenario {
-  protected readonly data: number[];
-  protected readonly chart: Chart;
+  protected readonly chart: TemperatureVsTimeChart;
   protected readonly svg;
 
   constructor(
@@ -38,17 +32,6 @@ export default class GreenhouseEffectScenario extends BaseScenario {
   ) {
     super(elem, new Simulation(convertToBoxModelForScenario(model)));
     this.svg = SVG(document.importNode(resources.svg.documentElement, true));
-    const { chart, data } = this.init();
-    this.data = data;
-    this.chart = chart;
-  }
-
-  static async loadResources(): Promise<GreenhouseEffectScenario.Resources> {
-    const svg = await loadSvg(scenarioSvgUrl);
-    return { svg };
-  }
-
-  private init() {
     this.container.appendChild(this.svg.node);
 
     const canvas: HTMLCanvasElement = document.createElement('canvas');
@@ -57,63 +40,33 @@ export default class GreenhouseEffectScenario extends BaseScenario {
     canvas.classList.add('graph');
     this.container.appendChild(canvas);
 
-    const data = new Array(numSteps).fill(undefined);
-
-    const chartData = {
-      labels: Array(numSteps)
-        .fill(null)
-        .map((_, i) => -(numSteps - i - 1)),
-      datasets: [
-        {
-          label: 'Temperature',
-          backgroundColor: 'rgb(255, 99, 132)',
-          borderColor: 'rgb(255, 99, 132)',
-          data: data,
-          borderJoinStyle: 'bevel',
-        },
-      ],
+    const chartOptions: TemperatureVsTimeChartOptions = {
+      numYears: model.numSteps,
+      minTemp: 10,
+      maxTemp: 30,
+      toYear: createYearExtractor(model),
+      toTemperatureCelsius: createTemperatureCelsiusExtractor(
+        model,
+        'variables',
+        'gnd temperature'
+      ),
     };
-    const temperatureFormatter = new Intl.NumberFormat('de', {
-      maximumFractionDigits: 1,
-    });
-    const chartConfig = {
-      type: 'line' as keyof ChartTypeRegistry,
-      data: chartData,
-      options: {
-        responsive: false,
-        radius: 0,
-        scales: {
-          y: {
-            min: 10,
-            max: 30,
-            ticks: {
-              callback: (value) => `${temperatureFormatter.format(value)}°C`,
-            },
-          },
-        },
-      },
-    };
+    this.chart = new TemperatureVsTimeChart(canvas, chartOptions);
+  }
 
-    const chart = new Chart(canvas, chartConfig);
-
-    return { chart, data };
+  static async loadResources(): Promise<GreenhouseEffectScenario.Resources> {
+    const svg = await loadSvg(scenarioSvgUrl);
+    return { svg };
   }
 
   reset() {
-    // TODO
+    this.chart.reset();
+    this.update([]);
   }
 
-  protected update(newData: SimulationResult[]) {
-    const newRecords = newData.map(([_, record]) => record);
-    this.updateChart(newRecords);
+  protected update(newResults: SimulationResult[]) {
+    this.chart.update(newResults);
     this.updateCO2();
-  }
-
-  protected updateChart(newRecords: Record[]) {
-    const newTemperatures = newRecords.map(getTemperatureCelsius);
-    this.data.splice(0, newTemperatures.length);
-    this.data.push(...newTemperatures);
-    this.chart.update('resize');
   }
 
   protected updateCO2() {
