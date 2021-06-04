@@ -1,10 +1,12 @@
+import { EventEmitter } from 'events';
 import { Scenario } from './scenario';
 
-export default class ScenarioSwitcher {
+export default class ScenarioSwitcher extends EventEmitter {
   protected scenarios: Scenario[];
   protected currentScenarioIndex: number = -1;
 
   constructor(scenarios: Scenario[]) {
+    super();
     this.scenarios = scenarios;
     scenarios.forEach((s) => ScenarioSwitcher.deselect(s));
     if (scenarios.length > 0) {
@@ -34,7 +36,10 @@ export default class ScenarioSwitcher {
     ScenarioSwitcher.deselect(this.getCurrentScenario());
     ScenarioSwitcher.select(this.scenarios[clampedWhich]);
 
+    const oldIdx = this.currentScenarioIndex;
     this.currentScenarioIndex = clampedWhich;
+
+    this.emit('switch', oldIdx, this.currentScenarioIndex);
   }
 
   protected static async deselectWithTransition(
@@ -58,7 +63,10 @@ export default class ScenarioSwitcher {
     await ScenarioSwitcher.deselectWithTransition(this.getCurrentScenario());
     await ScenarioSwitcher.selectWithTransition(this.scenarios[clampedWhich]);
 
+    const oldIdx = this.currentScenarioIndex;
     this.currentScenarioIndex = clampedWhich;
+
+    this.emit('switch', oldIdx, this.currentScenarioIndex);
   }
 
   getScenarios(): Scenario[] {
