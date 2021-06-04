@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 23.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" baseProfile="tiny" id="model-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+	 x="0px" y="0px" viewBox="0 0 1024 600" xml:space="preserve">
+<rect id="sky" fill="#80D4F7" width="1024" height="600"/>
+<ellipse id="ground" fill="#A17145" cx="512" cy="795.1" rx="774.7" ry="309"/>
+<ellipse id="sun" fill="#FFF37B" cx="78.1" cy="89.8" rx="46.2" ry="42.2"/>
+<g id="tree-2">
+	<path fill="#1F6734" d="M96.3,508.7l10.1,20.8H86.1L96.3,508.7z"/>
+	<path fill="#1F6734" d="M96.6,514.3l13.1,26.8H83.5L96.6,514.3z"/>
+	<path fill="#1F6734" d="M96.6,522.3l14.1,29.1H82.4L96.6,522.3z"/>
+	<rect x="93.8" y="550" fill="#1F6734" width="5.5" height="9.2"/>
+</g>
+<g id="tree-1">
+	<path fill="#1F6734" d="M145.5,493.9l10.1,20.8h-20.3L145.5,493.9z"/>
+	<path fill="#1F6734" d="M145.8,499.4l13.1,26.8h-26.1L145.8,499.4z"/>
+	<path fill="#1F6734" d="M145.8,507.4l14.1,29.1h-28.3L145.8,507.4z"/>
+	<rect x="143" y="535.1" fill="#1F6734" width="5.5" height="9.2"/>
+</g>
+<path id="ocean" fill="#5085C5" d="M819,738.1l233.5-10.4L1085,598l-201-119.3l-233.5,10.4l-32.5,129.7L819,738.1z"/>
+<path id="icesheet-1" fill="#FFFFFF" d="M952.6,514.7L1056,581L904,627.4L952.6,514.7z"/>
+<g id="sunrays-in">
+	<line id="sunray-1" fill="none" stroke="#FFF37B" stroke-width="3" x1="83.5" y1="173.6" x2="208.5" y2="375.2"/>
+	<line id="sunray-3" fill="none" stroke="#FFF37B" stroke-width="3" x1="112.7" y1="162.1" x2="237.6" y2="363.6"/>
+	<line id="sunray-2" fill="none" stroke="#FFF37B" stroke-width="3" x1="146" y1="147.2" x2="271" y2="348.8"/>
+</g>
+<path id="mountain-1" fill="#7B7070" d="M575.6,394.2l52.8,140.9H522.8L575.6,394.2z"/>
+<path id="mountain-2" fill="#7B7070" d="M628.4,370.5l52.8,140.9H575.6L628.4,370.5z"/>
+<path id="mountain-3" fill="#7B7070" d="M681.2,419.5l43.2,118.3H638L681.2,419.5z"/>
+<path id="mountainice-1" fill="#FFFFFF" d="M575.6,393.6l19,51.7h-38L575.6,393.6z"/>
+<path id="mountainice-2" fill="#FFFFFF" d="M628.4,370.5l19.7,52.7h-39.5L628.4,370.5z"/>
+<path id="mountainice-3" fill="#FFFFFF" d="M681.2,420.2l14.9,41.6h-29.9L681.2,420.2z"/>
+<g id="co2">
+	<circle fill="#385BA9" cx="507.4" cy="162.1" r="4.6"/>
+	<circle fill="#385BA9" cx="494.4" cy="162.1" r="4.6"/>
+	<circle fill="#ED1C24" cx="500.9" cy="162.1" r="6.5"/>
+</g>
+</svg>
