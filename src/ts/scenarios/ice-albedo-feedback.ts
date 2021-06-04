@@ -116,6 +116,11 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     const { min, max } = simulation.getParameterRange();
     const value = simulation.getParameter();
     const relValue = (value - min) / (max - min);
+
+    const sunRays = this.svg.findOne('#sunrays-in');
+    sunRays.each(function (i, children) {
+      this.stroke({ width: 1 + relValue * (7 - 1) });
+    });
   }
 }
 
