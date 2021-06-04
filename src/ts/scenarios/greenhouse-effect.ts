@@ -64,6 +64,10 @@ export default class GreenhouseEffectScenario extends BaseScenario {
     this.update([]);
   }
 
+  getName() {
+    return 'Ice Albedo Feedback';
+  }
+
   protected update(newResults: SimulationResult[]) {
     this.chart.update(newResults);
     this.updateCO2();

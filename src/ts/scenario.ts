@@ -2,6 +2,7 @@ import { Simulation } from './simulation';
 
 export interface Scenario {
   getSimulation(): Simulation;
+  getName(): string;
   reset(): void;
   hide(): void;
   show(): void;

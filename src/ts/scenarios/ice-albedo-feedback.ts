@@ -105,6 +105,10 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     this.update([]);
   }
 
+  getName() {
+    return 'Greenhouse Effect';
+  }
+
   protected update(newData: SimulationResult[]) {
     this.chart1.update(newData);
     this.chart2.update(newData);

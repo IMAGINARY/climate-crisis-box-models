@@ -62,6 +62,10 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
     this.update([]);
   }
 
+  getName() {
+    return 'Earth Energy Balance';
+  }
+
   protected update(newResults: SimulationResult[]) {
     this.chart.update(newResults);
     this.updateAlbedo();

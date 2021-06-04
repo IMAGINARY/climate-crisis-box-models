@@ -16,12 +16,14 @@ export abstract class BaseScenario implements Scenario {
     this.simulation.on('reset', () => this.reset());
 
     const scenarioLabel = document.createElement('div');
-    scenarioLabel.innerText = this.constructor.name;
+    scenarioLabel.innerText = this.getName();
     scenarioLabel.classList.add('label');
     this.container.appendChild(scenarioLabel);
   }
 
   abstract reset();
+
+  abstract getName(): string;
 
   protected abstract update(newResults: SimulationResult[]);
 
