@@ -32,6 +32,8 @@ function addSlider(parent, simulation) {
   });
 
   parent.appendChild(container);
+
+  return container;
 }
 
 async function main() {
@@ -66,7 +68,18 @@ async function main() {
   });
 
   const sliderContainerElem = document.getElementById('slider-container');
-  scenarios.forEach((s) => addSlider(sliderContainerElem, s.getSimulation()));
+  scenarios.forEach((s, idx) => {
+    const slider = addSlider(sliderContainerElem, s.getSimulation());
+    if (idx !== scenarioSwitcher.getCurrentScenarioIndex())
+      slider.classList.add('display-none');
+
+    scenarioSwitcher.on('switch', (curIdx, prevIdx) => {
+      slider.classList.add('display-none');
+      if (idx === prevIdx) {
+        slider.classList.remove('display-none');
+      }
+    });
+  });
 
   const startButton = document.getElementById(
     'playButton'
