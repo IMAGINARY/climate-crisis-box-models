@@ -18,7 +18,7 @@ function addSlider(parent, simulation) {
   slider.type = 'range';
   slider.min = `${min}`;
   slider.max = `${max}`;
-  slider.step = `${0.01 * (max - min)}`;
+  slider.step = `${0.001 * (max - min)}`;
   slider.value = `${initialValue}`;
   container.append(slider);
 
@@ -36,12 +36,23 @@ function addSlider(parent, simulation) {
   return { container, slider };
 }
 
-function registerKey(eventType, keys, callback) {
+function registerKey(eventType, propss, callback) {
   function filterKeyCallback(event) {
-    if (typeof keys === 'string') {
-      keys = [keys];
+    if (typeof propss === 'string') {
+      propss = [{ key: propss }];
+    } else if (
+      typeof propss === 'object' &&
+      typeof propss[Symbol.iterator] !== 'function'
+    ) {
+      propss = [propss];
     }
-    if (keys.indexOf(event.key) !== -1) {
+    const matcher = (props) => {
+      for (const [key, value] of Object.entries(props)) {
+        if (event[key] !== value) return false;
+      }
+      return true;
+    };
+    if (propss.findIndex(matcher) !== -1) {
       callback();
     }
   }
@@ -148,8 +159,18 @@ async function main() {
   }
 
   // set model parameter via keys or mouse wheel
-  registerKey('keydown', 'ArrowUp', () => stepSliders(+1));
-  registerKey('keydown', 'ArrowDown', () => stepSliders(-1));
+  registerKey('keydown', { key: 'ArrowUp', repeat: false }, () =>
+    stepSliders(+1)
+  );
+  registerKey('keydown', { key: 'ArrowDown', repeat: false }, () =>
+    stepSliders(-1)
+  );
+  registerKey('keydown', { key: 'ArrowUp', repeat: true }, () =>
+    stepSliders(+10)
+  );
+  registerKey('keydown', { key: 'ArrowDown', repeat: true }, () =>
+    stepSliders(-10)
+  );
   window.addEventListener(
     'wheel',
     (event) => {
