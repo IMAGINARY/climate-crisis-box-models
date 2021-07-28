@@ -22,10 +22,12 @@ export default class ScenarioSwitcher extends EventEmitter {
     }
   }
 
-  protected static select(scenario: Scenario) {
+  protected static select(scenario: Scenario, autoplay: boolean = false) {
     if (typeof scenario !== 'undefined' && scenario !== null) {
       scenario.reset();
-      scenario.getSimulation().start();
+      const simulation = scenario.getSimulation();
+      simulation.reset();
+      if (autoplay) simulation.play();
       scenario.show();
     }
   }
@@ -36,8 +38,9 @@ export default class ScenarioSwitcher extends EventEmitter {
       Math.max(0, which)
     );
 
+    const wasPlaying = this.getCurrentScenario().getSimulation().isPlaying();
     ScenarioSwitcher.deselect(this.getCurrentScenario());
-    ScenarioSwitcher.select(this.scenarios[clampedWhich]);
+    ScenarioSwitcher.select(this.scenarios[clampedWhich], wasPlaying);
 
     const oldIdx = this.currentScenarioIndex;
     this.currentScenarioIndex = clampedWhich;
@@ -61,10 +64,13 @@ export default class ScenarioSwitcher extends EventEmitter {
   }
 
   protected static async selectWithTransition(
-    scenario: Scenario
+    scenario: Scenario,
+    autoplay: boolean = false
   ): Promise<void> {
     scenario.reset();
-    scenario.getSimulation().start();
+    const simulation = scenario.getSimulation();
+    simulation.reset();
+    if (autoplay) simulation.play();
     await scenario.tweenIn();
   }
 
@@ -74,8 +80,12 @@ export default class ScenarioSwitcher extends EventEmitter {
       Math.max(0, which)
     );
 
+    const wasPlaying = this.getCurrentScenario().getSimulation().isPlaying();
     await ScenarioSwitcher.deselectWithTransition(this.getCurrentScenario());
-    await ScenarioSwitcher.selectWithTransition(this.scenarios[clampedWhich]);
+    await ScenarioSwitcher.selectWithTransition(
+      this.scenarios[clampedWhich],
+      wasPlaying
+    );
 
     const oldIdx = this.currentScenarioIndex;
     this.currentScenarioIndex = clampedWhich;
