@@ -71,9 +71,8 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     const solarEmissivityIdx = model.parameters.findIndex(
       ({ id }) => id === 'solar emissivity'
     );
-    const { min: minEmissivity, max: maxEmissivity } = model.parameters[
-      solarEmissivityIdx
-    ];
+    const { min: minEmissivity, max: maxEmissivity } =
+      model.parameters[solarEmissivityIdx];
     const chart2Options: SolarEmissivityVsTemperatureChartOptions = {
       numDataPoints: 2000,
       minTemp: -275,
@@ -106,7 +105,7 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
   }
 
   getName() {
-    return 'Greenhouse Effect';
+    return 'Ice Albedo Feedback';
   }
 
   protected update(newData: SimulationResult[]) {

@@ -65,7 +65,7 @@ export default class GreenhouseEffectScenario extends BaseScenario {
   }
 
   getName() {
-    return 'Ice Albedo Feedback';
+    return 'Greenhouse Effect';
   }
 
   protected update(newResults: SimulationResult[]) {
