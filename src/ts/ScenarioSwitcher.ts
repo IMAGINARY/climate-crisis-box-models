@@ -38,6 +38,8 @@ export default class ScenarioSwitcher extends EventEmitter {
       Math.max(0, which)
     );
 
+    if (clampedWhich === this.getCurrentScenarioIndex()) return;
+
     const wasPlaying = this.getCurrentScenario().getSimulation().isPlaying();
     ScenarioSwitcher.deselect(this.getCurrentScenario());
     ScenarioSwitcher.select(this.scenarios[clampedWhich], wasPlaying);
@@ -79,6 +81,8 @@ export default class ScenarioSwitcher extends EventEmitter {
       this.scenarios.length - 1,
       Math.max(0, which)
     );
+
+    if (clampedWhich === this.getCurrentScenarioIndex()) return;
 
     const wasPlaying = this.getCurrentScenario().getSimulation().isPlaying();
     await ScenarioSwitcher.deselectWithTransition(this.getCurrentScenario());
