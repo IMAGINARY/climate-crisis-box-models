@@ -31,7 +31,10 @@ export default class ScenarioSwitcher extends EventEmitter {
   }
 
   switchTo(which: number): void {
-    const clampedWhich = Math.min(this.scenarios.length, Math.max(0, which));
+    const clampedWhich = Math.min(
+      this.scenarios.length - 1,
+      Math.max(0, which)
+    );
 
     ScenarioSwitcher.deselect(this.getCurrentScenario());
     ScenarioSwitcher.select(this.scenarios[clampedWhich]);
@@ -58,7 +61,10 @@ export default class ScenarioSwitcher extends EventEmitter {
   }
 
   async switchToWithTransition(which: number): Promise<void> {
-    const clampedWhich = Math.min(this.scenarios.length, Math.max(0, which));
+    const clampedWhich = Math.min(
+      this.scenarios.length - 1,
+      Math.max(0, which)
+    );
 
     await ScenarioSwitcher.deselectWithTransition(this.getCurrentScenario());
     await ScenarioSwitcher.selectWithTransition(this.scenarios[clampedWhich]);
