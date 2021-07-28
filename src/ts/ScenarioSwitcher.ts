@@ -45,6 +45,14 @@ export default class ScenarioSwitcher extends EventEmitter {
     this.emit('switch', oldIdx, this.currentScenarioIndex);
   }
 
+  prev(): void {
+    this.switchTo(this.getCurrentScenarioIndex() - 1);
+  }
+
+  next(): void {
+    this.switchTo(this.getCurrentScenarioIndex() + 1);
+  }
+
   protected static async deselectWithTransition(
     scenario: Scenario
   ): Promise<void> {

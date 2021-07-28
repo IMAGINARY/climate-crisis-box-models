@@ -1,5 +1,9 @@
 @import '~/node_modules/reseter.css/css/reseter.css';
 
+body {
+  overflow: hidden;
+}
+
 .graph,
 .graph1 {
   position: absolute;

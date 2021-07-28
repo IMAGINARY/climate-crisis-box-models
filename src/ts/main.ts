@@ -33,7 +33,20 @@ function addSlider(parent, simulation) {
 
   parent.appendChild(container);
 
-  return container;
+  return { container, slider };
+}
+
+function registerKey(eventType, keys, callback) {
+  function filterKeyCallback(event) {
+    if (typeof keys === 'string') {
+      keys = [keys];
+    }
+    if (keys.indexOf(event.key) !== -1) {
+      callback();
+    }
+  }
+
+  window.addEventListener(eventType, filterKeyCallback);
 }
 
 async function main() {
@@ -67,16 +80,21 @@ async function main() {
     scenarioSelectorContainer.appendChild(button);
   });
 
+  const sliders = [];
   const sliderContainerElem = document.getElementById('slider-container');
   scenarios.forEach((s, idx) => {
-    const slider = addSlider(sliderContainerElem, s.getSimulation());
+    const { container, slider } = addSlider(
+      sliderContainerElem,
+      s.getSimulation()
+    );
+    sliders.push(slider);
     if (idx !== scenarioSwitcher.getCurrentScenarioIndex())
-      slider.classList.add('display-none');
+      container.classList.add('display-none');
 
     scenarioSwitcher.on('switch', (curIdx, prevIdx) => {
-      slider.classList.add('display-none');
+      container.classList.add('display-none');
       if (idx === prevIdx) {
-        slider.classList.remove('display-none');
+        container.classList.remove('display-none');
       }
     });
   });
@@ -90,14 +108,58 @@ async function main() {
 
   let shouldBePlaying = false;
 
-  startButton.addEventListener('click', () => {
+  function play() {
     scenarioSwitcher.getCurrentScenario().getSimulation().play();
+    startButton.style.display = 'none';
+    stopButton.style.display = 'unset';
     shouldBePlaying = true;
-  });
-  stopButton.addEventListener('click', () => {
+  }
+
+  function pause() {
     scenarioSwitcher.getCurrentScenario().getSimulation().pause();
+    startButton.style.display = 'unset';
+    stopButton.style.display = 'none';
     shouldBePlaying = false;
-  });
+  }
+
+  function tooglePlayPause() {
+    if (shouldBePlaying) {
+      pause();
+    } else {
+      play();
+    }
+  }
+
+  // toggle play/pause
+  startButton.addEventListener('click', play);
+  stopButton.addEventListener('click', pause);
+  registerKey('keypress', ' ', tooglePlayPause);
+  pause();
+
+  // step through scenarios
+  registerKey('keydown', 'ArrowLeft', () => scenarioSwitcher.prev());
+  registerKey('keydown', 'ArrowRight', () => scenarioSwitcher.next());
+
+  function stepSliders(steps) {
+    sliders.forEach((slider) => {
+      slider.stepUp(steps);
+      slider.dispatchEvent(new InputEvent('input'));
+    });
+  }
+
+  // set model parameter via keys or mouse wheel
+  registerKey('keydown', 'ArrowUp', () => stepSliders(+1));
+  registerKey('keydown', 'ArrowDown', () => stepSliders(-1));
+  window.addEventListener(
+    'wheel',
+    (event) => {
+      event.preventDefault();
+      if (event.deltaMode === WheelEvent.DOM_DELTA_PIXEL) {
+        stepSliders(event.deltaY);
+      }
+    },
+    { passive: false }
+  );
 
   function handlePageVisibilityChange() {
     switch (document.visibilityState) {
