@@ -34,7 +34,7 @@ export class Simulation extends EventEmitter {
       const valueClamped = Math.min(max, Math.max(min, value));
       if (p.value !== valueClamped) {
         p.value = valueClamped;
-        this.emit('parameter-changed', model.parameters[0]);
+        this.emit('parameter-changed', model.parameters[0], value);
       }
     }
   }
@@ -78,7 +78,13 @@ export class Simulation extends EventEmitter {
     }
 
     const { model } = this;
-    model.parameters.forEach((p) => (p.value = p.initialValue));
+    model.parameters.forEach((p, i) => {
+      if (i === 0) {
+        this.setParameter(p.initialValue);
+      } else {
+        p.value = p.initialValue;
+      }
+    });
 
     this.lastSimStopTimestamp = -1;
     this.simulationTime = 0;

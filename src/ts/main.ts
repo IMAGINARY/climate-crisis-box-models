@@ -31,6 +31,15 @@ function addSlider(parent, simulation) {
     simulation.setParameter(slider.valueAsNumber);
   });
 
+  simulation.on('parameter-changed', (p, suppliedValue) => {
+    if (suppliedValue === slider.valueAsNumber) {
+      // no need to adjsut the slider
+    } else {
+      slider.valueAsNumber = p.value;
+      slider.dispatchEvent(new InputEvent('input'));
+    }
+  });
+
   parent.appendChild(container);
 
   return { container, slider };
