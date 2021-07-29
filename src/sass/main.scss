@@ -21,16 +21,27 @@ body {
   margin: 2vw;
 }
 
-.scenario-container {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr;
-  grid-column-gap: 0px;
-  grid-row-gap: 0px;
+#aspect-ratio-box {
+  height: 0;
+  overflow: hidden;
+  padding-top: calc(600 / 1024 * 100%);
+  position: relative;
+}
 
-  .scenario {
-    grid-area: 1 / 1 / 2 / 2;
-    position: relative;
+@mixin fill-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  overflow: hidden;
+}
+
+.scenario-container {
+  @include fill-box;
+
+  > .scenario {
+    @include fill-box;
 
     .fade-in {
       transition: opacity 0.5s;
@@ -42,16 +53,10 @@ body {
       opacity: 0;
     }
 
-    .scene {
-    }
-
+    .scene,
     .overlay,
     .label {
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
+      @include fill-box;
     }
 
     .label {
