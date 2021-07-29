@@ -2,15 +2,24 @@ import { Scenario } from '../scenario';
 import { Simulation, SimulationResult } from '../simulation';
 
 export abstract class BaseScenario implements Scenario {
-  public readonly simulation: Simulation;
-  protected parent: HTMLDivElement;
-  protected container: HTMLDivElement;
+  private readonly simulation: Simulation;
+  private readonly container: HTMLDivElement;
+  private readonly scene: HTMLDivElement;
+  private readonly overlay: HTMLDivElement;
 
   protected constructor(elem: HTMLDivElement, simulation: Simulation) {
-    this.parent = elem;
     this.container = document.createElement('div');
     this.container.classList.add('scenario');
-    this.parent.appendChild(this.container);
+    elem.appendChild(this.container);
+
+    this.scene = document.createElement('div');
+    this.scene.classList.add('scene');
+    this.container.appendChild(this.scene);
+
+    this.overlay = document.createElement('div');
+    this.overlay.classList.add('overlay');
+    this.container.appendChild(this.overlay);
+
     this.simulation = simulation;
     this.simulation.on('results', (results) => this.update(results));
     this.simulation.on('reset', () => this.reset());
@@ -24,6 +33,18 @@ export abstract class BaseScenario implements Scenario {
   abstract reset();
 
   abstract getName(): string;
+
+  getContainer() {
+    return this.container;
+  }
+
+  getScene() {
+    return this.scene;
+  }
+
+  getOverlay() {
+    return this.overlay;
+  }
 
   protected abstract update(newResults: SimulationResult[]);
 
@@ -39,6 +60,10 @@ export abstract class BaseScenario implements Scenario {
     this.container.classList.remove('invisible');
   }
 
+  isVisible() {
+    return !this.container.classList.contains('invisible');
+  }
+
   tweenIn() {
     // TODO: implement actual tween
     this.show();
@@ -49,5 +74,17 @@ export abstract class BaseScenario implements Scenario {
     // TODO: implement actual tween
     this.hide();
     return Promise.resolve();
+  }
+
+  hideOverlay() {
+    this.overlay.classList.add('invisible');
+  }
+
+  showOverlay() {
+    this.overlay.classList.remove('invisible');
+  }
+
+  isOverlayVisible() {
+    return !this.overlay.classList.contains('invisible');
   }
 }

@@ -31,13 +31,13 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
   ) {
     super(elem, new Simulation(convertToBoxModelForScenario(model)));
     this.svg = SVG(document.importNode(resources.svg.documentElement, true));
-    this.container.appendChild(this.svg.node);
+    this.getScene().appendChild(this.svg.node);
 
     const canvas: HTMLCanvasElement = document.createElement('canvas');
     canvas.width = 400;
     canvas.height = 300;
     canvas.classList.add('graph');
-    this.container.appendChild(canvas);
+    this.getScene().appendChild(canvas);
 
     this.chart = new TemperatureVsTimeChart(canvas, {
       numYears: model.numSteps,

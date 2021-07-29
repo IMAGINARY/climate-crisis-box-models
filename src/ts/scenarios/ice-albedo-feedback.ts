@@ -46,13 +46,13 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
   ) {
     super(elem, new Simulation(modelForScenario));
     this.svg = SVG(document.importNode(resources.svg.documentElement, true));
-    this.container.appendChild(this.svg.node);
+    this.getScene().appendChild(this.svg.node);
 
     const canvas1: HTMLCanvasElement = document.createElement('canvas');
     canvas1.width = 400;
     canvas1.height = 300;
     canvas1.classList.add('graph1');
-    this.container.appendChild(canvas1);
+    this.getScene().appendChild(canvas1);
 
     const chart1Options: TemperatureVsTimeChartOptions = {
       numYears: model.numSteps,
@@ -71,7 +71,7 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     canvas2.width = 400;
     canvas2.height = 300;
     canvas2.classList.add('graph2');
-    this.container.appendChild(canvas2);
+    this.getScene().appendChild(canvas2);
 
     const solarEmissivityIdx = model.parameters.findIndex(
       ({ id }) => id === 'solar emissivity'
