@@ -160,6 +160,15 @@ async function main() {
   registerKey('keydown', 'ArrowLeft', () => scenarioSwitcher.prev());
   registerKey('keydown', 'ArrowRight', () => scenarioSwitcher.next());
 
+  // toogle overlay
+  registerKey('keydown', { key: 'm', repeat: false }, () =>
+    scenarioSwitcher.getScenarios().forEach((s) => s.showOverlay())
+  );
+  registerKey('keyup', { key: 'm', repeat: false }, () =>
+    scenarioSwitcher.getScenarios().forEach((s) => s.hideOverlay())
+  );
+  scenarioSwitcher.getScenarios().forEach((s) => s.hideOverlay());
+
   function stepSliders(steps) {
     sliders.forEach((slider) => {
       slider.stepUp(steps);
