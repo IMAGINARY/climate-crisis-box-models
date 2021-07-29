@@ -45,23 +45,23 @@ function addSlider(parent, simulation) {
   return { container, slider };
 }
 
-function registerKey(eventType, propss, callback) {
+function registerKey(eventType, eventPropss, callback) {
   function filterKeyCallback(event) {
-    if (typeof propss === 'string') {
-      propss = [{ key: propss }];
+    if (typeof eventPropss === 'string') {
+      eventPropss = [{ key: eventPropss }];
     } else if (
-      typeof propss === 'object' &&
-      typeof propss[Symbol.iterator] !== 'function'
+      typeof eventPropss === 'object' &&
+      typeof eventPropss[Symbol.iterator] !== 'function'
     ) {
-      propss = [propss];
+      eventPropss = [eventPropss];
     }
-    const matcher = (props) => {
-      for (const [key, value] of Object.entries(props)) {
+    const matcher = (eventProps) => {
+      for (const [key, value] of Object.entries(eventProps)) {
         if (event[key] !== value) return false;
       }
       return true;
     };
-    if (propss.findIndex(matcher) !== -1) {
+    if (eventPropss.findIndex(matcher) !== -1) {
       callback();
     }
   }
@@ -161,13 +161,17 @@ async function main() {
   registerKey('keydown', 'ArrowRight', () => scenarioSwitcher.next());
 
   // toogle overlay
-  registerKey('keydown', { key: 'm', repeat: false }, () =>
-    scenarioSwitcher.getScenarios().forEach((s) => s.showOverlay())
-  );
-  registerKey('keyup', { key: 'm', repeat: false }, () =>
-    scenarioSwitcher.getScenarios().forEach((s) => s.hideOverlay())
-  );
-  scenarioSwitcher.getScenarios().forEach((s) => s.hideOverlay());
+  {
+    const setOverlaysVisible = (visible) => {
+      scenarioSwitcher
+        .getScenarios()
+        .forEach((s) => s.setOverlayVisible(visible));
+    };
+    const keyProps = { key: 'm', repeat: false };
+    registerKey('keydown', keyProps, () => setOverlaysVisible(true));
+    registerKey('keyup', keyProps, () => setOverlaysVisible(false));
+    setOverlaysVisible(false);
+  }
 
   function stepSliders(steps) {
     sliders.forEach((slider) => {

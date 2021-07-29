@@ -17,7 +17,7 @@ export default class ScenarioSwitcher extends EventEmitter {
 
   protected static deselect(scenario: Scenario) {
     if (typeof scenario !== 'undefined' && scenario !== null) {
-      scenario.hide();
+      scenario.setVisible(false);
       scenario.getSimulation().stop();
     }
   }
@@ -28,7 +28,7 @@ export default class ScenarioSwitcher extends EventEmitter {
       const simulation = scenario.getSimulation();
       simulation.reset();
       if (autoplay) simulation.play();
-      scenario.show();
+      scenario.setVisible(true);
     }
   }
 

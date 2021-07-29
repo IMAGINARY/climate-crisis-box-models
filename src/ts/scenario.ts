@@ -7,12 +7,10 @@ export interface Scenario {
   getScene(): HTMLDivElement;
   getOverlay(): HTMLDivElement;
   reset(): void;
-  hide(): void;
-  show(): void;
+  setVisible(visible: boolean): void;
   isVisible(): boolean;
   tweenIn(): Promise<void>;
   tweenOut(): Promise<void>;
-  hideOverlay(): void;
-  showOverlay(): void;
+  setOverlayVisible(visible: boolean): void;
   isOverlayVisible(): boolean;
 }

@@ -52,12 +52,9 @@ export abstract class BaseScenario implements Scenario {
     return this.simulation;
   }
 
-  hide() {
-    this.container.classList.add('invisible');
-  }
-
-  show() {
-    this.container.classList.remove('invisible');
+  setVisible(visible) {
+    if (visible) this.container.classList.remove('invisible');
+    else this.container.classList.add('invisible');
   }
 
   isVisible() {
@@ -66,22 +63,19 @@ export abstract class BaseScenario implements Scenario {
 
   tweenIn() {
     // TODO: implement actual tween
-    this.show();
+    this.setVisible(true);
     return Promise.resolve();
   }
 
   tweenOut() {
     // TODO: implement actual tween
-    this.hide();
+    this.setVisible(false);
     return Promise.resolve();
   }
 
-  hideOverlay() {
-    this.overlay.classList.add('invisible');
-  }
-
-  showOverlay() {
-    this.overlay.classList.remove('invisible');
+  setOverlayVisible(visible) {
+    if (visible) this.overlay.classList.remove('invisible');
+    else this.overlay.classList.add('invisible');
   }
 
   isOverlayVisible() {
