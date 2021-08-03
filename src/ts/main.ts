@@ -89,6 +89,7 @@ async function main() {
 
   const scenarioSwitcher = new ScenarioSwitcher(scenarios);
   scenarioSwitcher.getCurrentScenario().getSimulation().stop();
+  scenarioSwitcher.switchTo(2);
 
   const scenarioSelectorContainer = document.getElementById(
     'scenario-selector-container'
@@ -170,7 +171,7 @@ async function main() {
     const keyProps = { key: 'm', repeat: false };
     registerKey('keydown', keyProps, () => setOverlaysVisible(true));
     registerKey('keyup', keyProps, () => setOverlaysVisible(false));
-    setOverlaysVisible(false);
+    setOverlaysVisible(true);
   }
 
   function stepSliders(steps) {
