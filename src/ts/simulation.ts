@@ -76,6 +76,14 @@ export class Simulation extends EventEmitter {
     }
   }
 
+  getModel(): BoxModelForScenario {
+    return this.model;
+  }
+
+  getEngine(): BoxModelEngine {
+    return this.engine;
+  }
+
   reset() {
     if (this.isPlaying()) {
       this.simulate(false);
