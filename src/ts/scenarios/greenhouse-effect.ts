@@ -11,6 +11,8 @@ import {
 
 // @ts-ignore
 import scenarioSvgUrl from 'url:./../../svg/scenario.svg';
+// @ts-ignore
+import scenarioOverlaySvgUrl from 'url:./../../svg/greenhouse-effect-overlay.svg';
 import { convertToBoxModelForScenario } from '../box-model-definition';
 import TemperatureVsTimeChart, {
   TemperatureVsTimeChartOptions,
@@ -19,12 +21,14 @@ import TemperatureVsTimeChart, {
 namespace GreenhouseEffectScenario {
   export type Resources = {
     svg: XMLDocument;
+    overlaySvg: XMLDocument;
   };
 }
 
 export default class GreenhouseEffectScenario extends BaseScenario {
   protected readonly chart: TemperatureVsTimeChart;
   protected readonly svg;
+  protected readonly overlaySvg;
 
   constructor(
     elem: HTMLDivElement,
@@ -33,6 +37,12 @@ export default class GreenhouseEffectScenario extends BaseScenario {
     super(elem, new Simulation(convertToBoxModelForScenario(model)));
     this.svg = SVG(document.importNode(resources.svg.documentElement, true));
     this.getScene().appendChild(this.svg.node);
+
+    this.overlaySvg = SVG(
+      document.importNode(resources.overlaySvg.documentElement, true)
+    );
+    this.overlaySvg.node.style.transform = 'scale(0.8) translate(-15%,+10%)';
+    this.getOverlay().appendChild(this.overlaySvg.node);
 
     const canvas: HTMLCanvasElement = document.createElement('canvas');
     canvas.width = 400;
@@ -55,8 +65,11 @@ export default class GreenhouseEffectScenario extends BaseScenario {
   }
 
   static async loadResources(): Promise<GreenhouseEffectScenario.Resources> {
-    const svg = await loadSvg(scenarioSvgUrl);
-    return { svg };
+    const [svg, overlaySvg] = await Promise.all([
+      loadSvg(scenarioSvgUrl),
+      loadSvg(scenarioOverlaySvgUrl),
+    ]);
+    return { svg, overlaySvg };
   }
 
   reset() {
