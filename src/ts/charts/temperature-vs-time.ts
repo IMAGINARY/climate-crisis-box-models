@@ -43,6 +43,9 @@ export default class TemperatureVsTimeChart implements Chart {
         responsive: false,
         radius: 0,
         showLine: true,
+        parsing: false,
+        normalized: true,
+        animation: false,
         scales: {
           x: {
             type: 'linear',
@@ -85,15 +88,22 @@ export default class TemperatureVsTimeChart implements Chart {
       y: toTemperatureCelsius(r),
     });
 
-    const newDataPoints = newResults.map(createDataPoint);
+    /*
+     * Due to a bug in Chart.js 3.x, we need to splice() first, then push(),
+     * which makes updating the data set slightly cumbersome.
+     * @see {@link https://github.com/chartjs/Chart.js/issues/9511}
+     */
+    const { numYears } = this.options;
+    const newDataPoints = newResults.slice(-numYears).map(createDataPoint);
+    const totalNumDataPoints = newDataPoints.length + data.length;
+    data.splice(0, Math.max(0, totalNumDataPoints - numYears));
     data.push(...newDataPoints);
-    data.splice(0, Math.max(0, data.length - this.options.numYears));
 
-    const xScale = this.chart.config.options.scales.x;
+    const { x: xScale } = this.chart.config.options.scales;
     xScale.max = data.length > 0 ? data[data.length - 1].x : xStart - 1;
-    xScale.min = xScale.max - this.options.numYears + 1;
+    xScale.min = xScale.max - numYears + 1;
 
-    this.chart.update('resize');
+    this.chart.update();
   }
 }
 
