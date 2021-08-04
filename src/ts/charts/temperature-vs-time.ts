@@ -31,6 +31,7 @@ export default class TemperatureVsTimeChart implements Chart {
           label: 'Temperature',
           backgroundColor: 'rgb(255, 99, 132)',
           borderColor: 'rgb(255, 99, 132)',
+          pointRadius: 0,
           data: data,
           borderJoinStyle: 'bevel',
         },
@@ -41,8 +42,8 @@ export default class TemperatureVsTimeChart implements Chart {
       data: chartData,
       options: {
         responsive: false,
-        radius: 0,
         showLine: true,
+        tension: 0,
         parsing: false,
         normalized: true,
         animation: false,
