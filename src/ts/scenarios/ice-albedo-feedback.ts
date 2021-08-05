@@ -74,11 +74,12 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     const { min: minEmissivity, max: maxEmissivity } =
       model.parameters[solarEmissivityIdx];
     const chart2Options: SolarEmissivityVsTemperatureChartOptions = {
-      numDataPoints: 2000,
+      numYears: 2000,
       minTemp: -275,
       maxTemp: 40,
       minEmissivity,
       maxEmissivity,
+      toYear: createYearExtractor(model),
       toSolarEmissivity: createExtractor(
         model,
         'parameters',

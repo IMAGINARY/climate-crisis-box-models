@@ -46,9 +46,12 @@ const parameters = [
   },
 ];
 
-const subSteps = 1;
+const subSteps = 9;
 const stepSize = (subSteps + 1) * SECONDS_PER_YEAR;
-const stepsPerSecond = 60;
+const yearsPerSecond = 1000;
+const stepsPerSecond = Math.round(
+  (yearsPerSecond * SECONDS_PER_YEAR) / stepSize
+);
 const numSteps = 3000;
 
 const model: BoxModelExt = {
