@@ -1,5 +1,6 @@
 import { ChartTypeRegistry } from 'chart.js';
 import ChartJs from 'chart.js/auto';
+import { first, last } from 'lodash';
 
 import { Chart } from '../chart';
 import { SimulationResult } from '../simulation';
@@ -80,9 +81,6 @@ export default class TemperatureVsTimeChart implements Chart {
   }
 
   update(newResults: SimulationResult[]) {
-    const data = this.chart.data.datasets[0].data;
-    const xStart = data.length > 0 ? data[data.length - 1].x + 1 : 0;
-
     const { toTemperatureCelsius, toYear } = this.options;
     const createDataPoint = (r: SimulationResult) => ({
       x: toYear(r),
@@ -90,19 +88,36 @@ export default class TemperatureVsTimeChart implements Chart {
     });
 
     /*
-     * Due to a bug in Chart.js 3.x, we need to splice() first, then push(),
+     * Due to a bug in Chart.js 3.x, we need to unshift() first, then push(),
      * which makes updating the data set slightly cumbersome.
      * @see {@link https://github.com/chartjs/Chart.js/issues/9511}
      */
+    const data = this.chart.data.datasets[0].data;
     const { numYears } = this.options;
-    const newDataPoints = newResults.slice(-numYears).map(createDataPoint);
-    const totalNumDataPoints = newDataPoints.length + data.length;
-    data.splice(0, Math.max(0, totalNumDataPoints - numYears));
-    data.push(...newDataPoints);
+    const newDataPoints = newResults.map(createDataPoint);
+    const { x: maxYear } = last(newDataPoints) ?? last(data) ?? { x: -1 };
+    const minYear = maxYear - numYears + 1;
+    if (true) {
+      // to be used as long as there is no fix for the Chart.js bug
+      while (first(data)?.x < minYear) data.shift();
+      if (first(newDataPoints)?.x < minYear) {
+        const newDataPointsClone = [...newDataPoints];
+        while (first(newDataPointsClone)?.x < minYear)
+          newDataPointsClone.shift();
+        data.push(...newDataPointsClone);
+      } else {
+        data.push(...newDataPoints);
+      }
+    } else {
+      data.push(...newDataPoints);
+      const idx = data.findIndex(({ x }) => x >= minYear);
+      data.splice(0, idx);
+    }
 
-    const { x: xScale } = this.chart.config.options.scales;
-    xScale.max = data.length > 0 ? data[data.length - 1].x : xStart - 1;
-    xScale.min = xScale.max - numYears + 1;
+    Object.assign(this.chart.config.options.scales.x, {
+      min: minYear,
+      max: maxYear,
+    });
 
     this.chart.update();
   }
