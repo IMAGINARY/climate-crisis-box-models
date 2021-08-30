@@ -87,32 +87,15 @@ export default class TemperatureVsTimeChart implements Chart {
       y: toTemperatureCelsius(r),
     });
 
-    /*
-     * Due to a bug in Chart.js 3.x, we need to unshift() first, then push(),
-     * which makes updating the data set slightly cumbersome.
-     * @see {@link https://github.com/chartjs/Chart.js/issues/9511}
-     */
     const data = this.chart.data.datasets[0].data;
     const { numYears } = this.options;
     const newDataPoints = newResults.map(createDataPoint);
     const { x: maxYear } = last(newDataPoints) ?? last(data) ?? { x: -1 };
     const minYear = maxYear - numYears + 1;
-    if (true) {
-      // to be used as long as there is no fix for the Chart.js bug
-      while (first(data)?.x < minYear) data.shift();
-      if (first(newDataPoints)?.x < minYear) {
-        const newDataPointsClone = [...newDataPoints];
-        while (first(newDataPointsClone)?.x < minYear)
-          newDataPointsClone.shift();
-        data.push(...newDataPointsClone);
-      } else {
-        data.push(...newDataPoints);
-      }
-    } else {
-      data.push(...newDataPoints);
-      const idx = data.findIndex(({ x }) => x >= minYear);
-      data.splice(0, idx);
-    }
+
+    data.push(...newDataPoints);
+    const idx = data.findIndex(({ x }) => x >= minYear);
+    data.splice(0, idx);
 
     Object.assign(this.chart.config.options.scales.x, {
       min: minYear,

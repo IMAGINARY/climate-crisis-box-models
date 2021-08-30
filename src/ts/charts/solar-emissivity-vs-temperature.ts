@@ -98,33 +98,16 @@ export default class SolarEmissivityVsTemperatureChart implements Chart {
       year: toYear(r),
     });
 
-    /*
-     * Due to a bug in Chart.js 3.x, we need to unshift() first, then push(),
-     * which makes updating the data set slightly cumbersome.
-     * @see {@link https://github.com/chartjs/Chart.js/issues/9511}
-     */
     const data0 = this.chart.data.datasets[0].data;
     const { numYears } = this.options;
     const newDataPoints = newResults.map(createDataPoint);
     const { year: maxYear } = last(newDataPoints) ??
       last(data0) ?? { year: -1 };
     const minYear = maxYear - numYears + 1;
-    if (true) {
-      // to be used as long as there is no fix for the Chart.js bug
-      while (first(data0)?.year < minYear) data0.shift();
-      if (first(newDataPoints)?.year < minYear) {
-        const newDataPointsClone = [...newDataPoints];
-        while (first(newDataPointsClone)?.year < minYear)
-          newDataPointsClone.shift();
-        data0.push(...newDataPointsClone);
-      } else {
-        data0.push(...newDataPoints);
-      }
-    } else {
-      data0.push(...newDataPoints);
-      const idx = data0.findIndex(({ year }) => year >= minYear);
-      data0.splice(0, idx);
-    }
+
+    data0.push(...newDataPoints);
+    const idx = data0.findIndex(({ year }) => year >= minYear);
+    data0.splice(0, idx);
 
     const data1 = this.chart.config.data.datasets[1].data;
     data1[0] =
