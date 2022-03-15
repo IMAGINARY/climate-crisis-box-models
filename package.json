@@ -10,16 +10,17 @@
     "not dead"
   ],
   "devDependencies": {
-    "@parcel/transformer-sass": "^2.0.0-nightly.690",
-    "eslint": "^7.27.0",
+    "@parcel/transformer-sass": "^2.3.2",
+    "eslint": "^7.32.0",
     "eslint-config-airbnb": "^18.2.1",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.23.4",
-    "eslint-plugin-jsx-a11y": "^6.4.1",
-    "eslint-plugin-react": "^7.24.0",
-    "eslint-plugin-react-hooks": "^4.2.0",
-    "parcel": "^2.0.0-nightly.688",
-    "prettier": "^2.3.0"
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.29.4",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "events": "^3.3.0",
+    "parcel": "^2.3.2",
+    "prettier": "^2.5.1"
   },
   "dependencies": {
     "@imaginary-maths/box-model": "^0.5.0",
