@@ -33,15 +33,15 @@ const variables = [
   {
     id: 'albedo',
     formula: (s, f, v, p, t) =>
-      Math.max(0.1, Math.min(0.9, 2.8 - 0.01 * v('temperature'))),
+      Math.max(0.15, Math.min(0.65, 2.8 - 0.01 * v('temperature'))),
   },
 ];
 
 const parameters = [
   {
     id: 'solar emissivity',
-    min: 1000,
-    max: 2000,
+    min: 1200,
+    max: 1420,
     value: 1367,
   },
 ];
