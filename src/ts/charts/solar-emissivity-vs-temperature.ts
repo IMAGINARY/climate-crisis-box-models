@@ -48,7 +48,9 @@ export default class SolarEmissivityVsTemperatureChart implements Chart {
       ],
     };
     const { minEmissivity: chartXMin, maxEmissivity: chartXMax } = this.options;
+    const { minTemp: chartYMin, maxTemp: chartYMax } = this.options;
     const chartXSize = chartXMax - chartXMin;
+    const chartYSize = chartYMax - chartYMin;
     const chartConfig = {
       type: 'scatter' as keyof ChartTypeRegistry,
       data: chartData,
@@ -67,8 +69,8 @@ export default class SolarEmissivityVsTemperatureChart implements Chart {
           },
           y: {
             type: 'linear',
-            min: -274,
-            max: 40,
+            min: chartYMin - 0.1 * chartYSize,
+            max: chartYMax + 0.1 * chartYSize,
             ticks: {
               callback: formatCelsius,
             },

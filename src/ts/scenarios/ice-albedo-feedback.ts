@@ -51,8 +51,8 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
 
     const chart1Options: TemperatureVsTimeChartOptions = {
       numYears: model.numSteps,
-      minTemp: -275,
-      maxTemp: 40,
+      minTemp: -60,
+      maxTemp: 10,
       toYear: createYearExtractor(model),
       toTemperatureCelsius: createTemperatureCelsiusExtractor(
         model,
@@ -75,8 +75,8 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
       model.parameters[solarEmissivityIdx];
     const chart2Options: SolarEmissivityVsTemperatureChartOptions = {
       numYears: 2000,
-      minTemp: -275,
-      maxTemp: 40,
+      minTemp: -70,
+      maxTemp: 0,
       minEmissivity,
       maxEmissivity,
       toYear: createYearExtractor(model),
