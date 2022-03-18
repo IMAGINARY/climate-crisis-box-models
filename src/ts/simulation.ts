@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { BoxModelEngine, Record } from './box-model';
+import { BoxModelEngine, Record, ConvergenceCriterion } from './box-model';
 import { BoxModelForScenario } from './box-model-definition';
 
 export type SimulationResult = [number, Record];
@@ -26,12 +26,14 @@ export class Simulation extends EventEmitter {
     return record;
   }
 
-  setParameter(value: number) {
+  setParameter(value: number, allowOutOfRange = false): void {
     const { model } = this;
     if (typeof model.parameters[0] !== 'undefined') {
       const p = model.parameters[0];
       const { min, max } = p;
-      const valueClamped = Math.min(max, Math.max(min, value));
+      const valueClamped = allowOutOfRange
+        ? value
+        : Math.min(max, Math.max(min, value));
       if (p.value !== valueClamped) {
         p.value = valueClamped;
         this.emit('parameter-changed', model.parameters[0], value);
@@ -49,12 +51,14 @@ export class Simulation extends EventEmitter {
     }
   }
 
-  getParameter() {
+  getParameter(allowOutOfRange = false) {
     const { model } = this;
     if (typeof model.parameters[0] !== 'undefined') {
       const p = model.parameters[0];
       const { value, min, max } = p;
-      const valueClamped = Math.min(max, Math.max(min, value));
+      const valueClamped = allowOutOfRange
+        ? value
+        : Math.min(max, Math.max(min, value));
       return valueClamped;
     } else {
       return 0;
@@ -176,5 +180,26 @@ export class Simulation extends EventEmitter {
         this.lastSimStopTimestamp = now;
       }
     }
+  }
+
+  public converge(criterion: ConvergenceCriterion): SimulationResult {
+    const { model } = this;
+    const { stepSize } = model;
+    let { subSteps } = model;
+    subSteps = Math.max(0, subSteps);
+    if (this.lastResult === null) {
+      this.lastResult = [0, this.initialRecord()];
+    }
+    const h = stepSize / (subSteps + 1);
+
+    const [timestamp, lastRecord] = this.lastResult;
+    const record: Record = this.engine.convergeExt(
+      lastRecord.stocks,
+      lastRecord.t,
+      h,
+      criterion
+    );
+    this.lastResult = [timestamp, record];
+    return this.lastResult;
   }
 }

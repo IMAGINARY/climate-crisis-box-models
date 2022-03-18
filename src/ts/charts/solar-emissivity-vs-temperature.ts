@@ -15,6 +15,7 @@ export type SolarEmissivityVsTemperatureChartOptions = {
   toSolarEmissivity: (result: SimulationResult) => number;
   toTemperatureCelsius: (result: SimulationResult) => number;
   toYear: (result: SimulationResult) => number;
+  hysteresisData: ReadonlyArray<SimulationResult>;
 };
 
 export default class SolarEmissivityVsTemperatureChart implements Chart {
@@ -44,6 +45,17 @@ export default class SolarEmissivityVsTemperatureChart implements Chart {
           borderColor: 'rgb(75, 192, 192)',
           pointRadius: 5,
           showLine: false,
+        },
+        {
+          label: 'Hysteresis',
+          data: options.hysteresisData.map((r) => ({
+            x: options.toSolarEmissivity(r),
+            y: options.toTemperatureCelsius(r),
+          })),
+          backgroundColor: 'rgb(255, 99, 132)',
+          borderColor: 'rgb(0, 0, 128)',
+          borderJoinStyle: 'bevel',
+          pointRadius: 0,
         },
       ],
     };

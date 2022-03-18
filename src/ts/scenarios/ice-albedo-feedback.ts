@@ -13,7 +13,10 @@ import {
 
 // @ts-ignore
 import scenarioSvgUrl from 'url:./../../svg/scenario.svg';
-import { convertToBoxModelForScenario } from '../box-model-definition';
+import {
+  BoxModelForScenario,
+  convertToBoxModelForScenario,
+} from '../box-model-definition';
 import Chart from '../chart';
 import {
   TemperatureVsTimeChart,
@@ -30,6 +33,8 @@ namespace IceAlbedoFeedbackScenario {
   };
 }
 
+const modelForScenario = convertToBoxModelForScenario(model);
+
 export default class IceAlbedoFeedbackScenario extends BaseScenario {
   protected readonly chart1: Chart;
   protected readonly chart2: Chart;
@@ -39,7 +44,7 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     elem: HTMLDivElement,
     resources: IceAlbedoFeedbackScenario.Resources
   ) {
-    super(elem, new Simulation(convertToBoxModelForScenario(model)));
+    super(elem, new Simulation(modelForScenario));
     this.svg = SVG(document.importNode(resources.svg.documentElement, true));
     this.container.appendChild(this.svg.node);
 
@@ -90,6 +95,7 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
         'variables',
         'temperature'
       ),
+      hysteresisData: IceAlbedoFeedbackScenario.computeHysteresisData(),
     };
     this.chart2 = new SolarEmissivityVsTemperatureChart(canvas2, chart2Options);
   }
@@ -107,6 +113,36 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
 
   getName() {
     return 'Ice Albedo Feedback';
+  }
+
+  protected static computeHysteresisData(): SimulationResult[] {
+    const temperatureIdx = model.variables
+      .map(({ id }) => id)
+      .indexOf('temperature');
+    const hysteresisData: SimulationResult[] = [];
+    const numSteps = 100;
+
+    const convergenceCriteria = (record: Record, lastRecord: Record) => {
+      const temp = record.variables[temperatureIdx];
+      const lastTemp = lastRecord.variables[temperatureIdx];
+      return Math.abs(temp - lastTemp) < 0.001;
+    };
+
+    const simulation = new Simulation(modelForScenario);
+    const { min, max } = simulation.getParameterRange();
+    const extMin = min - (max - min) * 0.1;
+    const extMax = max + (max - min) * 0.1;
+    // walk the solar emissivity parameter down and back up
+    for (let step = -numSteps + 1; step < numSteps; step += 1) {
+      simulation.setParameter(
+        extMin + ((extMax - extMin) * Math.abs(step)) / (numSteps - 1),
+        true
+      );
+      const result = simulation.converge(convergenceCriteria);
+      hysteresisData.push(result);
+    }
+
+    return hysteresisData;
   }
 
   protected update(newData: SimulationResult[]) {
