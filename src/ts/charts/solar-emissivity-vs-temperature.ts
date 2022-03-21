@@ -33,7 +33,7 @@ export default class SolarEmissivityVsTemperatureChart implements Chart {
       datasets: [
         {
           label: 'Solar emissivity vs. Temperature',
-          data: new Array(200).fill({ x: null, y: null }),
+          data: [],
           backgroundColor: 'rgb(255, 99, 132)',
           borderColor: 'rgb(255, 99, 132)',
           borderJoinStyle: 'bevel',
