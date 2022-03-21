@@ -49,8 +49,8 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     this.getScene().appendChild(this.svg.node);
 
     const canvas1: HTMLCanvasElement = document.createElement('canvas');
-    canvas1.width = 400;
-    canvas1.height = 300;
+    canvas1.width = 270;
+    canvas1.height = 190;
     canvas1.classList.add('graph1');
     this.getScene().appendChild(canvas1);
 
@@ -68,8 +68,8 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     this.chart1 = new TemperatureVsTimeChart(canvas1, chart1Options);
 
     const canvas2: HTMLCanvasElement = document.createElement('canvas');
-    canvas2.width = 400;
-    canvas2.height = 300;
+    canvas2.width = 270;
+    canvas2.height = 190;
     canvas2.classList.add('graph2');
     this.getScene().appendChild(canvas2);
 

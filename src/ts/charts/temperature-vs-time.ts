@@ -1,10 +1,12 @@
 import { ChartTypeRegistry } from 'chart.js';
 import ChartJs from 'chart.js/auto';
-import { first, last } from 'lodash';
+import { first, last, merge } from 'lodash';
 
 import { Chart } from '../chart';
+import { gridConfig, filterNonBoundaryTicks } from './common';
 import { SimulationResult } from '../simulation';
-import { formatCelsius } from '../util';
+import { formatCelsiusTick, formatYearTick } from '../util';
+import * as common from './common';
 
 export type TemperatureVsTimeChartOptions = {
   numYears: number;
@@ -24,7 +26,7 @@ export default class TemperatureVsTimeChart implements Chart {
     options: TemperatureVsTimeChartOptions
   ) {
     this.options = options;
-    const data = [];
+    const data: { x: number; y: number }[] = [];
 
     const chartData = {
       datasets: [
@@ -33,38 +35,40 @@ export default class TemperatureVsTimeChart implements Chart {
           backgroundColor: 'rgb(255, 99, 132)',
           borderColor: 'rgb(255, 99, 132)',
           pointRadius: 0,
-          data: data,
+          data,
           borderJoinStyle: 'bevel',
+        },
+        {
+          label: 'Last datapoint',
+          data: [{ x: null, y: null }],
+          backgroundColor: 'rgb(255, 99, 132)',
+          borderColor: 'rgb(75, 192, 192)',
+          pointRadius: 5,
+          showLine: false,
+          clip: false,
         },
       ],
     };
-    const chartConfig = {
-      type: 'scatter' as keyof ChartTypeRegistry,
+
+    const chartConfig = merge({}, common.config, {
       data: chartData,
       options: {
-        responsive: false,
-        showLine: true,
-        tension: 0,
-        parsing: false,
-        normalized: true,
-        animation: false,
         scales: {
           x: {
-            type: 'linear',
+            title: { text: 'Time' },
             min: -this.options.numYears,
             max: -1,
+            ticks: {
+              callback: formatYearTick,
+            },
           },
           y: {
-            type: 'linear',
             min: this.options.minTemp,
             max: this.options.maxTemp,
-            ticks: {
-              callback: formatCelsius,
-            },
           },
         },
       },
-    };
+    });
 
     this.chart = new ChartJs(canvas, chartConfig);
   }
@@ -87,20 +91,24 @@ export default class TemperatureVsTimeChart implements Chart {
       y: toTemperatureCelsius(r),
     });
 
-    const data = this.chart.data.datasets[0].data;
+    const data0 = this.chart.data.datasets[0].data;
     const { numYears } = this.options;
     const newDataPoints = newResults.map(createDataPoint);
-    const { x: maxYear } = last(newDataPoints) ?? last(data) ?? { x: -1 };
+    const { x: maxYear } = last(newDataPoints) ?? last(data0) ?? { x: -1 };
     const minYear = maxYear - numYears + 1;
 
-    data.push(...newDataPoints);
-    const idx = data.findIndex(({ x }) => x >= minYear);
-    data.splice(0, idx);
+    data0.push(...newDataPoints);
+    const idx = data0.findIndex(({ x }) => x >= minYear);
+    data0.splice(0, idx);
 
     Object.assign(this.chart.config.options.scales.x, {
       min: minYear,
       max: maxYear,
     });
+
+    const data1 = this.chart.config.data.datasets[1].data;
+    data1[0] =
+      data0.length > 0 ? data0[data0.length - 1] : { x: null, y: null };
 
     this.chart.update();
   }

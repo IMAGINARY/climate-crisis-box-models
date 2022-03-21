@@ -1,10 +1,11 @@
 import { ChartTypeRegistry } from 'chart.js';
 import ChartJs from 'chart.js/auto';
-import { first, last } from 'lodash';
+import { first, last, merge } from 'lodash';
 
 import { Chart } from '../chart';
 import { SimulationResult } from '../simulation';
-import { formatCelsius } from '../util';
+import { formatCelsiusTick, formatIrradianceTick } from '../util';
+import * as common from './common';
 
 export type SolarEmissivityVsTemperatureChartOptions = {
   numYears: number;
@@ -45,6 +46,7 @@ export default class SolarEmissivityVsTemperatureChart implements Chart {
           borderColor: 'rgb(75, 192, 192)',
           pointRadius: 5,
           showLine: false,
+          clip: false,
         },
         {
           label: 'Hysteresis',
@@ -63,33 +65,22 @@ export default class SolarEmissivityVsTemperatureChart implements Chart {
     const { minTemp: chartYMin, maxTemp: chartYMax } = this.options;
     const chartXSize = chartXMax - chartXMin;
     const chartYSize = chartYMax - chartYMin;
-    const chartConfig = {
-      type: 'scatter' as keyof ChartTypeRegistry,
+    const chartConfig = merge({}, common.config, {
       data: chartData,
       options: {
-        responsive: false,
-        showLine: true,
-        tension: 0,
-        parsing: false,
-        normalized: true,
-        animation: false,
         scales: {
           x: {
-            type: 'linear',
+            title: { text: 'Solar Emissivity' },
             min: chartXMin - 0.1 * chartXSize,
             max: chartXMax + 0.1 * chartXSize,
           },
           y: {
-            type: 'linear',
             min: chartYMin - 0.1 * chartYSize,
             max: chartYMax + 0.1 * chartYSize,
-            ticks: {
-              callback: formatCelsius,
-            },
           },
         },
       },
-    };
+    });
 
     this.chart = new ChartJs(canvas, chartConfig);
   }

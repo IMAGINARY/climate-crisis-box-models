@@ -63,8 +63,12 @@ function createTemperatureCelsiusExtractor(
 const celsiusNumberFormatter = new Intl.NumberFormat('de', {
   maximumFractionDigits: 1,
 });
-function formatCelsius(celsius) {
+function formatCelsius(celsius: number) {
   return `${celsiusNumberFormatter.format(celsius)}°C`;
+}
+
+function formatCelsiusTick(celsius: number) {
+  return typeof celsius !== 'undefined' ? formatCelsius(celsius) : undefined;
 }
 
 function secondsToYears(seconds) {
@@ -76,11 +80,34 @@ function createYearExtractor(model: BoxModelExt) {
   return (result) => secondsToYears(secondsExtractor(result));
 }
 
+function formatYear(year: number) {
+  return `Year ${year}`;
+}
+
+function formatYearTick(year: number) {
+  return typeof year !== 'undefined' ? formatYear(year) : undefined;
+}
+
+function formatIrradiance(irradiance: number) {
+  return `${irradiance.toFixed(0)} W/m²`;
+}
+
+function formatIrradianceTick(irradiance: number) {
+  return typeof irradiance !== 'undefined'
+    ? formatIrradiance(irradiance)
+    : undefined;
+}
+
 export {
   loadSvg,
   kelvinToCelsius,
   secondsToYears,
   formatCelsius,
+  formatCelsiusTick,
+  formatYear,
+  formatYearTick,
+  formatIrradiance,
+  formatIrradianceTick,
   createExtractor,
   createTemperatureCelsiusExtractor,
   createYearExtractor,

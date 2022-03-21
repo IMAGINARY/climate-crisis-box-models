@@ -49,8 +49,8 @@ export default class GreenhouseEffectScenario extends BaseScenario {
     this.modelSceneConnections = this.prepareModelToSceneConnections();
 
     const canvas: HTMLCanvasElement = document.createElement('canvas');
-    canvas.width = 400;
-    canvas.height = 300;
+    canvas.width = 270;
+    canvas.height = 190;
     canvas.classList.add('graph');
     this.getScene().appendChild(canvas);
 
