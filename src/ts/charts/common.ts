@@ -30,9 +30,11 @@ const config = {
         grid: gridConfig,
         title: {
           display: true,
+          font: { family: 'Share Tech Mono', color: 'black' },
         },
         ticks: {
           callback: formatIrradianceTick,
+          font: { family: 'Share Tech Mono', color: 'black' },
           stepSize: Number.POSITIVE_INFINITY,
         },
       },
@@ -41,10 +43,12 @@ const config = {
         title: {
           text: 'Temperature',
           display: true,
+          font: { family: 'Share Tech Mono', color: 'black' },
         },
         grid: gridConfig,
         ticks: {
           callback: formatCelsiusTick,
+          font: { family: 'Share Tech Mono', color: 'black' },
           stepSize: Number.POSITIVE_INFINITY,
         },
       },

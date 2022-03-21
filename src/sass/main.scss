@@ -1,6 +1,15 @@
+@use '~@fontsource/share-tech-mono/scss/mixins' as ShareTechMono;
+
 @import '~/node_modules/reseter.css/css/reseter.css';
 
+@include ShareTechMono.fontFace(
+  $weight: 400,
+  $display: fallback,
+  $fontDir: '~/node_modules/@fontsource/share-tech-mono/files'
+);
+
 body {
+  font-family: Share Tech Mono, monospace;
   overflow: hidden;
 }
 
