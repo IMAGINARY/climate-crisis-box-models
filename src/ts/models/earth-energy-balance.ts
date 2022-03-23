@@ -1,7 +1,14 @@
-import { BoxModelExt } from '../box-model-definition';
+import {
+  Flow,
+  Variable,
+  StockWithInitialValue,
+  ParameterWithRange,
+  LookupFunction,
+  BoxModelExt,
+} from '../box-model-definition';
 import { SECONDS_PER_YEAR } from '../constants';
 
-const stocks = [
+const stocks: StockWithInitialValue[] = [
   {
     id: 'planet heat content',
     in: ['sun radiation'],
@@ -10,29 +17,31 @@ const stocks = [
   },
 ];
 
-const flows = [
+const flows: Flow[] = [
   {
     id: 'sun radiation',
-    formula: (s, f, v, p, t) => p('solar emissivity') / 4,
+    formula: ({ p }: { p: LookupFunction }) => p('solar emissivity') / 4,
   },
   {
     id: 'reflected sun radiation',
-    formula: (s, f, v, p, t) => (p('solar emissivity') * p('albedo')) / 4,
+    formula: ({ p }: { p: LookupFunction }) =>
+      (p('solar emissivity') * p('albedo')) / 4,
   },
   {
     id: 'earth infrared radiation',
-    formula: (s, f, v, p, t) => 5.67e-8 * Math.pow(v('temperature'), 4),
+    formula: ({ v }: { v: LookupFunction }) => 5.67e-8 * v('temperature') ** 4,
   },
 ];
 
-const variables = [
+const variables: Variable[] = [
   {
     id: 'temperature',
-    formula: (s, f, v, p, t) => s('planet heat content') * 2.38e-10,
+    formula: ({ s }: { s: LookupFunction }): number =>
+      s('planet heat content') * 2.38e-10,
   },
 ];
 
-const parameters = [
+const parameters: ParameterWithRange[] = [
   {
     id: 'albedo',
     min: 0,

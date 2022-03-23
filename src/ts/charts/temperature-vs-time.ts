@@ -1,11 +1,10 @@
-import { ChartTypeRegistry } from 'chart.js';
+import { merge } from 'lodash';
 import ChartJs from 'chart.js/auto';
-import { first, last, merge } from 'lodash';
+import { ChartConfiguration } from 'chart.js';
 
 import { Chart } from '../chart';
-import { gridConfig, filterNonBoundaryTicks } from './common';
 import { SimulationResult } from '../simulation';
-import { formatCelsiusTick, formatYearTick } from '../util';
+import { formatYearTick } from '../util';
 import * as common from './common';
 
 export type TemperatureVsTimeChartOptions = {
@@ -16,71 +15,83 @@ export type TemperatureVsTimeChartOptions = {
   toYear: (result: SimulationResult) => number;
 };
 
+type TMyDataPoint = {
+  x: number;
+  y: number;
+};
+
+type TMyChartType = ChartJs<'scatter', TMyDataPoint[]>;
+type TMyChartConfiguration = ChartConfiguration<'scatter', TMyDataPoint[]>;
+type TMyChartOptions = TMyChartConfiguration['options'];
+type TMyChartData = TMyChartConfiguration['data'];
 export default class TemperatureVsTimeChart implements Chart {
-  protected readonly chart: ChartJs;
+  protected readonly chart: TMyChartType;
+
   protected options: TemperatureVsTimeChartOptions;
-  protected count: number;
 
   constructor(
     canvas: HTMLCanvasElement,
     options: TemperatureVsTimeChartOptions
   ) {
     this.options = options;
-    const data: { x: number; y: number }[] = [];
 
-    const chartData = {
+    const chartData: TMyChartData = {
       datasets: [
         {
           label: 'Temperature',
           backgroundColor: 'rgb(255, 99, 132)',
           borderColor: 'rgb(255, 99, 132)',
-          pointRadius: 0,
-          data,
+          data: [] as TMyDataPoint[],
           borderJoinStyle: 'bevel',
-        },
-        {
-          label: 'Last datapoint',
-          data: [{ x: null, y: null }],
-          backgroundColor: 'rgb(255, 99, 132)',
-          borderColor: 'rgb(75, 192, 192)',
-          pointRadius: 5,
-          showLine: false,
-          clip: false,
+          pointRadius: (ctx) =>
+            ctx.dataIndex === ctx.dataset.data.length - 1 ? 5 : 0,
+          clip: Number.MAX_SAFE_INTEGER,
         },
       ],
     };
 
-    const chartConfig = merge({}, common.config, {
-      data: chartData,
-      options: {
-        scales: {
-          x: {
-            title: { text: 'Time' },
-            min: -this.options.numYears,
-            max: -1,
-            ticks: {
-              callback: formatYearTick,
-            },
-          },
-          y: {
-            min: this.options.minTemp,
-            max: this.options.maxTemp,
+    const { minTemp, maxTemp } = this.options;
+    const additionalChartOptions: TMyChartOptions = {
+      scales: {
+        x: {
+          title: { text: 'Time' },
+          min: -this.options.numYears,
+          max: -1,
+          ticks: {
+            callback: formatYearTick,
           },
         },
+        y: {
+          min: minTemp,
+          max: maxTemp,
+        },
       },
-    });
+    };
+    const chartOptions: TMyChartOptions = merge(
+      {} as TMyChartOptions,
+      common.scatterChartOptions,
+      additionalChartOptions
+    );
 
-    this.chart = new ChartJs(canvas, chartConfig);
+    const chartConfig: TMyChartConfiguration = {
+      type: 'scatter',
+      data: chartData,
+      options: chartOptions,
+    };
+
+    this.chart = new ChartJs<'scatter', TMyDataPoint[]>(canvas, chartConfig);
+  }
+
+  setYearRange(min: number, max: number) {
+    merge(this.chart.config, {
+      options: { scales: { x: { min, max } } },
+    });
   }
 
   reset() {
-    const data = this.chart.data.datasets[0].data;
-    const xScale = this.chart.config.options.scales.x;
-    xScale.max = -1;
-    xScale.min = -this.count;
-
+    const { data } = this.chart.data.datasets[0];
     data.splice(0, data.length);
-
+    this.setYearRange(-this.options.numYears, -1);
     this.update([]);
   }
 
@@ -91,26 +102,27 @@ export default class TemperatureVsTimeChart implements Chart {
       y: toTemperatureCelsius(r),
     });
 
-    const data0 = this.chart.data.datasets[0].data;
-    const { numYears } = this.options;
-    const newDataPoints = newResults.map(createDataPoint);
-    const { x: maxYear } = last(newDataPoints) ?? last(data0) ?? { x: -1 };
-    const minYear = maxYear - numYears + 1;
+    const data = this.chart.data.datasets?.[0]?.data;
 
-    data0.push(...newDataPoints);
-    const idx = data0.findIndex(({ x }) => x >= minYear);
-    data0.splice(0, idx);
+    if (data) {
+      common.updateDataWithTrace<TMyDataPoint>(
+        newResults,
+        data,
+        createDataPoint,
+        (dataPoint) => dataPoint.x,
+        this.options.numYears
+      );
 
-    Object.assign(this.chart.config.options.scales.x, {
-      min: minYear,
-      max: maxYear,
-    });
+      const lastDataPoint: TMyDataPoint = data?.[data.length - 1];
+      if (lastDataPoint) {
+        this.setYearRange(
+          lastDataPoint.x - this.options.numYears,
+          lastDataPoint.x
+        );
+      }
 
-    const data1 = this.chart.config.data.datasets[1].data;
-    data1[0] =
-      data0.length > 0 ? data0[data0.length - 1] : { x: null, y: null };
-
-    this.chart.update();
+      this.chart.update();
+    }
   }
 }
 

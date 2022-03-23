@@ -1,6 +1,6 @@
 import cloneDeep from 'lodash/cloneDeep';
 
-import { Stock, Parameter, BoxModel } from './box-model';
+import { Stock, Parameter, BoxModel } from '@imaginary-maths/box-model';
 
 export interface StockWithInitialValue extends Stock {
   initialValue: number;
@@ -27,18 +27,27 @@ export interface ParameterWithRangeAndInitialValue extends ParameterWithRange {
 export interface BoxModelForScenario extends BoxModelExt {
   stocks: StockWithInitialValue[];
   parameters: ParameterWithRangeAndInitialValue[];
-  [key: string]: any;
+  [key: string]: unknown;
+}
+
+function addInitialValueToParameter(
+  p: ParameterWithRange
+): ParameterWithRangeAndInitialValue {
+  return {
+    ...p,
+    initialValue: p.value,
+  };
 }
 
 export function convertToBoxModelForScenario(
   m: BoxModelExt
 ): BoxModelForScenario {
-  const result = cloneDeep(m);
-  result.parameters = result.parameters.map(
-    (p: ParameterWithRange): ParameterWithRangeAndInitialValue => ({
-      ...p,
-      initialValue: p.value,
-    })
-  );
+  const mDeepClone: BoxModelExt = cloneDeep<BoxModelExt>(m);
+  const result: BoxModelForScenario = {
+    ...mDeepClone,
+    parameters: mDeepClone.parameters.map(addInitialValueToParameter),
+  };
   return result;
 }
+
+export * from '@imaginary-maths/box-model';

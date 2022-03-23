@@ -1,18 +1,30 @@
 import { EventEmitter } from 'events';
-import { BoxModelEngine, Record, ConvergenceCriterion } from './box-model';
-import { BoxModelForScenario } from './box-model-definition';
+import {
+  BoxModelForScenario,
+  BoxModelEngine,
+  Record,
+  ConvergenceCriterion,
+} from './box-model-definition';
 
-export type SimulationResult = [number, Record];
+export type SimulationResult = { timestamp: number; record: Record };
+
+const e = new EventEmitter();
+e.emit('test', 'test');
 
 export class Simulation extends EventEmitter {
   protected model: BoxModelForScenario;
-  protected engine: BoxModelEngine;
-  protected lastResult: SimulationResult = null;
 
-  protected lastSimStopTimestamp: number = -1;
-  protected simulationTime: number = 0;
-  protected simulationTimeOffset: number = -1;
-  private simulationFrameId: number = 0;
+  protected engine: BoxModelEngine;
+
+  protected lastResult: SimulationResult | null = null;
+
+  protected lastSimStopTimestamp = -1;
+
+  protected simulationTime = 0;
+
+  protected simulationTimeOffset = -1;
+
+  private simulationFrameId = 0;
 
   constructor(model: BoxModelForScenario) {
     super();
@@ -36,7 +48,11 @@ export class Simulation extends EventEmitter {
         : Math.min(max, Math.max(min, value));
       if (p.value !== valueClamped) {
         p.value = valueClamped;
-        this.emit('parameter-changed', model.parameters[0], value);
+        (this as EventEmitter).emit(
+          'parameter-changed',
+          model.parameters[0],
+          value
+        );
       }
     }
   }
@@ -46,9 +62,8 @@ export class Simulation extends EventEmitter {
     if (typeof model.parameters[0] !== 'undefined') {
       const { id } = model.parameters[0];
       return id;
-    } else {
-      return '';
     }
+    return '';
   }
 
   getParameter(allowOutOfRange = false) {
@@ -60,9 +75,8 @@ export class Simulation extends EventEmitter {
         ? value
         : Math.min(max, Math.max(min, value));
       return valueClamped;
-    } else {
-      return 0;
     }
+    return 0;
   }
 
   getParameterRange() {
@@ -71,9 +85,8 @@ export class Simulation extends EventEmitter {
       const p = model.parameters[0];
       const { min, max } = p;
       return { min, max };
-    } else {
-      return { min: 0, max: 1 };
     }
+    return { min: 0, max: 1 };
   }
 
   getModel(): BoxModelForScenario {
@@ -94,6 +107,7 @@ export class Simulation extends EventEmitter {
       if (i === 0) {
         this.setParameter(p.initialValue);
       } else {
+        // eslint-disable-next-line no-param-reassign
         p.value = p.initialValue;
       }
     });
@@ -141,12 +155,12 @@ export class Simulation extends EventEmitter {
     let { subSteps } = model;
     subSteps = Math.max(0, subSteps);
     if (this.lastResult === null) {
-      this.lastResult = [0, this.initialRecord()];
+      this.lastResult = { timestamp: 0, record: this.initialRecord() };
       results.push(this.lastResult);
     }
 
     const timeStep = 1000 / model.stepsPerSecond;
-    let [timestamp, record] = this.lastResult;
+    let { timestamp, record } = this.lastResult;
     const h = stepSize / (subSteps + 1);
     while (timestamp + timeStep <= targetSimulationTime) {
       for (let i = 0; i < subSteps + 1; i += 1) {
@@ -154,7 +168,7 @@ export class Simulation extends EventEmitter {
         record = this.engine.stepExt(stocks, flows, t, h);
       }
       timestamp += timeStep;
-      this.lastResult = [timestamp, record];
+      this.lastResult = { timestamp, record };
       results.push(this.lastResult);
     }
 
@@ -174,19 +188,17 @@ export class Simulation extends EventEmitter {
         } else {
           this.simulationTimeOffset += now - this.lastSimStopTimestamp;
         }
-        const cb = (now) => {
-          const targetSimulationTime = now - this.simulationTimeOffset;
+        const cb = (timestamp: number) => {
+          const targetSimulationTime = timestamp - this.simulationTimeOffset;
           this.stepSimulation(targetSimulationTime);
           this.simulationFrameId = requestAnimationFrame(cb);
         };
         cb(now);
       }
-    } else {
-      if (this.simulationFrameId !== 0) {
-        cancelAnimationFrame(this.simulationFrameId);
-        this.simulationFrameId = 0;
-        this.lastSimStopTimestamp = now;
-      }
+    } else if (this.simulationFrameId !== 0) {
+      cancelAnimationFrame(this.simulationFrameId);
+      this.simulationFrameId = 0;
+      this.lastSimStopTimestamp = now;
     }
   }
 
@@ -196,18 +208,18 @@ export class Simulation extends EventEmitter {
     let { subSteps } = model;
     subSteps = Math.max(0, subSteps);
     if (this.lastResult === null) {
-      this.lastResult = [0, this.initialRecord()];
+      this.lastResult = { timestamp: 0, record: this.initialRecord() };
     }
     const h = stepSize / (subSteps + 1);
 
-    const [timestamp, lastRecord] = this.lastResult;
+    const { timestamp, record: lastRecord } = this.lastResult;
     const record: Record = this.engine.convergeExt(
       lastRecord.stocks,
       lastRecord.t,
       h,
       criterion
     );
-    this.lastResult = [timestamp, record];
+    this.lastResult = { timestamp, record };
     return this.lastResult;
   }
 }

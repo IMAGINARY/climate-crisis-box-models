@@ -1,10 +1,18 @@
+import { AssertionError, strict as assert } from 'assert';
 import ready from 'document-ready';
+import { Key } from 'ts-key-enum';
+
 import { EarthEnergyBalanceScenario } from './scenarios/earth-energy-balance';
 import { IceAlbedoFeedbackScenario } from './scenarios/ice-albedo-feedback';
 import { GreenhouseEffectScenario } from './scenarios/greenhouse-effect';
-import ScenarioSwitcher from './ScenarioSwitcher';
+import { ScenarioSwitcher } from './scenario-switcher';
+import { Simulation } from './simulation';
+import { ParameterWithRange } from './box-model-definition';
 
-function addSlider(parent, simulation) {
+function addSlider(
+  parent: HTMLElement,
+  simulation: Simulation
+): { container: HTMLDivElement; slider: HTMLInputElement } {
   const container = document.createElement('div');
 
   const labelSpan = document.createElement('span');
@@ -14,7 +22,7 @@ function addSlider(parent, simulation) {
   const initialValue = simulation.getParameter();
   const { min, max } = simulation.getParameterRange();
 
-  const slider = document.createElement('input') as HTMLInputElement;
+  const slider = document.createElement('input');
   slider.type = 'range';
   slider.min = `${min}`;
   slider.max = `${max}`;
@@ -31,37 +39,42 @@ function addSlider(parent, simulation) {
     simulation.setParameter(slider.valueAsNumber);
   });
 
-  simulation.on('parameter-changed', (p, suppliedValue) => {
-    if (suppliedValue === slider.valueAsNumber) {
-      // no need to adjsut the slider
-    } else {
-      slider.valueAsNumber = p.value;
-      slider.dispatchEvent(new InputEvent('input'));
+  simulation.on(
+    'parameter-changed',
+    (p: ParameterWithRange, suppliedValue: number) => {
+      if (suppliedValue === slider.valueAsNumber) {
+        // no need to adjust the slider
+      } else {
+        slider.valueAsNumber = p.value;
+        slider.dispatchEvent(new InputEvent('input'));
+      }
     }
-  });
+  );
 
   parent.appendChild(container);
 
   return { container, slider };
 }
 
-function registerKey(eventType, eventPropss, callback) {
-  function filterKeyCallback(event) {
-    if (typeof eventPropss === 'string') {
-      eventPropss = [{ key: eventPropss }];
-    } else if (
-      typeof eventPropss === 'object' &&
-      typeof eventPropss[Symbol.iterator] !== 'function'
-    ) {
-      eventPropss = [eventPropss];
-    }
-    const matcher = (eventProps) => {
-      for (const [key, value] of Object.entries(eventProps)) {
-        if (event[key] !== value) return false;
-      }
-      return true;
-    };
-    if (eventPropss.findIndex(matcher) !== -1) {
+function registerKey<
+  K extends keyof Pick<HTMLElementEventMap, 'keydown' | 'keyup' | 'keypress'>
+>(
+  eventType: K,
+  eventProps: Partial<KeyboardEvent>,
+  callback: () => unknown
+): void {
+  const eventPropsEntries = Object.entries(eventProps) as [
+    key: keyof KeyboardEvent,
+    value: unknown
+  ][];
+  const isMatching = (event: KeyboardEvent): boolean =>
+    eventPropsEntries.reduce(
+      (acc: boolean, [key, value]): boolean => acc && event[key] === value,
+      true
+    );
+
+  function filterKeyCallback(event: KeyboardEvent) {
+    if (isMatching(event)) {
       callback();
     }
   }
@@ -73,19 +86,22 @@ async function main() {
   const scenarioContainer = document.getElementById(
     'scenario-container'
   ) as HTMLDivElement;
+  assert(scenarioContainer !== null);
 
-  const scenarioClasses = [
-    EarthEnergyBalanceScenario,
-    IceAlbedoFeedbackScenario,
-    GreenhouseEffectScenario,
+  const scenarios = [
+    new EarthEnergyBalanceScenario(
+      scenarioContainer,
+      await EarthEnergyBalanceScenario.loadResources()
+    ),
+    new IceAlbedoFeedbackScenario(
+      scenarioContainer,
+      await IceAlbedoFeedbackScenario.loadResources()
+    ),
+    new GreenhouseEffectScenario(
+      scenarioContainer,
+      await GreenhouseEffectScenario.loadResources()
+    ),
   ];
-  const scenarios = await Promise.all(
-    scenarioClasses.map(async (ScenarioClass) => {
-      const scenarioResources = await ScenarioClass.loadResources();
-      const scenario = new ScenarioClass(scenarioContainer, scenarioResources);
-      return scenario;
-    })
-  );
 
   const scenarioSwitcher = new ScenarioSwitcher(scenarios);
   scenarioSwitcher.getCurrentScenario().getSimulation().stop();
@@ -95,14 +111,17 @@ async function main() {
     'scenario-selector-container'
   );
   scenarios.forEach((scenario, idx) => {
-    const button = document.createElement('button') as HTMLButtonElement;
+    const button = document.createElement('button');
+    assert(button !== null);
     button.innerText = scenario.getName();
     button.onclick = () => scenarioSwitcher.switchTo(idx);
-    scenarioSelectorContainer.appendChild(button);
+    scenarioSelectorContainer?.appendChild(button);
   });
 
-  const sliders = [];
-  const sliderContainerElem = document.getElementById('slider-container');
+  const sliders = [] as HTMLInputElement[];
+  const sliderContainerElem = document.getElementById(
+    'slider-container'
+  ) as HTMLDivElement;
   scenarios.forEach((s, idx) => {
     const { container, slider } = addSlider(
       sliderContainerElem,
@@ -154,16 +173,18 @@ async function main() {
   // toggle play/pause
   startButton.addEventListener('click', play);
   stopButton.addEventListener('click', pause);
-  registerKey('keypress', ' ', tooglePlayPause);
+  registerKey('keypress', { key: ' ' }, tooglePlayPause);
   pause();
 
   // step through scenarios
-  registerKey('keydown', 'ArrowLeft', () => scenarioSwitcher.prev());
-  registerKey('keydown', 'ArrowRight', () => scenarioSwitcher.next());
+  registerKey('keydown', { key: Key.ArrowLeft }, () => scenarioSwitcher.prev());
+  registerKey('keydown', { key: Key.ArrowRight }, () =>
+    scenarioSwitcher.next()
+  );
 
   // toogle overlay
   {
-    const setOverlaysVisible = (visible) => {
+    const setOverlaysVisible = (visible: boolean) => {
       scenarioSwitcher
         .getScenarios()
         .forEach((s) => s.setOverlayVisible(visible));
@@ -174,7 +195,7 @@ async function main() {
     setOverlaysVisible(true);
   }
 
-  function stepSliders(steps) {
+  function stepSliders(steps: number) {
     sliders.forEach((slider) => {
       slider.stepUp(steps);
       slider.dispatchEvent(new InputEvent('input'));
@@ -182,16 +203,16 @@ async function main() {
   }
 
   // set model parameter via keys or mouse wheel
-  registerKey('keydown', { key: 'ArrowUp', repeat: false }, () =>
+  registerKey('keydown', { key: Key.ArrowUp, repeat: false }, () =>
     stepSliders(+1)
   );
-  registerKey('keydown', { key: 'ArrowDown', repeat: false }, () =>
+  registerKey('keydown', { key: Key.ArrowDown, repeat: false }, () =>
     stepSliders(-1)
   );
-  registerKey('keydown', { key: 'ArrowUp', repeat: true }, () =>
+  registerKey('keydown', { key: Key.ArrowUp, repeat: true }, () =>
     stepSliders(+10)
   );
-  registerKey('keydown', { key: 'ArrowDown', repeat: true }, () =>
+  registerKey('keydown', { key: Key.ArrowDown, repeat: true }, () =>
     stepSliders(-10)
   );
   window.addEventListener(

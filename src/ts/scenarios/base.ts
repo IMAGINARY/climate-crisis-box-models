@@ -1,10 +1,13 @@
 import { Scenario } from '../scenario';
 import { Simulation, SimulationResult } from '../simulation';
 
-export abstract class BaseScenario implements Scenario {
+export default abstract class BaseScenario implements Scenario {
   private readonly simulation: Simulation;
+
   private readonly container: HTMLDivElement;
+
   private readonly scene: HTMLDivElement;
+
   private readonly overlay: HTMLDivElement;
 
   protected constructor(elem: HTMLDivElement, simulation: Simulation) {
@@ -21,7 +24,7 @@ export abstract class BaseScenario implements Scenario {
     this.container.appendChild(this.overlay);
 
     this.simulation = simulation;
-    this.simulation.on('results', (results) => this.update(results));
+    this.simulation.on('results', this.update.bind(this));
     this.simulation.on('reset', () => this.reset());
 
     const scenarioLabel = document.createElement('div');
@@ -30,7 +33,7 @@ export abstract class BaseScenario implements Scenario {
     this.container.appendChild(scenarioLabel);
   }
 
-  abstract reset();
+  abstract reset(): void;
 
   abstract getName(): string;
 
@@ -46,13 +49,13 @@ export abstract class BaseScenario implements Scenario {
     return this.overlay;
   }
 
-  protected abstract update(newResults: SimulationResult[]);
+  protected abstract update(newResults: SimulationResult[]): void;
 
   getSimulation(): Simulation {
     return this.simulation;
   }
 
-  setVisible(visible) {
+  setVisible(visible: boolean) {
     if (visible) this.container.classList.remove('invisible');
     else this.container.classList.add('invisible');
   }
@@ -73,7 +76,7 @@ export abstract class BaseScenario implements Scenario {
     return Promise.resolve();
   }
 
-  setOverlayVisible(visible) {
+  setOverlayVisible(visible: boolean) {
     if (visible) this.overlay.classList.remove('invisible');
     else this.overlay.classList.add('invisible');
   }
@@ -82,3 +85,5 @@ export abstract class BaseScenario implements Scenario {
     return !this.overlay.classList.contains('invisible');
   }
 }
+
+export { BaseScenario };

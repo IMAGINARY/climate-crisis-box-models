@@ -3,7 +3,8 @@ import { Scenario } from './scenario';
 
 export default class ScenarioSwitcher extends EventEmitter {
   protected scenarios: Scenario[];
-  protected currentScenarioIndex: number = -1;
+
+  protected currentScenarioIndex = -1;
 
   constructor(scenarios: Scenario[]) {
     super();
@@ -22,7 +23,7 @@ export default class ScenarioSwitcher extends EventEmitter {
     }
   }
 
-  protected static select(scenario: Scenario, autoplay: boolean = false) {
+  protected static select(scenario: Scenario, autoplay = false) {
     if (typeof scenario !== 'undefined' && scenario !== null) {
       scenario.reset();
       const simulation = scenario.getSimulation();
@@ -67,7 +68,7 @@ export default class ScenarioSwitcher extends EventEmitter {
 
   protected static async selectWithTransition(
     scenario: Scenario,
-    autoplay: boolean = false
+    autoplay = false
   ): Promise<void> {
     scenario.reset();
     const simulation = scenario.getSimulation();

@@ -9,26 +9,24 @@ import {
   loadSvg,
 } from '../util';
 
-// @ts-ignore
-import scenarioSvgUrl from 'url:./../../svg/scenario.svg';
 import { convertToBoxModelForScenario } from '../box-model-definition';
-import { SECONDS_PER_YEAR } from '../constants';
-import TemperatureVsTimeChart from '../charts/temperature-vs-time';
+import { TemperatureVsTimeChart } from '../charts/temperature-vs-time';
 
-namespace EarthEnergyBalanceScenario {
-  export type Resources = {
-    svg: XMLDocument;
-  };
-}
+const scenarioSvgUrl: URL = new URL(
+  './../../svg/scenario.svg',
+  import.meta.url
+);
+
+export type Resources = {
+  svg: XMLDocument;
+};
 
 export default class EarthEnergyBalanceScenario extends BaseScenario {
   protected readonly chart: TemperatureVsTimeChart;
+
   protected readonly svg;
 
-  constructor(
-    elem: HTMLDivElement,
-    resources: EarthEnergyBalanceScenario.Resources
-  ) {
+  constructor(elem: HTMLDivElement, resources: Resources) {
     super(elem, new Simulation(convertToBoxModelForScenario(model)));
     this.svg = SVG(document.importNode(resources.svg.documentElement, true));
     this.getScene().appendChild(this.svg.node);
@@ -52,7 +50,7 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
     });
   }
 
-  static async loadResources(): Promise<EarthEnergyBalanceScenario.Resources> {
+  static async loadResources(): Promise<Resources> {
     const svg = await loadSvg(scenarioSvgUrl);
     return { svg };
   }
@@ -62,6 +60,7 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
     this.update([]);
   }
 
+  // eslint-disable-next-line class-methods-use-this
   getName() {
     return 'Earth Energy Balance';
   }
@@ -75,6 +74,9 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
     const simulation = this.getSimulation();
     const { min, max } = simulation.getParameterRange();
     const value = simulation.getParameter();
+
+    // TODO: implement albedo animation
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const relValue = (value - min) / (max - min);
   }
 }

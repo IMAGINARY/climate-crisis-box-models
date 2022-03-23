@@ -1,7 +1,14 @@
-import { BoxModelExt } from '../box-model-definition';
+import {
+  Flow,
+  Variable,
+  StockWithInitialValue,
+  ParameterWithRange,
+  LookupFunction,
+  BoxModelExt,
+} from '../box-model-definition';
 import { SECONDS_PER_YEAR } from '../constants';
 
-const stocks = [
+const stocks: StockWithInitialValue[] = [
   {
     id: 'atmosphere',
     in: ['gnd infrared radiation'],
@@ -20,47 +27,50 @@ const stocks = [
   },
 ];
 
-const flows = [
+const flows: Flow[] = [
   {
     id: 'sun radiation',
-    formula: (s, f, v, p, t) => p('solar emissivity') / 4,
+    formula: ({ p }: { p: LookupFunction }) => p('solar emissivity') / 4,
   },
   {
     id: 'reflected sun radiation',
-    formula: (s, f, v, p, t) => (p('solar emissivity') * p('albedo')) / 4,
+    formula: ({ p }: { p: LookupFunction }) =>
+      (p('solar emissivity') * p('albedo')) / 4,
   },
   {
     id: 'atm infrared radiation',
-    formula: (s, f, v, p, t) =>
-      v('epsilon') * 5.67e-8 * Math.pow(v('atm temperature'), 4),
+    formula: ({ v }: { v: LookupFunction }) =>
+      v('epsilon') * 5.67e-8 * v('atm temperature') ** 4,
   },
   {
     id: 'gnd infrared radiation',
-    formula: (s, f, v, p, t) => 5.67e-8 * Math.pow(v('gnd temperature'), 4),
+    formula: ({ v }: { v: LookupFunction }) =>
+      5.67e-8 * v('gnd temperature') ** 4,
   },
   {
     id: 'gnd infrared radiation not absorbed',
-    formula: (s, f, v, p, t) =>
-      (1 - v('epsilon')) * 5.67e-8 * Math.pow(v('gnd temperature'), 4),
+    formula: ({ v }: { v: LookupFunction }) =>
+      (1 - v('epsilon')) * 5.67e-8 * v('gnd temperature') ** 4,
   },
 ];
 
-const variables = [
+const variables: Variable[] = [
   {
     id: 'atm temperature',
-    formula: (s, f, v, p, t) => s('atmosphere') / 1e8,
+    formula: ({ s }: { s: LookupFunction }) => s('atmosphere') / 1e8,
   },
   {
     id: 'gnd temperature',
-    formula: (s, f, v, p, t) => s('ground') / 1.55e10,
+    formula: ({ s }: { s: LookupFunction }) => s('ground') / 1.55e10,
   },
   {
     id: 'epsilon',
-    formula: (s, f, v, p, t) => 0.057 * Math.log(1 + p('co2')) + 0.437,
+    formula: ({ p }: { p: LookupFunction }) =>
+      0.057 * Math.log(1 + p('co2')) + 0.437,
   },
 ];
 
-const parameters = [
+const parameters: ParameterWithRange[] = [
   {
     id: 'co2',
     min: 280,

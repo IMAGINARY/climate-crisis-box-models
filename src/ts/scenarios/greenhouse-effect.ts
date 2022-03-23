@@ -1,5 +1,5 @@
-import { SVG } from '@svgdotjs/svg.js';
-import flattenDepth from 'lodash/flattenDepth';
+import { SVG, Element as SVGElement } from '@svgdotjs/svg.js';
+import flatten from 'lodash/flattenDepth';
 
 import { BaseScenario } from './base';
 import model from '../models/greenhouse-effect';
@@ -10,33 +10,43 @@ import {
   loadSvg,
 } from '../util';
 
-// @ts-ignore
-import scenarioSvgUrl from 'url:./../../svg/scenario.svg';
-// @ts-ignore
-import scenarioOverlaySvgUrl from 'url:./../../svg/greenhouse-effect-overlay.svg';
-import { convertToBoxModelForScenario } from '../box-model-definition';
-import TemperatureVsTimeChart, {
+import {
+  Record,
+  BoxModelElementKey,
+  convertToBoxModelForScenario,
+} from '../box-model-definition';
+import {
+  TemperatureVsTimeChart,
   TemperatureVsTimeChartOptions,
 } from '../charts/temperature-vs-time';
 
-namespace GreenhouseEffectScenario {
-  export type Resources = {
-    svg: XMLDocument;
-    overlaySvg: XMLDocument;
-  };
-}
+const scenarioSvgUrl: URL = new URL(
+  './../../svg/scenario.svg',
+  import.meta.url
+);
+const scenarioOverlaySvgUrl: URL = new URL(
+  './../../svg/greenhouse-effect-overlay.svg',
+  import.meta.url
+);
+
+export type Resources = {
+  svg: XMLDocument;
+  overlaySvg: XMLDocument;
+};
+
+const modelForScenario = convertToBoxModelForScenario(model);
 
 export default class GreenhouseEffectScenario extends BaseScenario {
   protected readonly chart: TemperatureVsTimeChart;
-  protected readonly svg;
-  protected readonly overlaySvg;
-  protected modelSceneConnections;
 
-  constructor(
-    elem: HTMLDivElement,
-    resources: GreenhouseEffectScenario.Resources
-  ) {
-    super(elem, new Simulation(convertToBoxModelForScenario(model)));
+  protected readonly svg;
+
+  protected readonly overlaySvg;
+
+  protected modelSceneConnections: ((record: Record) => void)[];
+
+  constructor(elem: HTMLDivElement, resources: Resources) {
+    super(elem, new Simulation(modelForScenario));
     this.svg = SVG(document.importNode(resources.svg.documentElement, true));
     this.getScene().appendChild(this.svg.node);
 
@@ -68,31 +78,44 @@ export default class GreenhouseEffectScenario extends BaseScenario {
     this.chart = new TemperatureVsTimeChart(canvas, chartOptions);
   }
 
-  prepareModelToSceneConnections() {
-    const model = this.getSimulation().getModel();
+  prepareModelToSceneConnections(): ((record: Record) => void)[] {
     const formatter = new Intl.NumberFormat('de', {
       minimumFractionDigits: 1,
       maximumFractionDigits: 1,
     });
     const format = formatter.format.bind(formatter);
 
-    const connectModelElemType = (modelElemType: string) =>
-      model[modelElemType].map(({ id }, idx) => {
+    const connectModelElemType = (
+      modelElemType: BoxModelElementKey
+    ): ((record: Record) => void)[][] =>
+      model[modelElemType].map(({ id }: { id: string }, idx: number) => {
         const cssDataId = CSS.escape(id);
-        const elems = this.overlaySvg.node.querySelectorAll(
-          `*[data-id="${cssDataId}"]`
-        );
-        const extractValue = (record) => record[modelElemType][idx];
-        return [...elems].map(
-          (elem) => (record) =>
-            (elem.innerText = `${format(extractValue(record))}`)
+        const elems: NodeListOf<HTMLElement> =
+          this.overlaySvg.node.querySelectorAll(`*[data-id="${cssDataId}"]`);
+        const extractValue = (record: Record): number => {
+          const recordElement = record[modelElemType];
+          return recordElement[idx];
+        };
+        return Array.from(elems).map(
+          (elem: HTMLElement) =>
+            function setInnerText(record: Record) {
+              // eslint-disable-next-line no-param-reassign
+              elem.innerText = `${format(extractValue(record))}`;
+            }
         );
       });
-    const supportedTypes = ['stocks', 'flows', 'parameters', 'variables'];
-    return flattenDepth(supportedTypes.map(connectModelElemType), 2);
+    const supportedTypes: BoxModelElementKey[] = [
+      'stocks',
+      'flows',
+      'parameters',
+      'variables',
+    ];
+    const nestedModelSceneConnections =
+      supportedTypes.map(connectModelElemType);
+    return flatten(flatten(nestedModelSceneConnections));
   }
 
-  static async loadResources(): Promise<GreenhouseEffectScenario.Resources> {
+  static async loadResources(): Promise<Resources> {
     const [svg, overlaySvg] = await Promise.all([
       loadSvg(scenarioSvgUrl),
       loadSvg(scenarioOverlaySvgUrl),
@@ -105,6 +128,7 @@ export default class GreenhouseEffectScenario extends BaseScenario {
     this.update([]);
   }
 
+  // eslint-disable-next-line class-methods-use-this
   getName() {
     return 'Greenhouse Effect';
   }
@@ -117,7 +141,8 @@ export default class GreenhouseEffectScenario extends BaseScenario {
 
   protected updateOverlay(newResults: SimulationResult[]) {
     if (newResults.length > 0) {
-      const [, lastRecord] = newResults[newResults.length - 1];
+      const lastNewResult: SimulationResult = newResults[newResults.length - 1];
+      const { record: lastRecord } = lastNewResult;
       this.modelSceneConnections.forEach((c) => c(lastRecord));
     }
   }
@@ -129,7 +154,7 @@ export default class GreenhouseEffectScenario extends BaseScenario {
     const relValue = (value - min) / (max - min);
     const scale = 0.5 + (3 + 0.5) * relValue;
 
-    const co2 = this.svg.findOne('#co2');
+    const co2 = this.svg.findOne('#co2') as SVGElement;
     co2.transform({ scale });
   }
 }

@@ -1,7 +1,7 @@
-import { SVG } from '@svgdotjs/svg.js';
+import { SVG, Element as SVGElement } from '@svgdotjs/svg.js';
 
 import { BaseScenario } from './base';
-import { Record } from '../box-model';
+import { Record, convertToBoxModelForScenario } from '../box-model-definition';
 import model from '../models/ice-albedo-feedback';
 import { Simulation, SimulationResult } from '../simulation';
 import {
@@ -11,13 +11,7 @@ import {
   loadSvg,
 } from '../util';
 
-// @ts-ignore
-import scenarioSvgUrl from 'url:./../../svg/scenario.svg';
-import {
-  BoxModelForScenario,
-  convertToBoxModelForScenario,
-} from '../box-model-definition';
-import Chart from '../chart';
+import { Chart } from '../chart';
 import {
   TemperatureVsTimeChart,
   TemperatureVsTimeChartOptions,
@@ -27,23 +21,25 @@ import {
   SolarEmissivityVsTemperatureChartOptions,
 } from '../charts/solar-emissivity-vs-temperature';
 
-namespace IceAlbedoFeedbackScenario {
-  export type Resources = {
-    svg: XMLDocument;
-  };
-}
+const scenarioSvgUrl: URL = new URL(
+  './../../svg/scenario.svg',
+  import.meta.url
+);
+
+type Resources = {
+  svg: XMLDocument;
+};
 
 const modelForScenario = convertToBoxModelForScenario(model);
 
 export default class IceAlbedoFeedbackScenario extends BaseScenario {
   protected readonly chart1: Chart;
+
   protected readonly chart2: Chart;
+
   protected readonly svg;
 
-  constructor(
-    elem: HTMLDivElement,
-    resources: IceAlbedoFeedbackScenario.Resources
-  ) {
+  constructor(elem: HTMLDivElement, resources: Resources) {
     super(elem, new Simulation(modelForScenario));
     this.svg = SVG(document.importNode(resources.svg.documentElement, true));
     this.getScene().appendChild(this.svg.node);
@@ -56,8 +52,8 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
 
     const chart1Options: TemperatureVsTimeChartOptions = {
       numYears: model.numSteps,
-      minTemp: -60,
-      maxTemp: 10,
+      minTemp: -70,
+      maxTemp: 0,
       toYear: createYearExtractor(model),
       toTemperatureCelsius: createTemperatureCelsiusExtractor(
         model,
@@ -100,7 +96,7 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     this.chart2 = new SolarEmissivityVsTemperatureChart(canvas2, chart2Options);
   }
 
-  static async loadResources(): Promise<IceAlbedoFeedbackScenario.Resources> {
+  static async loadResources(): Promise<Resources> {
     const svg = await loadSvg(scenarioSvgUrl);
     return { svg };
   }
@@ -111,6 +107,7 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     this.update([]);
   }
 
+  // eslint-disable-next-line class-methods-use-this
   getName() {
     return 'Ice Albedo Feedback';
   }
@@ -157,10 +154,10 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     const value = simulation.getParameter();
     const relValue = (value - min) / (max - min);
 
-    const sunRays = this.svg.findOne('#sunrays-in');
-    sunRays.each(function (i, children) {
-      this.stroke({ width: 1 + relValue * (7 - 1) });
-    });
+    const sunRays = this.svg.findOne('#sunrays-in') as SVGElement;
+    if (sunRays) {
+      sunRays.stroke({ width: 1 + relValue * (7 - 1) });
+    }
   }
 }
 
