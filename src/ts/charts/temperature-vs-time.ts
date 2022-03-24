@@ -39,13 +39,7 @@ export default class TemperatureVsTimeChart implements Chart {
       datasets: [
         {
           label: 'Temperature',
-          backgroundColor: 'rgb(255, 99, 132)',
-          borderColor: 'rgb(255, 99, 132)',
           data: [] as TMyDataPoint[],
-          borderJoinStyle: 'bevel',
-          pointRadius: (ctx) =>
-            ctx.dataIndex === ctx.dataset.data.length - 1 ? 5 : 0,
-          clip: Number.MAX_SAFE_INTEGER,
         },
       ],
     };

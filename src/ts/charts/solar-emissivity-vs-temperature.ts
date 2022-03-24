@@ -45,11 +45,6 @@ export default class SolarEmissivityVsTemperatureChart implements Chart {
         {
           label: 'Solar emissivity vs. Temperature',
           data: [] as TMyDataPoint[],
-          backgroundColor: 'rgb(255, 99, 132)',
-          borderColor: 'rgb(255, 99, 132)',
-          borderJoinStyle: 'bevel',
-          pointRadius: (ctx) =>
-            ctx.dataIndex === ctx.dataset.data.length - 1 ? 5 : 0,
         },
         {
           label: 'Hysteresis',
@@ -58,10 +53,6 @@ export default class SolarEmissivityVsTemperatureChart implements Chart {
             y: options.toTemperatureCelsius(r),
             year: 0,
           })),
-          backgroundColor: 'rgb(255, 99, 132)',
-          borderColor: 'rgb(0, 0, 128)',
-          borderJoinStyle: 'bevel',
-          pointRadius: 0,
         },
       ],
     };

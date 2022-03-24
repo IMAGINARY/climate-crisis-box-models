@@ -54,6 +54,33 @@ const scatterChartOptions: ChartConfiguration<'scatter'>['options'] = {
   plugins: {
     legend: { display: false },
   },
+  elements: {
+    line: {
+      borderColor: ['#ED1C24', '#ED1C2444'],
+      borderCapStyle: 'round',
+      borderWidth: 4,
+      borderJoinStyle: 'bevel',
+    },
+    point: {
+      backgroundColor: 'transparent',
+      borderColor: '#ED1C24',
+      borderWidth: 2,
+      radius: (ctx) =>
+        ctx.datasetIndex === 0 && ctx.dataIndex === ctx.dataset.data.length - 1
+          ? 5
+          : 0,
+    },
+  },
+  datasets: {
+    scatter: {
+      clip: {
+        left: 0,
+        top: false as unknown as number, // this options also accepts booleans, but the type definition is not correct
+        right: false as unknown as number, // this options also accepts booleans, but the type definition is not correct
+        bottom: 0,
+      },
+    },
+  },
   scales: {
     x: xScaleConfig,
     y: yScaleConfig,
