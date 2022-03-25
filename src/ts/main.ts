@@ -105,7 +105,7 @@ async function main() {
 
   const scenarioSwitcher = new ScenarioSwitcher(scenarios);
   scenarioSwitcher.getCurrentScenario().getSimulation().stop();
-  scenarioSwitcher.switchTo(2);
+  scenarioSwitcher.switchTo(0);
 
   const scenarioSelectorContainer = document.getElementById(
     'scenario-selector-container'

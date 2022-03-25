@@ -1,3 +1,6 @@
+import SvgJs from '@svgdotjs/svg.js';
+import assert from 'assert';
+
 import { BoxModelExt, BoxModelElementKey } from './box-model-definition';
 import { SimulationResult } from './simulation';
 import { SECONDS_PER_YEAR } from './constants';
@@ -39,6 +42,19 @@ function createExtractor(
   return (result) => {
     const { record } = result;
     return record[key][idx];
+  };
+}
+
+function createRelativeExtractor(
+  model: BoxModelExt,
+  key: BoxModelElementKey,
+  id?: string
+): Extractor {
+  const idx = model[key].findIndex(({ id: idInModel }) => id === idInModel);
+  return (result) => {
+    const { min, max } = model[key][idx];
+    const { record } = result;
+    return (record[key][idx] - min) / (max - min);
   };
 }
 
@@ -99,6 +115,78 @@ function formatIrradianceTick(irradiance: number | string) {
     : undefined;
 }
 
+type Morpher<T> = (pos: number) => T;
+
+function createSvgMorpher(
+  svg: SvgJs.Dom,
+  parentSelector: string,
+  minSelector: string,
+  maxSelector: string,
+  inBetweenId: string
+): Morpher<void> {
+  const parent = svg.findOne(parentSelector) as SvgJs.G;
+  const minGroup = svg.findOne(minSelector) as SvgJs.G;
+  assert(minGroup !== null);
+
+  const maxGroup = svg.findOne(maxSelector) as SvgJs.G;
+  assert(maxGroup !== null);
+
+  assert(minGroup.children().length === maxGroup.children().length);
+
+  const inBetweenGroup = minGroup.clone();
+  inBetweenGroup.attr('id', inBetweenId);
+  parent.add(inBetweenGroup);
+
+  minGroup.css({ display: 'none' });
+  maxGroup.css({ display: 'none' });
+
+  type ShapeWithArray = SvgJs.Polyline | SvgJs.Polygon | SvgJs.Path;
+  const supportedShapeTypes = ['polyline', 'polygon', 'path'];
+
+  const morphers = Array.from(inBetweenGroup.children()).map((_, i) => {
+    const shapeAtMin = minGroup.children()[i] as ShapeWithArray;
+    const shapeInBetween = inBetweenGroup.children()[i] as ShapeWithArray;
+    const shapeAtMax = maxGroup.children()[i] as ShapeWithArray;
+
+    assert(shapeAtMin.type === shapeAtMax.type);
+    assert(supportedShapeTypes.includes(shapeAtMin.type));
+
+    assert(shapeAtMin.array().length === shapeAtMax.array().length);
+    const arrayMorpher = shapeAtMin.array().to(shapeAtMax.array());
+    const shapeMorpher = (t: number) => {
+      shapeInBetween.plot(arrayMorpher.at(t) as SvgJs.PointArrayAlias);
+    };
+    return shapeMorpher;
+  }) as ((t: number) => void)[];
+
+  const morpher = (t: number) => morphers.forEach((m) => m(t));
+  return morpher;
+}
+
+type VizUpdater = (s: SimulationResult) => void;
+
+function createSvgMorphUpdater(
+  model: BoxModelExt,
+  key: BoxModelElementKey,
+  id: string,
+  svg: SvgJs.Dom,
+  parentSelector: string,
+  minSelector: string,
+  maxSelector: string,
+  inBetweenId: string
+): VizUpdater {
+  const relativeExtractor = createRelativeExtractor(model, key, id);
+  const morpher = createSvgMorpher(
+    svg,
+    parentSelector,
+    minSelector,
+    maxSelector,
+    inBetweenId
+  );
+  const vizUpdater: VizUpdater = (s) => morpher(relativeExtractor(s));
+  return vizUpdater;
+}
+
 export {
   loadSvg,
   kelvinToCelsius,
@@ -110,6 +198,11 @@ export {
   formatIrradiance,
   formatIrradianceTick,
   createExtractor,
+  createRelativeExtractor,
   createTemperatureCelsiusExtractor,
   createYearExtractor,
+  Morpher,
+  createSvgMorpher,
+  VizUpdater,
+  createSvgMorphUpdater,
 };

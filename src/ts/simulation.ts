@@ -57,6 +57,11 @@ export class Simulation extends EventEmitter {
     }
   }
 
+  setParameterRelative(value: number, allowOutOfRange = false): void {
+    const { min, max } = this.getParameterRange();
+    this.setParameter(min + value * (max - min), allowOutOfRange);
+  }
+
   getParameterId() {
     const { model } = this;
     if (typeof model.parameters[0] !== 'undefined') {
@@ -66,7 +71,7 @@ export class Simulation extends EventEmitter {
     return '';
   }
 
-  getParameter(allowOutOfRange = false) {
+  getParameter(allowOutOfRange = false): number {
     const { model } = this;
     if (typeof model.parameters[0] !== 'undefined') {
       const p = model.parameters[0];
@@ -79,7 +84,7 @@ export class Simulation extends EventEmitter {
     return 0;
   }
 
-  getParameterRange() {
+  getParameterRange(): { min: number; max: number } {
     const { model } = this;
     if (typeof model.parameters[0] !== 'undefined') {
       const p = model.parameters[0];
@@ -87,6 +92,12 @@ export class Simulation extends EventEmitter {
       return { min, max };
     }
     return { min: 0, max: 1 };
+  }
+
+  getParameterRelative(allowOutOfRange = true): number {
+    const { min, max } = this.getParameterRange();
+    const value = this.getParameter(allowOutOfRange);
+    return (value - min) / (max - min);
   }
 
   getModel(): BoxModelForScenario {
