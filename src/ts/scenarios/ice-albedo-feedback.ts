@@ -41,6 +41,11 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
 
   constructor(elem: HTMLDivElement, resources: Resources) {
     super(elem, new Simulation(modelForScenario));
+    const scenarioLabel = document.createElement('div');
+    scenarioLabel.innerText = this.getName();
+    scenarioLabel.classList.add('label');
+    this.getContainer().appendChild(scenarioLabel);
+
     this.svg = SVG(document.importNode(resources.svg.documentElement, true));
     this.getScene().appendChild(this.svg.node);
 

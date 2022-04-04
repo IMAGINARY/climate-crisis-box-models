@@ -29,11 +29,6 @@ export default abstract class BaseScenario implements Scenario {
     this.simulation = simulation;
     this.simulation.on('results', this.update.bind(this));
     this.simulation.on('reset', () => this.reset());
-
-    const scenarioLabel = document.createElement('div');
-    scenarioLabel.innerText = this.getName();
-    scenarioLabel.classList.add('label');
-    this.container.appendChild(scenarioLabel);
   }
 
   reset() {
