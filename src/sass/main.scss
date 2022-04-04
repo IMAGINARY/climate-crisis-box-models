@@ -97,3 +97,21 @@ body {
     stroke-dashoffset: 0;
   }
 }
+
+#sun-in-between > * {
+  animation: rotate 20000ms infinite;
+  animation-timing-function: linear;
+}
+
+#sun-in-between > *:nth-child(odd) {
+  animation-direction: reverse;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

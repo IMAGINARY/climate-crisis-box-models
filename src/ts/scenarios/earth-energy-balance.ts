@@ -55,6 +55,7 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
   }
 
   static fixScenarioSvg(svg: XMLDocument): void {
+    // fix mapping between ice min and max polygons
     const iceMax = svg.querySelector('[id^=ice-max_]') as SVGGElement;
     assert(iceMax !== null);
     const iceMaxPolygons = Array.from(iceMax.children);
@@ -73,8 +74,26 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
       }
     });
 
+    // hide the hard-coded graph
     const graph = svg.querySelector('[id^=graph1]') as SVGGElement;
     if (graph !== null) graph.style.display = 'none';
+
+    // assign a transform origin to the layers of the sun
+    // the actual animation is done via CSS animations
+    const sunOrigin = svg.querySelector('[id^=sun-anchor]') as SVGElement;
+    assert(sunOrigin !== null);
+    const cx = sunOrigin.getAttribute('cx');
+    const cy = sunOrigin.getAttribute('cy');
+    assert(cx !== null && cy !== null);
+
+    const sunLayers: NodeListOf<SVGElement> = svg.querySelectorAll(
+      '[id^=sun-min] > *, [id^=sun-max] > *'
+    );
+    assert(sunLayers.length !== 0);
+    Array.from(sunLayers).forEach((sunLayer) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,no-param-reassign
+      sunLayer.style.transformOrigin = `${cx}px ${cy}px`;
+    });
   }
 
   static async loadResources(): Promise<Resources> {
