@@ -1,5 +1,6 @@
 import { Scenario } from '../scenario';
 import { Simulation, SimulationResult } from '../simulation';
+import { Updater } from '../util';
 
 export default abstract class BaseScenario implements Scenario {
   private readonly simulation: Simulation;
@@ -9,6 +10,8 @@ export default abstract class BaseScenario implements Scenario {
   private readonly scene: HTMLDivElement;
 
   private readonly overlay: HTMLDivElement;
+
+  protected readonly updaters: Updater[] = [];
 
   protected constructor(elem: HTMLDivElement, simulation: Simulation) {
     this.container = document.createElement('div');
@@ -33,7 +36,9 @@ export default abstract class BaseScenario implements Scenario {
     this.container.appendChild(scenarioLabel);
   }
 
-  abstract reset(): void;
+  reset() {
+    this.updaters.forEach((u) => u.reset());
+  }
 
   abstract getName(): string;
 
@@ -49,7 +54,9 @@ export default abstract class BaseScenario implements Scenario {
     return this.overlay;
   }
 
-  protected abstract update(newResults: SimulationResult[]): void;
+  protected update(newResults: SimulationResult[]): void {
+    this.updaters.forEach((u) => u.update(newResults));
+  }
 
   getSimulation(): Simulation {
     return this.simulation;

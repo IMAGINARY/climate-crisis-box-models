@@ -3,13 +3,12 @@ import * as SvgJs from '@svgdotjs/svg.js';
 
 import { BaseScenario } from './base';
 import model from '../models/earth-energy-balance';
-import { Simulation, SimulationResult } from '../simulation';
+import { Simulation } from '../simulation';
 import {
   createSvgMorphUpdater,
   createTemperatureCelsiusExtractor,
   createYearExtractor,
   loadSvg,
-  VizUpdater,
 } from '../util';
 
 import { convertToBoxModelForScenario } from '../box-model-definition';
@@ -25,11 +24,7 @@ export type Resources = {
 };
 
 export default class EarthEnergyBalanceScenario extends BaseScenario {
-  protected readonly chart: TemperatureVsTimeChart;
-
   protected readonly svg;
-
-  private readonly vizUpdaters: VizUpdater[] = [];
 
   constructor(elem: HTMLDivElement, resources: Resources) {
     super(elem, new Simulation(convertToBoxModelForScenario(model)));
@@ -44,7 +39,7 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
     canvas.classList.add('graph');
     this.getScene().appendChild(canvas);
 
-    this.chart = new TemperatureVsTimeChart(canvas, {
+    const chart = new TemperatureVsTimeChart(canvas, {
       numYears: model.numSteps,
       minTemp: -275,
       maxTemp: 15,
@@ -56,7 +51,7 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
       ),
     });
 
-    this.vizUpdaters = this.createVizUpdaters();
+    this.updaters.push(chart, ...this.createVizUpdaters());
   }
 
   static fixScenarioSvg(svg: XMLDocument): void {
@@ -74,11 +69,6 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
     const svg = await loadSvg(scenarioSvgUrl);
     EarthEnergyBalanceScenario.fixScenarioSvg(svg);
     return { svg };
-  }
-
-  reset() {
-    this.chart.reset();
-    this.update([]);
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -110,15 +100,6 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
     );
 
     return [albedoVizUpdater, solarEmissivityVizUpdater];
-  }
-
-  protected update(newResults: SimulationResult[]) {
-    this.chart.update(newResults);
-
-    if (newResults.length > 0) {
-      const lastResult = newResults[newResults.length - 1];
-      this.vizUpdaters.forEach((vizUpdater) => vizUpdater(lastResult));
-    }
   }
 }
 

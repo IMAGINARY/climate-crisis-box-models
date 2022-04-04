@@ -1,8 +1,7 @@
-import { SimulationResult } from './simulation';
+import { Updater } from './util';
 
-export default interface Chart {
-  update(results: SimulationResult[]): void;
-  reset(): void;
-}
+type Chart = Updater;
+
+export default Chart;
 
 export { Chart };

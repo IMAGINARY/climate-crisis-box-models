@@ -1,7 +1,11 @@
 import SvgJs from '@svgdotjs/svg.js';
 import assert from 'assert';
 
-import { BoxModelExt, BoxModelElementKey } from './box-model-definition';
+import {
+  BoxModelExt,
+  BoxModelElementKey,
+  BoxModelForScenario,
+} from './box-model-definition';
 import { SimulationResult } from './simulation';
 import { SECONDS_PER_YEAR } from './constants';
 
@@ -163,7 +167,10 @@ function createSvgMorpher(
   return morpher;
 }
 
-type VizUpdater = (s: SimulationResult) => void;
+interface Updater {
+  update(results: SimulationResult[]): void;
+  reset(): void;
+}
 
 function createSvgMorphUpdater(
   model: BoxModelExt,
@@ -174,7 +181,7 @@ function createSvgMorphUpdater(
   minSelector: string,
   maxSelector: string,
   inBetweenId: string
-): VizUpdater {
+): Updater {
   const relativeExtractor = createRelativeExtractor(model, key, id);
   const morpher = createSvgMorpher(
     svg,
@@ -183,8 +190,19 @@ function createSvgMorphUpdater(
     maxSelector,
     inBetweenId
   );
-  const vizUpdater: VizUpdater = (s) => morpher(relativeExtractor(s));
-  return vizUpdater;
+  const updater: Updater = new (class implements Updater {
+    // eslint-disable-next-line class-methods-use-this
+    update(results: SimulationResult[]) {
+      if (results.length > 0)
+        morpher(relativeExtractor(results[results.length - 1]));
+    }
+
+    // eslint-disable-next-line class-methods-use-this
+    reset() {
+      morpher(0);
+    }
+  })();
+  return updater;
 }
 
 export {
@@ -203,6 +221,6 @@ export {
   createYearExtractor,
   Morpher,
   createSvgMorpher,
-  VizUpdater,
+  Updater,
   createSvgMorphUpdater,
 };
