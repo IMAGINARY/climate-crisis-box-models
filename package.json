@@ -43,7 +43,7 @@
   },
   "scripts": {
     "serve": "parcel serve --dist-dir dist-dev ./src/html/index.html",
-    "build": "rm -r dist && parcel build --public-url . ./src/html/index.html",
+    "build": "rm -r dist; parcel build --public-url . ./src/html/index.html",
     "test": "echo \"Error: no test specified\" && exit 1"
   }
 }
