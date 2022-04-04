@@ -34,7 +34,7 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
     this.getScene().appendChild(this.svg.node);
 
     const canvas: HTMLCanvasElement = document.createElement('canvas');
-    canvas.width = 270;
+    canvas.width = 288;
     canvas.height = 190;
     canvas.classList.add('graph');
     this.getScene().appendChild(canvas);
@@ -63,6 +63,18 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
       (p, i) => iceMaxPolygons[idxMap[i]]
     );
     iceMax.replaceChildren(...iceMaxPolygonsReordered);
+
+    const pathElements = svg.querySelectorAll('path');
+    pathElements.forEach((pathElement) => {
+      const d = pathElement.getAttribute('d');
+      if (d !== null) {
+        const dFixed = d.replaceAll(/\s+/g, ' ').trim();
+        pathElement.setAttribute('d', dFixed);
+      }
+    });
+
+    const graph = svg.querySelector('[id^=graph1]') as SVGGElement;
+    if (graph !== null) graph.style.display = 'none';
   }
 
   static async loadResources(): Promise<Resources> {
@@ -77,29 +89,68 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
   }
 
   protected createVizUpdaters() {
+    const solarEmissivityVizUpdater = createSvgMorphUpdater(
+      model,
+      'parameters',
+      'solar emissivity',
+      this.svg,
+      '[id^=sun]',
+      '[id^=sun-min]',
+      '[id^=sun-max]',
+      'sun-in-between'
+    );
+
+    const sunRadiationVizUpdater = createSvgMorphUpdater(
+      model,
+      'flows',
+      'sun radiation',
+      this.svg,
+      '[id^=arrowL]',
+      '[id^=arrowL-min]',
+      '[id^=arrowL-max]',
+      'arrowL-in-between'
+    );
+
     const albedoVizUpdater = createSvgMorphUpdater(
       model,
       'parameters',
       'albedo',
       this.svg,
-      '[id=ice]',
-      '[id^=ice-min_]',
-      '[id^=ice-max_]',
+      '[id^=ice]',
+      '[id^=ice-min]',
+      '[id^=ice-max]',
       'ice-in-between'
     );
 
-    const solarEmissivityVizUpdater = createSvgMorphUpdater(
+    const reflectedSunRadiationVizUpdater = createSvgMorphUpdater(
       model,
-      'parameters',
-      'albedo',
+      'flows',
+      'reflected sun radiation',
       this.svg,
-      '[id^=sun_]',
-      '[id=sun-min]',
-      '[id=sun-max]',
-      'sun-in-between'
+      '[id^=arrowA]',
+      '[id^=arrowA-min]',
+      '[id^=arrowA-max]',
+      'arrowA-in-between'
     );
 
-    return [albedoVizUpdater, solarEmissivityVizUpdater];
+    const earthInfraredRadiationVizUpdater = createSvgMorphUpdater(
+      model,
+      'flows',
+      'earth infrared radiation',
+      this.svg,
+      '[id^=arrowT]',
+      '[id^=arrowT-min]',
+      '[id^=arrowT-max]',
+      'arrowT-in-between'
+    );
+
+    return [
+      solarEmissivityVizUpdater,
+      sunRadiationVizUpdater,
+      albedoVizUpdater,
+      reflectedSunRadiationVizUpdater,
+      earthInfraredRadiationVizUpdater,
+    ];
   }
 }
 

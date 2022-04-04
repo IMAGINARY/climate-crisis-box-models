@@ -15,7 +15,7 @@ const stocks: StockWithInitialValueAndRange[] = [
     out: ['reflected sun radiation', 'earth infrared radiation'],
     initialValue: 1e12,
     min: 0,
-    max: 2 * 1e12,
+    max: Number.MAX_SAFE_INTEGER,
   },
 ];
 
@@ -24,20 +24,20 @@ const flows: FlowWithRange[] = [
     id: 'sun radiation',
     formula: ({ p }: { p: LookupFunction }) => p('solar emissivity') / 4,
     min: 0,
-    max: 1,
+    max: 341.75,
   },
   {
     id: 'reflected sun radiation',
     formula: ({ p }: { p: LookupFunction }) =>
       (p('solar emissivity') * p('albedo')) / 4,
     min: 0,
-    max: 1,
+    max: 341.75,
   },
   {
     id: 'earth infrared radiation',
     formula: ({ v }: { v: LookupFunction }) => 5.67e-8 * v('temperature') ** 4,
     min: 0,
-    max: 1,
+    max: 341.75,
   },
 ];
 
@@ -60,8 +60,8 @@ const parameters: ParameterWithRange[] = [
   },
   {
     id: 'solar emissivity',
-    min: 1000,
-    max: 2000,
+    min: 1200,
+    max: 1420,
     value: 1367,
   },
 ];
