@@ -48,11 +48,20 @@ export default class TemperatureVsTimeChart implements Chart {
     const additionalChartOptions: TMyChartOptions = {
       scales: {
         x: {
-          title: { text: 'Time' },
+          title: { text: 'Zeit (Jahrtausende)' },
           min: -this.options.numYears,
           max: -1,
-          ticks: {
-            callback: formatYearTick,
+          afterBuildTicks: (axis) => {
+            // eslint-disable-next-line no-param-reassign
+            axis.ticks = [
+              { value: axis.chart.scales.x.min, major: true },
+              {
+                value:
+                  Math.round((axis.chart.scales.x.max - 500) / 1000) * 1000,
+                major: false,
+              },
+              { value: axis.chart.scales.x.max, major: true },
+            ];
           },
         },
         y: {

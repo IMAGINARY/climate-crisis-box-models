@@ -8,6 +8,7 @@ import {
   createSvgMorphUpdater,
   createTemperatureCelsiusExtractor,
   createYearExtractor,
+  kelvinToCelsius,
   loadSvg,
 } from '../util';
 
@@ -34,15 +35,19 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
     this.getScene().appendChild(this.svg.node);
 
     const canvas: HTMLCanvasElement = document.createElement('canvas');
-    canvas.width = 288;
-    canvas.height = 190;
+    canvas.width = 238;
+    canvas.height = 176;
     canvas.classList.add('graph');
     this.getScene().appendChild(canvas);
 
+    const { min, max } = model.variables.filter(
+      (v) => v.id === 'temperature'
+    )[0];
+
     const chart = new TemperatureVsTimeChart(canvas, {
       numYears: model.numSteps,
-      minTemp: -275,
-      maxTemp: 15,
+      minTemp: kelvinToCelsius(min),
+      maxTemp: kelvinToCelsius(max),
       toYear: createYearExtractor(model),
       toTemperatureCelsius: createTemperatureCelsiusExtractor(
         model,

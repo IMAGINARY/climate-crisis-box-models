@@ -65,12 +65,9 @@ export default class SolarEmissivityVsTemperatureChart implements Chart {
     const additionalChartOptions: TMyChartOptions = {
       scales: {
         x: {
-          title: { text: 'Solar Emissivity' },
+          title: { text: 'Solar Emissivity (W/m²)' },
           min: chartXMin - 0.1 * chartXSize,
           max: chartXMax + 0.1 * chartXSize,
-          ticks: {
-            callback: formatIrradianceTick,
-          },
         },
         y: {
           min: chartYMin - 0.1 * chartYSize,

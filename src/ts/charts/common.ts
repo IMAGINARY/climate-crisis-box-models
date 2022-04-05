@@ -7,7 +7,7 @@ Chart.register(ChartDataLabels);
 
 const colors = ['#ED1C24', '#ED1C2444'];
 
-const gridConfig = {
+const xGridConfig = {
   display: true,
   drawBorder: true,
   drawOnChartArea: false,
@@ -18,15 +18,18 @@ const gridConfig = {
   tickWidth: 2,
 };
 
+const yGridConfig = { ...xGridConfig, display: false };
+
 const xScaleConfig: ScaleOptions = {
   type: 'linear',
-  grid: gridConfig,
+  grid: xGridConfig,
   title: {
     display: true,
     font: { family: 'Share Tech Mono' },
     color: 'black',
   },
   ticks: {
+    display: false,
     font: { family: 'Share Tech Mono' },
     color: 'black',
     stepSize: Number.POSITIVE_INFINITY,
@@ -36,13 +39,14 @@ const xScaleConfig: ScaleOptions = {
 const yScaleConfig: ScaleOptions = {
   type: 'linear',
   title: {
-    text: 'Temperature',
+    text: 'Temperatur (°C)',
     display: true,
     font: { family: 'Share Tech Mono' },
     color: 'black',
   },
-  grid: gridConfig,
+  grid: yGridConfig,
   ticks: {
+    display: false,
     callback: formatCelsiusTick,
     font: { family: 'Share Tech Mono' },
     color: 'black',
@@ -104,6 +108,7 @@ const scatterChartOptions: ChartConfiguration<'scatter'>['options'] = {
     x: xScaleConfig,
     y: yScaleConfig,
   },
+  layout: { padding: { top: 20, right: 22 } },
 };
 
 function updateDataWithTrace<TMyDataPoint>(

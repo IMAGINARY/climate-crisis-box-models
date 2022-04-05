@@ -72,7 +72,7 @@ function createTemperatureCelsiusExtractor(
 }
 
 const celsiusNumberFormatter = new Intl.NumberFormat('de', {
-  maximumFractionDigits: 1,
+  maximumFractionDigits: 0,
 });
 const celsiusFracNumberFormatter = new Intl.NumberFormat('de', {
   minimumFractionDigits: 1,
