@@ -8,9 +8,6 @@ import {
 
 export type SimulationResult = { timestamp: number; record: Record };
 
-const e = new EventEmitter();
-e.emit('test', 'test');
-
 export class Simulation extends EventEmitter {
   protected model: BoxModelForScenario;
 
