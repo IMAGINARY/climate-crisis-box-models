@@ -1,11 +1,7 @@
 import SvgJs from '@svgdotjs/svg.js';
 import assert from 'assert';
 
-import {
-  BoxModelExt,
-  BoxModelElementKey,
-  BoxModelForScenario,
-} from './box-model-definition';
+import { BoxModelExt, BoxModelElementKey } from './box-model-definition';
 import { SimulationResult } from './simulation';
 import { SECONDS_PER_YEAR } from './constants';
 
@@ -176,7 +172,6 @@ function createSvgMorpher(
       }`
     );
 
-    console.log(shapeAtMin, shapeAtMax);
     assert(
       shapeAtMin.array().length === shapeAtMax.array().length,
       'Shape arrays must have equal length'
