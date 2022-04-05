@@ -130,12 +130,15 @@ function createSvgMorpher(
 ): Morpher<void> {
   const parent = svg.findOne(parentSelector) as SvgJs.G;
   const minGroup = svg.findOne(minSelector) as SvgJs.G;
-  assert(minGroup !== null);
+  assert(minGroup !== null, 'minGroup must not be null');
 
   const maxGroup = svg.findOne(maxSelector) as SvgJs.G;
-  assert(maxGroup !== null);
+  assert(maxGroup !== null, 'maxGroup must not be null');
 
-  assert(minGroup.children().length === maxGroup.children().length);
+  assert(
+    minGroup.children().length === maxGroup.children().length,
+    'minGroup and maxGroup must have the same number of children'
+  );
 
   const inBetweenGroup = minGroup.clone();
   inBetweenGroup.attr('id', inBetweenId);
@@ -152,10 +155,19 @@ function createSvgMorpher(
     const shapeInBetween = inBetweenGroup.children()[i] as ShapeWithArray;
     const shapeAtMax = maxGroup.children()[i] as ShapeWithArray;
 
-    assert(shapeAtMin.type === shapeAtMax.type);
-    assert(supportedShapeTypes.includes(shapeAtMin.type));
+    assert(shapeAtMin.type === shapeAtMax.type, 'Shape types must be equal');
+    assert(
+      supportedShapeTypes.includes(shapeAtMin.type),
+      `Shape type must be one of ${supportedShapeTypes.join(', ')}, but is ${
+        shapeAtMin.type
+      }`
+    );
 
-    assert(shapeAtMin.array().length === shapeAtMax.array().length);
+    console.log(shapeAtMin, shapeAtMax);
+    assert(
+      shapeAtMin.array().length === shapeAtMax.array().length,
+      'Shape arrays must have equal length'
+    );
     const arrayMorpher = shapeAtMin.array().to(shapeAtMax.array());
     const shapeMorpher = (t: number) => {
       shapeInBetween.plot(arrayMorpher.at(t) as SvgJs.PointArrayAlias);
