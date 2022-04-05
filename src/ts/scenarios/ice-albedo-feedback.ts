@@ -59,6 +59,9 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
       numYears: model.numSteps,
       minTemp: -70,
       maxTemp: 0,
+      tempAxisLabel: () => 'Temperature (°C)',
+      timeAxisTitle: () => 'Zeit (Jahrtausend)',
+      timeTickStepSize: 1000,
       toYear: createYearExtractor(model),
       toTemperatureCelsius: createTemperatureCelsiusExtractor(
         model,

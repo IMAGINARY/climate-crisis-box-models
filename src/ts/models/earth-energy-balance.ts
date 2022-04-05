@@ -47,7 +47,7 @@ const variables: VariableWithRange[] = [
     formula: ({ s }: { s: LookupFunction }): number =>
       s('planet heat content') * 2.38e-10,
     min: 0,
-    max: 1,
+    max: 273.15 + 5.5,
   },
 ];
 
@@ -66,13 +66,14 @@ const parameters: ParameterWithRange[] = [
   },
 ];
 
+const divisor = 4;
 const subSteps = 9;
-const stepSize = (subSteps + 1) * SECONDS_PER_YEAR;
-const yearsPerSecond = 1000;
+const stepSize = ((subSteps + 1) * SECONDS_PER_YEAR) / divisor;
+const yearsPerSecond = 1000 / divisor;
 const stepsPerSecond = Math.round(
   (yearsPerSecond * SECONDS_PER_YEAR) / stepSize
 );
-const numSteps = 3000;
+const numSteps = 1000;
 
 const model: BoxModelExt = {
   stocks,

@@ -111,13 +111,14 @@ const parameters: ParameterWithRange[] = [
   },
 ];
 
+const divisor = 10;
 const subSteps = 9;
-const stepSize = (subSteps + 1) * SECONDS_PER_YEAR;
-const yearsPerSecond = 1000;
+const stepSize = ((subSteps + 1) * SECONDS_PER_YEAR) / divisor;
+const yearsPerSecond = 400 / 8;
 const stepsPerSecond = Math.round(
   (yearsPerSecond * SECONDS_PER_YEAR) / stepSize
 );
-const numSteps = 3000;
+const numSteps = 400;
 
 const model: BoxModelExt = {
   stocks,

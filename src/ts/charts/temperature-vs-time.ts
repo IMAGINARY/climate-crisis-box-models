@@ -4,13 +4,15 @@ import { ChartConfiguration } from 'chart.js';
 
 import { Chart } from '../chart';
 import { SimulationResult } from '../simulation';
-import { formatYearTick } from '../util';
 import * as common from './common';
 
 export type TemperatureVsTimeChartOptions = {
   numYears: number;
   minTemp: number;
   maxTemp: number;
+  tempAxisLabel: () => string;
+  timeAxisTitle: () => string;
+  timeTickStepSize: number;
   toTemperatureCelsius: (result: SimulationResult) => number;
   toYear: (result: SimulationResult) => number;
 };
@@ -19,6 +21,26 @@ type TMyDataPoint = {
   x: number;
   y: number;
 };
+
+function createYearTicks(
+  minYear: number,
+  maxYear: number,
+  stepSize: number
+): { value: number }[] {
+  const ticks: { value: number }[] = [];
+  ticks.push({ value: minYear });
+  const modulus = minYear % stepSize;
+  const offset = modulus < 0 ? stepSize + modulus : modulus;
+  for (
+    let tickYear = minYear - offset + stepSize;
+    tickYear < maxYear;
+    tickYear += stepSize
+  ) {
+    ticks.push({ value: tickYear });
+  }
+  ticks.push({ value: maxYear });
+  return ticks;
+}
 
 type TMyChartType = ChartJs<'scatter', TMyDataPoint[]>;
 type TMyChartConfiguration = ChartConfiguration<'scatter', TMyDataPoint[]>;
@@ -48,23 +70,20 @@ export default class TemperatureVsTimeChart implements Chart {
     const additionalChartOptions: TMyChartOptions = {
       scales: {
         x: {
-          title: { text: 'Zeit (Jahrtausende)' },
+          title: { text: this.options.timeAxisTitle() },
           min: -this.options.numYears,
           max: -1,
           afterBuildTicks: (axis) => {
             // eslint-disable-next-line no-param-reassign
-            axis.ticks = [
-              { value: axis.chart.scales.x.min, major: true },
-              {
-                value:
-                  Math.round((axis.chart.scales.x.max - 500) / 1000) * 1000,
-                major: false,
-              },
-              { value: axis.chart.scales.x.max, major: true },
-            ];
+            axis.ticks = createYearTicks(
+              axis.min,
+              axis.max,
+              this.options.timeTickStepSize
+            );
           },
         },
         y: {
+          title: { text: this.options.tempAxisLabel() },
           min: minTemp,
           max: maxTemp,
         },

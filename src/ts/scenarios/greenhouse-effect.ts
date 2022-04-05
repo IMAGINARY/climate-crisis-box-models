@@ -73,6 +73,9 @@ export default class GreenhouseEffectScenario extends BaseScenario {
       numYears: model.numSteps,
       minTemp: 10,
       maxTemp: 30,
+      tempAxisLabel: () => 'Temperature (°C)',
+      timeAxisTitle: () => 'Zeit (Jahrhundert)',
+      timeTickStepSize: 100,
       toYear: createYearExtractor(model),
       toTemperatureCelsius: createTemperatureCelsiusExtractor(
         model,
