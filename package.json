@@ -5,6 +5,10 @@
   "author": "Christian Stussak <christian.stussak@imaginary.org>",
   "repository": "github:IMAGINARY/box-model",
   "license": "MIT",
+  "engines": {
+    "npm": ">=8.0.0",
+    "node": ">=16.0.0"
+  },
   "browserslist": [
     "> 0.2%",
     "not dead"
