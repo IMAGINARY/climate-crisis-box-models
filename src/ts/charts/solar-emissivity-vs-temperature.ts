@@ -45,6 +45,7 @@ export default class SolarEmissivityVsTemperatureChart implements Chart {
         {
           label: 'Solar emissivity vs. Temperature',
           data: [] as TMyDataPoint[],
+          datalabels: { labels: { value: { display: false } } },
         },
         {
           label: 'Hysteresis',
@@ -53,6 +54,7 @@ export default class SolarEmissivityVsTemperatureChart implements Chart {
             y: options.toTemperatureCelsius(r),
             year: 0,
           })),
+          datalabels: { labels: { value: { display: false } } },
         },
       ],
     };

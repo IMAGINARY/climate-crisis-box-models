@@ -1,6 +1,11 @@
-import { ChartConfiguration, ScaleOptions } from 'chart.js';
-import { formatCelsiusTick } from '../util';
+import { Chart, ChartConfiguration, ScaleOptions } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { formatCelsiusFrac, formatCelsiusTick } from '../util';
 import { SimulationResult } from '../simulation';
+
+Chart.register(ChartDataLabels);
+
+const colors = ['#ED1C24', '#ED1C2444'];
 
 const gridConfig = {
   display: true,
@@ -53,17 +58,31 @@ const scatterChartOptions: ChartConfiguration<'scatter'>['options'] = {
   animation: false,
   plugins: {
     legend: { display: false },
+    datalabels: {
+      color: colors[0],
+      labels: {
+        value: {
+          display: (ctx) =>
+            ctx.datasetIndex === 0 &&
+            ctx.dataIndex === ctx.dataset.data.length - 1,
+          formatter: ({ y }: { y: number }) => formatCelsiusFrac(y),
+          anchor: 'center',
+          align: 'right',
+          rotation: 270,
+        },
+      },
+    },
   },
   elements: {
     line: {
-      borderColor: ['#ED1C24', '#ED1C2444'],
+      borderColor: colors,
       borderCapStyle: 'round',
       borderWidth: 4,
       borderJoinStyle: 'bevel',
     },
     point: {
       backgroundColor: 'transparent',
-      borderColor: '#ED1C24',
+      borderColor: colors[0],
       borderWidth: 2,
       radius: (ctx) =>
         ctx.datasetIndex === 0 && ctx.dataIndex === ctx.dataset.data.length - 1

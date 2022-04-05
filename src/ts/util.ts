@@ -78,11 +78,24 @@ function createTemperatureCelsiusExtractor(
 const celsiusNumberFormatter = new Intl.NumberFormat('de', {
   maximumFractionDigits: 1,
 });
+const celsiusFracNumberFormatter = new Intl.NumberFormat('de', {
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+});
+
 function formatCelsius(celsius: number | string) {
   return `${
     typeof celsius === 'string'
       ? celsius
       : celsiusNumberFormatter.format(celsius)
+  }°C`;
+}
+
+function formatCelsiusFrac(celsius: number | string) {
+  return `${
+    typeof celsius === 'string'
+      ? celsius
+      : celsiusFracNumberFormatter.format(celsius)
   }°C`;
 }
 
@@ -222,6 +235,7 @@ export {
   kelvinToCelsius,
   secondsToYears,
   formatCelsius,
+  formatCelsiusFrac,
   formatCelsiusTick,
   formatYear,
   formatYearTick,
