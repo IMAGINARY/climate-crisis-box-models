@@ -12,8 +12,9 @@ import {
   loadSvg,
 } from '../util';
 
-import { convertToBoxModelForScenario } from '../box-model-definition';
+import { convertToBoxModelForScenario, Record } from '../box-model-definition';
 import { TemperatureVsTimeChart } from '../charts/temperature-vs-time';
+import { ConvergenceCriterion } from '@imaginary-maths/box-model/dist/box-model';
 
 const scenarioSvgUrl: URL = new URL(
   './../../svg/earth-energy-balance.svg',
@@ -29,6 +30,11 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
 
   constructor(elem: HTMLDivElement, resources: Resources) {
     super(elem, new Simulation(convertToBoxModelForScenario(model)));
+
+    this.getSimulation().convergeInitialRecord(
+      EarthEnergyBalanceScenario.getConvergenceCriterion()
+    );
+
     this.svg = SvgJs.SVG(
       document.importNode(resources.svg.documentElement, true)
     );
@@ -178,6 +184,20 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
       reflectedSunRadiationVizUpdater,
       earthInfraredRadiationVizUpdater,
     ];
+  }
+
+  protected static getConvergenceCriterion(): ConvergenceCriterion {
+    const temperatureIdx = model.variables
+      .map(({ id }) => id)
+      .indexOf('temperature');
+
+    const convergenceCriterion = (record: Record, lastRecord: Record) => {
+      const temp = record.variables[temperatureIdx];
+      const lastTemp = lastRecord.variables[temperatureIdx];
+      return Math.abs(temp - lastTemp) < 0.001;
+    };
+
+    return convergenceCriterion;
   }
 }
 

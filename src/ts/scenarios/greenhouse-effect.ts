@@ -19,6 +19,7 @@ import {
   TemperatureVsTimeChart,
   TemperatureVsTimeChartOptions,
 } from '../charts/temperature-vs-time';
+import { ConvergenceCriterion } from '@imaginary-maths/box-model/dist/box-model';
 
 const scenarioSvgUrl: URL = new URL(
   './../../svg/scenario.svg',
@@ -47,6 +48,11 @@ export default class GreenhouseEffectScenario extends BaseScenario {
 
   constructor(elem: HTMLDivElement, resources: Resources) {
     super(elem, new Simulation(modelForScenario));
+
+    this.getSimulation().convergeInitialRecord(
+      GreenhouseEffectScenario.getConvergenceCriterion()
+    );
+
     const scenarioLabel = document.createElement('div');
     scenarioLabel.innerText = this.getName();
     scenarioLabel.classList.add('label');
@@ -131,14 +137,23 @@ export default class GreenhouseEffectScenario extends BaseScenario {
     return { svg, overlaySvg };
   }
 
-  reset() {
-    this.chart.reset();
-    this.update([]);
-  }
-
   // eslint-disable-next-line class-methods-use-this
   getName() {
     return 'Greenhouse Effect';
+  }
+
+  protected static getConvergenceCriterion(): ConvergenceCriterion {
+    const temperatureIdx = model.variables
+      .map(({ id }) => id)
+      .indexOf('gnd temperature');
+
+    const convergenceCriterion = (record: Record, lastRecord: Record) => {
+      const temp = record.variables[temperatureIdx];
+      const lastTemp = lastRecord.variables[temperatureIdx];
+      return Math.abs(temp - lastTemp) < 0.001;
+    };
+
+    return convergenceCriterion;
   }
 
   protected update(newResults: SimulationResult[]) {

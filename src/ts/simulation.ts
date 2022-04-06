@@ -1,3 +1,4 @@
+import assert from 'assert';
 import { EventEmitter } from 'events';
 import {
   BoxModelForScenario,
@@ -23,6 +24,9 @@ export class Simulation extends EventEmitter {
 
   private simulationFrameId = 0;
 
+  protected convergenceCriterionForInitialRecord: ConvergenceCriterion | null =
+    null;
+
   constructor(model: BoxModelForScenario) {
     super();
     this.model = model;
@@ -33,6 +37,29 @@ export class Simulation extends EventEmitter {
     const stocks = this.model.stocks.map(({ initialValue }) => initialValue);
     const record = this.engine.evaluateGraph(stocks, 0);
     return record;
+  }
+
+  initialConvergedRecord(criterion: ConvergenceCriterion): Record {
+    return this.convergeRecord(this.initialRecord(), criterion);
+  }
+
+  convergeInitialRecord(criterion: ConvergenceCriterion) {
+    this.convergenceCriterionForInitialRecord = criterion;
+  }
+
+  bootstrap() {
+    if (this.lastResult === null) {
+      this.lastResult = {
+        timestamp: 0,
+        record:
+          this.convergenceCriterionForInitialRecord === null
+            ? this.initialRecord()
+            : this.initialConvergedRecord(
+                this.convergenceCriterionForInitialRecord
+              ),
+      };
+      this.emit('results', [this.lastResult]);
+    }
   }
 
   setParameter(value: number, allowOutOfRange = false): void {
@@ -106,7 +133,8 @@ export class Simulation extends EventEmitter {
   }
 
   reset() {
-    if (this.isPlaying()) {
+    const shouldPlay = this.isPlaying();
+    if (shouldPlay) {
       this.simulate(false);
     }
 
@@ -128,7 +156,7 @@ export class Simulation extends EventEmitter {
 
     this.emit('reset');
 
-    if (this.isPlaying()) {
+    if (shouldPlay) {
       this.simulate(true);
     }
   }
@@ -162,10 +190,9 @@ export class Simulation extends EventEmitter {
     const { stepSize } = model;
     let { subSteps } = model;
     subSteps = Math.max(0, subSteps);
-    if (this.lastResult === null) {
-      this.lastResult = { timestamp: 0, record: this.initialRecord() };
-      results.push(this.lastResult);
-    }
+
+    this.bootstrap();
+    assert(this.lastResult !== null);
 
     const timeStep = 1000 / model.stepsPerSecond;
     let { timestamp, record } = this.lastResult;
@@ -210,23 +237,25 @@ export class Simulation extends EventEmitter {
     }
   }
 
-  public converge(criterion: ConvergenceCriterion): SimulationResult {
+  public convergeRecord(
+    record: Record,
+    criterion: ConvergenceCriterion
+  ): Record {
     const { model } = this;
     const { stepSize } = model;
     let { subSteps } = model;
     subSteps = Math.max(0, subSteps);
-    if (this.lastResult === null) {
-      this.lastResult = { timestamp: 0, record: this.initialRecord() };
-    }
     const h = stepSize / (subSteps + 1);
 
+    return this.engine.convergeExt(record.stocks, record.t, h, criterion);
+  }
+
+  public converge(criterion: ConvergenceCriterion): SimulationResult {
+    this.bootstrap();
+    assert(this.lastResult !== null);
+
     const { timestamp, record: lastRecord } = this.lastResult;
-    const record: Record = this.engine.convergeExt(
-      lastRecord.stocks,
-      lastRecord.t,
-      h,
-      criterion
-    );
+    const record: Record = this.convergeRecord(lastRecord, criterion);
     this.lastResult = { timestamp, record };
     return this.lastResult;
   }

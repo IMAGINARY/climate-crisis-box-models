@@ -26,9 +26,7 @@ export default class ScenarioSwitcher extends EventEmitter {
   protected static select(scenario: Scenario, autoplay = false) {
     if (typeof scenario !== 'undefined' && scenario !== null) {
       scenario.reset();
-      const simulation = scenario.getSimulation();
-      simulation.reset();
-      if (autoplay) simulation.play();
+      if (autoplay) scenario.getSimulation().play();
       scenario.setVisible(true);
     }
   }

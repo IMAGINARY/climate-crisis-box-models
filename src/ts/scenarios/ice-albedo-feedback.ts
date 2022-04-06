@@ -20,6 +20,7 @@ import {
   SolarEmissivityVsTemperatureChart,
   SolarEmissivityVsTemperatureChartOptions,
 } from '../charts/solar-emissivity-vs-temperature';
+import { ConvergenceCriterion } from '@imaginary-maths/box-model';
 
 const scenarioSvgUrl: URL = new URL(
   './../../svg/scenario.svg',
@@ -41,6 +42,11 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
 
   constructor(elem: HTMLDivElement, resources: Resources) {
     super(elem, new Simulation(modelForScenario));
+
+    this.getSimulation().convergeInitialRecord(
+      IceAlbedoFeedbackScenario.getConvergenceCriterion()
+    );
+
     const scenarioLabel = document.createElement('div');
     scenarioLabel.innerText = this.getName();
     scenarioLabel.classList.add('label');
@@ -109,29 +115,31 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     return { svg };
   }
 
-  reset() {
-    this.chart1.reset();
-    this.chart2.reset();
-    this.update([]);
-  }
-
   // eslint-disable-next-line class-methods-use-this
   getName() {
     return 'Ice Albedo Feedback';
   }
 
-  protected static computeHysteresisData(): SimulationResult[] {
+  protected static getConvergenceCriterion(): ConvergenceCriterion {
     const temperatureIdx = model.variables
       .map(({ id }) => id)
       .indexOf('temperature');
-    const hysteresisData: SimulationResult[] = [];
-    const numSteps = 100;
 
-    const convergenceCriteria = (record: Record, lastRecord: Record) => {
+    const convergenceCriterion = (record: Record, lastRecord: Record) => {
       const temp = record.variables[temperatureIdx];
       const lastTemp = lastRecord.variables[temperatureIdx];
       return Math.abs(temp - lastTemp) < 0.001;
     };
+
+    return convergenceCriterion;
+  }
+
+  protected static computeHysteresisData(): SimulationResult[] {
+    const convergenceCriterion =
+      IceAlbedoFeedbackScenario.getConvergenceCriterion();
+
+    const hysteresisData: SimulationResult[] = [];
+    const numSteps = 100;
 
     const simulation = new Simulation(modelForScenario);
     const { min, max } = simulation.getParameterRange();
@@ -143,7 +151,7 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
         extMin + ((extMax - extMin) * Math.abs(step)) / (numSteps - 1),
         true
       );
-      const result = simulation.converge(convergenceCriteria);
+      const result = simulation.converge(convergenceCriterion);
       hysteresisData.push(result);
     }
 

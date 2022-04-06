@@ -5,6 +5,8 @@ import { Updater } from '../util';
 export default abstract class BaseScenario implements Scenario {
   private readonly simulation: Simulation;
 
+  private readonly handleReset: () => void;
+
   private readonly container: HTMLDivElement;
 
   private readonly scene: HTMLDivElement;
@@ -26,13 +28,18 @@ export default abstract class BaseScenario implements Scenario {
     this.overlay.classList.add('overlay');
     this.container.appendChild(this.overlay);
 
+    this.handleReset = this.reset.bind(this);
     this.simulation = simulation;
     this.simulation.on('results', this.update.bind(this));
-    this.simulation.on('reset', () => this.reset());
+    this.simulation.on('reset', this.handleReset);
   }
 
   reset() {
     this.updaters.forEach((u) => u.reset());
+    this.simulation.off('reset', this.handleReset);
+    this.simulation.reset();
+    this.simulation.on('reset', this.handleReset);
+    this.simulation.bootstrap();
   }
 
   abstract getName(): string;
