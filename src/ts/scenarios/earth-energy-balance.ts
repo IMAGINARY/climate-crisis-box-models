@@ -12,7 +12,7 @@ import {
   kelvinToCelsius,
   loadSvg,
 } from '../util';
-import { prefixCssClasses } from '../svg-utils';
+import { preprocessSvg } from '../svg-utils';
 
 import { convertToBoxModelForScenario, Record } from '../box-model-definition';
 import { TemperatureVsTimeChart } from '../charts/temperature-vs-time';
@@ -80,39 +80,9 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
     );
     iceMax.replaceChildren(...iceMaxPolygonsReordered);
 
-    const pathElements = svg.querySelectorAll('path');
-    pathElements.forEach((pathElement) => {
-      const d = pathElement.getAttribute('d');
-      if (d !== null) {
-        const dFixed = d.replaceAll(/\s+/g, ' ').trim();
-        pathElement.setAttribute('d', dFixed);
-      }
-    });
-
-    // hide the hard-coded graph
-    const graph = svg.querySelector('[id^=graph1]') as SVGGElement;
-    if (graph !== null) graph.style.display = 'none';
-
-    // assign a transform origin to the layers of the sun
-    // the actual animation is done via CSS animations
-    const sunOrigin = svg.querySelector('[id^=sun-anchor]') as SVGElement;
-    assert(sunOrigin !== null);
-    const cx = sunOrigin.getAttribute('cx');
-    const cy = sunOrigin.getAttribute('cy');
-    assert(cx !== null && cy !== null);
-
-    const sunLayers: NodeListOf<SVGElement> = svg.querySelectorAll(
-      '[id^=sun-min] > *, [id^=sun-max] > *'
-    );
-    assert(sunLayers.length !== 0);
-    Array.from(sunLayers).forEach((sunLayer) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,no-param-reassign
-      sunLayer.style.transformOrigin = `${cx}px ${cy}px`;
-    });
-
-    // prefix CSS classes for scoping purposes
+    // general fix-ups
     const classPrefix = 'earth-energy-balance-scenario-svg-';
-    prefixCssClasses(svg, classPrefix);
+    preprocessSvg(svg, classPrefix);
   }
 
   static async loadResources(): Promise<Resources> {
@@ -203,6 +173,14 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
     };
 
     return convergenceCriterion;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getMathModeElements() {
+    return {
+      hide: [],
+      show: [],
+    };
   }
 }
 

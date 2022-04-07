@@ -105,7 +105,7 @@ async function main() {
 
   const scenarioSwitcher = new ScenarioSwitcher(scenarios);
   scenarioSwitcher.getCurrentScenario().getSimulation().stop();
-  scenarioSwitcher.switchTo(0);
+  scenarioSwitcher.switchTo(2);
 
   const scenarioSelectorContainer = document.getElementById(
     'scenario-selector-container'
@@ -184,15 +184,13 @@ async function main() {
 
   // toogle overlay
   {
-    const setOverlaysVisible = (visible: boolean) => {
-      scenarioSwitcher
-        .getScenarios()
-        .forEach((s) => s.setOverlayVisible(visible));
+    const enableMathMode = (visible: boolean) => {
+      scenarioSwitcher.getScenarios().forEach((s) => s.enableMathMode(visible));
     };
     const keyProps = { key: 'm', repeat: false };
-    registerKey('keydown', keyProps, () => setOverlaysVisible(true));
-    registerKey('keyup', keyProps, () => setOverlaysVisible(false));
-    setOverlaysVisible(true);
+    registerKey('keydown', keyProps, () => enableMathMode(true));
+    registerKey('keyup', keyProps, () => enableMathMode(false));
+    enableMathMode(true);
   }
 
   function stepSliders(steps: number) {

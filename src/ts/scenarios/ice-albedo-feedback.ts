@@ -21,6 +21,7 @@ import {
   SolarEmissivityVsTemperatureChartOptions,
 } from '../charts/solar-emissivity-vs-temperature';
 import { ConvergenceCriterion } from '@imaginary-maths/box-model';
+import assert from 'assert';
 
 const scenarioSvgUrl: URL = new URL(
   './../../svg/scenario.svg',
@@ -174,6 +175,11 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     if (sunRays) {
       sunRays.stroke({ width: 1 + relValue * (7 - 1) });
     }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getMathModeElements() {
+    return { hide: [], show: [] };
   }
 }
 

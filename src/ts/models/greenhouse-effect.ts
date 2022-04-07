@@ -36,35 +36,35 @@ const flows: FlowWithRange[] = [
     id: 'sun radiation',
     formula: ({ p }: { p: LookupFunction }) => p('solar emissivity') / 4,
     min: 0,
-    max: 1,
+    max: 341.75,
   },
   {
     id: 'reflected sun radiation',
     formula: ({ p }: { p: LookupFunction }) =>
       (p('solar emissivity') * p('albedo')) / 4,
     min: 0,
-    max: 1,
+    max: 341.75,
   },
   {
     id: 'atm infrared radiation',
     formula: ({ v }: { v: LookupFunction }) =>
       v('epsilon') * 5.67e-8 * v('atm temperature') ** 4,
-    min: 0,
-    max: 1,
+    min: 146,
+    max: 203,
   },
   {
     id: 'gnd infrared radiation',
     formula: ({ v }: { v: LookupFunction }) =>
       5.67e-8 * v('gnd temperature') ** 4,
-    min: 0,
-    max: 1,
+    min: 385,
+    max: 442,
   },
   {
     id: 'gnd infrared radiation not absorbed',
     formula: ({ v }: { v: LookupFunction }) =>
       (1 - v('epsilon')) * 5.67e-8 * v('gnd temperature') ** 4,
-    min: 0,
-    max: 1,
+    min: 36,
+    max: 93,
   },
 ];
 

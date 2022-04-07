@@ -11,7 +11,7 @@ export default abstract class BaseScenario implements Scenario {
 
   private readonly scene: HTMLDivElement;
 
-  private readonly overlay: HTMLDivElement;
+  private mathMode = false;
 
   protected readonly updaters: Updater[] = [];
 
@@ -23,10 +23,6 @@ export default abstract class BaseScenario implements Scenario {
     this.scene = document.createElement('div');
     this.scene.classList.add('scene');
     this.container.appendChild(this.scene);
-
-    this.overlay = document.createElement('div');
-    this.overlay.classList.add('overlay');
-    this.container.appendChild(this.overlay);
 
     this.handleReset = this.reset.bind(this);
     this.simulation = simulation;
@@ -52,9 +48,10 @@ export default abstract class BaseScenario implements Scenario {
     return this.scene;
   }
 
-  getOverlay() {
-    return this.overlay;
-  }
+  abstract getMathModeElements(): {
+    hide: ReadonlyArray<Element>;
+    show: ReadonlyArray<Element>;
+  };
 
   protected update(newResults: SimulationResult[]): void {
     this.updaters.forEach((u) => u.update(newResults));
@@ -85,13 +82,28 @@ export default abstract class BaseScenario implements Scenario {
     return Promise.resolve();
   }
 
-  setOverlayVisible(visible: boolean) {
-    if (visible) this.overlay.classList.remove('invisible');
-    else this.overlay.classList.add('invisible');
+  enableMathMode(enable: boolean) {
+    if (enable) {
+      this.mathMode = true;
+      this.getMathModeElements().show.forEach((e) =>
+        e.classList.remove('invisible')
+      );
+      this.getMathModeElements().hide.forEach((e) =>
+        e.classList.add('invisible')
+      );
+    } else {
+      this.mathMode = false;
+      this.getMathModeElements().show.forEach((e) =>
+        e.classList.add('invisible')
+      );
+      this.getMathModeElements().hide.forEach((e) =>
+        e.classList.remove('invisible')
+      );
+    }
   }
 
-  isOverlayVisible() {
-    return !this.overlay.classList.contains('invisible');
+  isMathModeEnabled() {
+    return this.mathMode;
   }
 }
 

@@ -1,4 +1,5 @@
 @use '~@fontsource/share-tech-mono/scss/mixins' as ShareTechMono;
+@use '~@fontsource/roboto-condensed/scss/mixins' as RobotoCondensed;
 
 @import '~/node_modules/reseter.css/css/reseter.css';
 
@@ -6,6 +7,20 @@
   $weight: 400,
   $display: fallback,
   $fontDir: '~/node_modules/@fontsource/share-tech-mono/files'
+);
+
+@include RobotoCondensed.fontFace(
+  $fontName: 'RobotoCondensed-Regular',
+  $weight: 400,
+  $display: fallback,
+  $fontDir: '~/node_modules/@fontsource/roboto-condensed/files'
+);
+
+@include RobotoCondensed.fontFace(
+  $fontName: 'RobotoCondensed-Bold',
+  $weight: 700,
+  $display: fallback,
+  $fontDir: '~/node_modules/@fontsource/roboto-condensed/files'
 );
 
 body {
