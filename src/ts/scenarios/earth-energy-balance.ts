@@ -1,5 +1,6 @@
 import assert from 'assert';
 import * as SvgJs from '@svgdotjs/svg.js';
+import { ConvergenceCriterion } from '@imaginary-maths/box-model/dist/box-model';
 
 import { BaseScenario } from './base';
 import model from '../models/earth-energy-balance';
@@ -11,10 +12,10 @@ import {
   kelvinToCelsius,
   loadSvg,
 } from '../util';
+import { prefixCssClasses } from '../svg-utils';
 
 import { convertToBoxModelForScenario, Record } from '../box-model-definition';
 import { TemperatureVsTimeChart } from '../charts/temperature-vs-time';
-import { ConvergenceCriterion } from '@imaginary-maths/box-model/dist/box-model';
 
 const scenarioSvgUrl: URL = new URL(
   './../../svg/earth-energy-balance.svg',
@@ -108,6 +109,10 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,no-param-reassign
       sunLayer.style.transformOrigin = `${cx}px ${cy}px`;
     });
+
+    // prefix CSS classes for scoping purposes
+    const classPrefix = 'earth-energy-balance-scenario-svg-';
+    prefixCssClasses(svg, classPrefix);
   }
 
   static async loadResources(): Promise<Resources> {
