@@ -190,9 +190,9 @@ export default class GreenhouseEffectScenario extends BaseScenario {
       'flows',
       'atm infrared radiation',
       this.svg,
-      '[id^=arrowT04_00000112630670996646518150000012643698993845127854_]',
-      '[id^=arrowT-min_00000178184571480185186270000000989059420252595633_]',
-      '[id^=arrowT-min_00000048494689990831607920000012975954839801877127_]',
+      '[id^=arrowT03]',
+      '[id^=arrowT03-min]',
+      '[id^=arrowT03-max]',
       'arrowAtmIrToSpace-in-between'
     );
 
@@ -201,10 +201,10 @@ export default class GreenhouseEffectScenario extends BaseScenario {
       'flows',
       'atm infrared radiation',
       this.svg,
-      '[id^=arrowT04_00000000220227962982375480000002875120465275809212_]',
-      '[id^=arrowT-min_00000177457970715849149150000002028447019056006802_]',
-      '[id^=arrowT-min_00000134220673476464974560000002754782525986077846_]',
-      'arrowAtmIrToSpace-in-between'
+      '[id^=arrowT02]',
+      '[id^=arrowT02-min]',
+      '[id^=arrowT02-max]',
+      'arrowAtmIrToGround-in-between'
     );
 
     const gndInfraredRadiationUpdater = createSvgMorphUpdater(
@@ -212,21 +212,21 @@ export default class GreenhouseEffectScenario extends BaseScenario {
       'flows',
       'gnd infrared radiation',
       this.svg,
-      '[id^=arrowT01_00000029741552965370584210000005287515950479437996_]',
-      '[id^=arrowT-min_00000040537476374896218760000011249788402166947992_]',
-      '[id^=arrowT-max_00000143601437999464270780000003627254799871171733_]',
-      'arrowAtmIrToSpace-in-between'
+      '[id^=arrowT01]',
+      '[id^=arrowT01-min]',
+      '[id^=arrowT01-max]',
+      'arrowGndIr-in-between'
     );
 
-    const gndInfraredRadiationNoAbsorbedUpdater = createSvgMorphUpdater(
+    const gndInfraredRadiationNotAbsorbedUpdater = createSvgMorphUpdater(
       model,
       'flows',
       'gnd infrared radiation not absorbed',
       this.svg,
-      '[id^=arrowT04_00000150821003731813250060000004973534727753554340_]',
-      '[id^=arrowT-min_00000163783013519234521790000015716059359473621940_]',
-      '[id^=arrowT-min_00000025416743853861926490000014613916206075972529_]',
-      'arrowAtmIrToSpace-in-between'
+      '[id^=arrowT04]',
+      '[id^=arrowT04-min]',
+      '[id^=arrowT04-max]',
+      'arrowGndIrNotAbsorbed-in-between'
     );
 
     return [
@@ -238,7 +238,7 @@ export default class GreenhouseEffectScenario extends BaseScenario {
       atmInfraredRadiationToSpaceUpdater,
       atmInfraredRadiationToGroundUpdater,
       gndInfraredRadiationUpdater,
-      gndInfraredRadiationNoAbsorbedUpdater,
+      gndInfraredRadiationNotAbsorbedUpdater,
     ];
   }
 
