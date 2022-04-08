@@ -12,7 +12,7 @@ function repaidPaths(svg: XMLDocument): void {
   });
 }
 
-function prefixCssClasses(svg: XMLDocument, classPrefix: string): void {
+function scopeCssClasses(svg: XMLDocument, parentSelector: string): void {
   // prefix CSS classes for scoping purposes
   const styleElements = svg.querySelectorAll('style');
   for (let i = 0; i < styleElements.length; i += 1) {
@@ -22,10 +22,9 @@ function prefixCssClasses(svg: XMLDocument, classPrefix: string): void {
       for (let j = 0; j < styleSheet.cssRules.length; j += 1) {
         const cssRule = styleSheet.cssRules[j];
         if (cssRule instanceof CSSStyleRule) {
-          cssRule.selectorText = cssRule.selectorText.replaceAll(
-            /\./g,
-            `.${classPrefix}`
-          );
+          cssRule.selectorText = cssRule.selectorText
+            .replace(/^/, `${parentSelector} `)
+            .replaceAll(/,/g, `, ${parentSelector} `);
         }
       }
       styleElement.textContent = Array.from(styleSheet.cssRules)
@@ -33,14 +32,6 @@ function prefixCssClasses(svg: XMLDocument, classPrefix: string): void {
         .join('\n');
     }
   }
-  svg.querySelectorAll('*').forEach((elem) => {
-    if (elem.classList.length !== 0) {
-      // eslint-disable-next-line no-param-reassign
-      elem.classList.value = Array.from(elem.classList)
-        .map((c) => `${classPrefix}${c}`)
-        .join(' ');
-    }
-  });
 }
 
 function hideHardcodedGraphs(svg: XMLDocument): void {
@@ -71,11 +62,13 @@ function addSunAnimation(svg: XMLDocument): void {
   });
 }
 
-function preprocessSvg(svg: XMLDocument, cssClassPrefix: string): void {
+function preprocessSvg(svg: XMLDocument, parentClassName: string): void {
   repaidPaths(svg);
   hideHardcodedGraphs(svg);
   addSunAnimation(svg);
-  prefixCssClasses(svg, cssClassPrefix);
+  svg.documentElement.classList.add(parentClassName);
+  const parentSelector = `.${parentClassName}`;
+  scopeCssClasses(svg, parentSelector);
 }
 
 // eslint-disable-next-line import/prefer-default-export

@@ -114,8 +114,8 @@ export default class GreenhouseEffectScenario extends BaseScenario {
 
   static fixScenarioSvg(svg: XMLDocument): void {
     // general fix-ups
-    const classPrefix = 'greenhouse-effect-scenario-svg-';
-    preprocessSvg(svg, classPrefix);
+    const parentClassName = 'greenhouse-effect-scenario';
+    preprocessSvg(svg, parentClassName);
   }
 
   static async loadResources(): Promise<Resources> {

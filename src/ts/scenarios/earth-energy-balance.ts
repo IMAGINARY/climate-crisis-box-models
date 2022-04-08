@@ -81,8 +81,8 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
     iceMax.replaceChildren(...iceMaxPolygonsReordered);
 
     // general fix-ups
-    const classPrefix = 'earth-energy-balance-scenario-svg-';
-    preprocessSvg(svg, classPrefix);
+    const parentClassName = 'earth-energy-balance-scenario';
+    preprocessSvg(svg, parentClassName);
   }
 
   static async loadResources(): Promise<Resources> {
