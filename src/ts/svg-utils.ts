@@ -22,9 +22,12 @@ function scopeCssClasses(svg: XMLDocument, parentSelector: string): void {
       for (let j = 0; j < styleSheet.cssRules.length; j += 1) {
         const cssRule = styleSheet.cssRules[j];
         if (cssRule instanceof CSSStyleRule) {
+          // Prefix each selector in a CSS selector group.
+          // Ignore commas inside attribute selectors,
+          // because they don't separate selector group elements.
           cssRule.selectorText = cssRule.selectorText
             .replace(/^/, `${parentSelector} `)
-            .replaceAll(/,/g, `, ${parentSelector} `);
+            .replaceAll(/,(([^,[]*|\[[^\]]*])*)/g, `, ${parentSelector} $1`);
         }
       }
       styleElement.textContent = Array.from(styleSheet.cssRules)
