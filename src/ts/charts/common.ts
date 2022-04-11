@@ -108,7 +108,7 @@ const scatterChartOptions: ChartConfiguration<'scatter'>['options'] = {
     x: xScaleConfig,
     y: yScaleConfig,
   },
-  layout: { padding: { top: 20, right: 22 } },
+  layout: { padding: { top: 40, right: 22 } },
 };
 
 function updateDataWithTrace<TMyDataPoint>(
