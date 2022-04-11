@@ -7,8 +7,11 @@ import model from '../models/greenhouse-effect';
 import { Simulation, SimulationResult } from '../simulation';
 import {
   createSvgMorphUpdater,
+  createExtractor,
   createTemperatureCelsiusExtractor,
   createYearExtractor,
+  formatCelsiusFrac,
+  formatPpmFrac,
   loadSvg,
 } from '../util';
 
@@ -46,17 +49,18 @@ export default class GreenhouseEffectScenario extends BaseScenario {
 
     //    this.modelSceneConnections = this.prepareModelToSceneConnections();
 
-    const canvas: HTMLCanvasElement = document.createElement('canvas');
-    canvas.width = 238;
-    canvas.height = 176;
-    canvas.classList.add('graph');
-    this.getScene().appendChild(canvas);
+    const tempCanvas: HTMLCanvasElement = document.createElement('canvas');
+    tempCanvas.width = 238;
+    tempCanvas.height = 176;
+    tempCanvas.classList.add('graph1');
+    this.getScene().appendChild(tempCanvas);
 
-    const chartOptions: TimeVsYChartOptions = {
+    const tempChartOptions: TimeVsYChartOptions = {
       numYears: model.numSteps,
-      minTemp: 10,
-      maxTemp: 30,
+      minY: 10,
+      maxY: 30,
       yAxisLabel: () => 'Temperature (°C)',
+      yDataFormatter: ({ y }) => formatCelsiusFrac(y),
       timeAxisTitle: () => 'Zeit (Jahrhundert)',
       timeTickStepSize: 100,
       toYear: yearExtractor,
@@ -67,9 +71,33 @@ export default class GreenhouseEffectScenario extends BaseScenario {
       ),
     };
 
-    const chart = new TimeVsYChart(canvas, chartOptions);
+    const tempChart = new TimeVsYChart(tempCanvas, tempChartOptions);
 
-    this.updaters.push(chart, ...this.createVizUpdaters());
+    const { min: co2Min, max: co2Max } = model.parameters.filter(
+      (v) => v.id === 'co2'
+    )[0];
+
+    const co2Canvas: HTMLCanvasElement = document.createElement('canvas');
+    co2Canvas.width = 238;
+    co2Canvas.height = 176;
+    co2Canvas.classList.add('graph2');
+    this.getScene().appendChild(co2Canvas);
+
+    const co2ChartOptions: TimeVsYChartOptions = {
+      numYears: model.numSteps,
+      minY: co2Min,
+      maxY: co2Max,
+      yAxisLabel: () => 'CO₂ (ppm)',
+      yDataFormatter: ({ y }) => formatPpmFrac(y),
+      timeAxisTitle: () => 'Zeit (Jahrhundert)',
+      timeTickStepSize: 100,
+      toYear: yearExtractor,
+      toYUnit: createExtractor(model, 'parameters', 'co2'),
+    };
+
+    const co2Chart = new TimeVsYChart(co2Canvas, co2ChartOptions);
+
+    this.updaters.push(tempChart, co2Chart, ...this.createVizUpdaters());
 
     this.getSimulation().on('results', this.resetIfIndicated.bind(this));
   }

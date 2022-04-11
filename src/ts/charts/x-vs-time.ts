@@ -8,9 +8,10 @@ import * as common from './common';
 
 export type TimeVsYChartOptions = {
   numYears: number;
-  minTemp: number;
-  maxTemp: number;
+  minY: number;
+  maxY: number;
   yAxisLabel: () => string;
+  yDataFormatter: ({ y }: { y: number }) => string;
   timeAxisTitle: () => string;
   timeTickStepSize: number;
   toYUnit: (result: SimulationResult) => number;
@@ -63,8 +64,17 @@ export default class TimeVsYChart implements Chart {
       ],
     };
 
-    const { minTemp, maxTemp } = this.options;
+    const { minY, maxY, yDataFormatter } = this.options;
     const additionalChartOptions: TMyChartOptions = {
+      plugins: {
+        datalabels: {
+          labels: {
+            value: {
+              formatter: yDataFormatter,
+            },
+          },
+        },
+      },
       scales: {
         x: {
           title: { text: this.options.timeAxisTitle() },
@@ -81,8 +91,8 @@ export default class TimeVsYChart implements Chart {
         },
         y: {
           title: { text: this.options.yAxisLabel() },
-          min: minTemp,
-          max: maxTemp,
+          min: minY,
+          max: maxY,
         },
       },
     };

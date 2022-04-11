@@ -71,10 +71,10 @@ function createTemperatureCelsiusExtractor(
   return (result) => kelvinToCelsius(kelvinExtractor(result));
 }
 
-const celsiusNumberFormatter = new Intl.NumberFormat('de', {
+const integralNumberFormatter = new Intl.NumberFormat('de', {
   maximumFractionDigits: 0,
 });
-const celsiusFracNumberFormatter = new Intl.NumberFormat('de', {
+const fractionalNumberFormatter = new Intl.NumberFormat('de', {
   minimumFractionDigits: 1,
   maximumFractionDigits: 1,
 });
@@ -83,7 +83,7 @@ function formatCelsius(celsius: number | string) {
   return `${
     typeof celsius === 'string'
       ? celsius
-      : celsiusNumberFormatter.format(celsius)
+      : integralNumberFormatter.format(celsius)
   }°C`;
 }
 
@@ -91,7 +91,7 @@ function formatCelsiusFrac(celsius: number | string) {
   return `${
     typeof celsius === 'string'
       ? celsius
-      : celsiusFracNumberFormatter.format(celsius)
+      : fractionalNumberFormatter.format(celsius)
   }°C`;
 }
 
@@ -114,6 +114,18 @@ function formatYear(year: number | string) {
 
 function formatYearTick(year: number | string) {
   return typeof year !== 'undefined' ? formatYear(year) : undefined;
+}
+
+function formatPpm(ppm: number | string) {
+  return `${
+    typeof ppm === 'string' ? ppm : integralNumberFormatter.format(ppm)
+  } ppm`;
+}
+
+function formatPpmFrac(ppm: number | string) {
+  return `${
+    typeof ppm === 'string' ? ppm : fractionalNumberFormatter.format(ppm)
+  } ppm`;
 }
 
 function formatIrradiance(irradiance: number | string) {
@@ -232,6 +244,8 @@ export {
   formatCelsius,
   formatCelsiusFrac,
   formatCelsiusTick,
+  formatPpm,
+  formatPpmFrac,
   formatYear,
   formatYearTick,
   formatIrradiance,
