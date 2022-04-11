@@ -118,7 +118,7 @@ const yearsPerSecond = 400 / 8;
 const stepsPerSecond = Math.round(
   (yearsPerSecond * SECONDS_PER_YEAR) / stepSize
 );
-const numSteps = 400;
+const numSteps = 250;
 
 const model: BoxModelExt = {
   stocks,

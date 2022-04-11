@@ -6,14 +6,14 @@ import { Chart } from '../chart';
 import { SimulationResult } from '../simulation';
 import * as common from './common';
 
-export type TemperatureVsTimeChartOptions = {
+export type TimeVsYChartOptions = {
   numYears: number;
   minTemp: number;
   maxTemp: number;
-  tempAxisLabel: () => string;
+  yAxisLabel: () => string;
   timeAxisTitle: () => string;
   timeTickStepSize: number;
-  toTemperatureCelsius: (result: SimulationResult) => number;
+  toYUnit: (result: SimulationResult) => number;
   toYear: (result: SimulationResult) => number;
 };
 
@@ -46,15 +46,12 @@ type TMyChartType = ChartJs<'scatter', TMyDataPoint[]>;
 type TMyChartConfiguration = ChartConfiguration<'scatter', TMyDataPoint[]>;
 type TMyChartOptions = TMyChartConfiguration['options'];
 type TMyChartData = TMyChartConfiguration['data'];
-export default class TemperatureVsTimeChart implements Chart {
+export default class TimeVsYChart implements Chart {
   protected readonly chart: TMyChartType;
 
-  protected options: TemperatureVsTimeChartOptions;
+  protected options: TimeVsYChartOptions;
 
-  constructor(
-    canvas: HTMLCanvasElement,
-    options: TemperatureVsTimeChartOptions
-  ) {
+  constructor(canvas: HTMLCanvasElement, options: TimeVsYChartOptions) {
     this.options = options;
 
     const chartData: TMyChartData = {
@@ -71,8 +68,8 @@ export default class TemperatureVsTimeChart implements Chart {
       scales: {
         x: {
           title: { text: this.options.timeAxisTitle() },
-          min: -this.options.numYears,
-          max: -1,
+          min: 0,
+          max: this.options.numYears,
           afterBuildTicks: (axis) => {
             // eslint-disable-next-line no-param-reassign
             axis.ticks = createYearTicks(
@@ -83,7 +80,7 @@ export default class TemperatureVsTimeChart implements Chart {
           },
         },
         y: {
-          title: { text: this.options.tempAxisLabel() },
+          title: { text: this.options.yAxisLabel() },
           min: minTemp,
           max: maxTemp,
         },
@@ -104,48 +101,27 @@ export default class TemperatureVsTimeChart implements Chart {
     this.chart = new ChartJs<'scatter', TMyDataPoint[]>(canvas, chartConfig);
   }
 
-  setYearRange(min: number, max: number) {
-    merge(this.chart.config, {
-      options: { scales: { x: { min, max } } },
-    });
-  }
-
   reset() {
     const { data } = this.chart.data.datasets[0];
     data.splice(0, data.length);
-    this.setYearRange(-this.options.numYears, -1);
     this.update([]);
   }
 
   update(newResults: SimulationResult[]) {
-    const { toTemperatureCelsius, toYear } = this.options;
+    const { toYUnit, toYear } = this.options;
     const createDataPoint = (r: SimulationResult) => ({
       x: toYear(r),
-      y: toTemperatureCelsius(r),
+      y: toYUnit(r),
     });
 
     const data = this.chart.data.datasets?.[0]?.data;
 
     if (data) {
-      common.updateDataWithTrace<TMyDataPoint>(
-        newResults,
-        data,
-        createDataPoint,
-        (dataPoint) => dataPoint.x,
-        this.options.numYears
-      );
-
-      const lastDataPoint: TMyDataPoint = data?.[data.length - 1];
-      if (lastDataPoint) {
-        this.setYearRange(
-          lastDataPoint.x - this.options.numYears,
-          lastDataPoint.x
-        );
-      }
+      data.push(...newResults.map(createDataPoint));
 
       this.chart.update();
     }
   }
 }
 
-export { TemperatureVsTimeChart };
+export { TimeVsYChart };

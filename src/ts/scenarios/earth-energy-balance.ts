@@ -15,7 +15,7 @@ import {
 import { preprocessSvg } from '../svg-utils';
 
 import { convertToBoxModelForScenario, Record } from '../box-model-definition';
-import { TemperatureVsTimeChart } from '../charts/temperature-vs-time';
+import { RealtimeVsTemperatureChart } from '../charts/temperature-vs-realtime';
 
 const scenarioSvgUrl: URL = new URL(
   './../../svg/earth-energy-balance.svg',
@@ -51,7 +51,7 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
       (v) => v.id === 'temperature'
     )[0];
 
-    const chart = new TemperatureVsTimeChart(canvas, {
+    const chart = new RealtimeVsTemperatureChart(canvas, {
       numYears: model.numSteps,
       minTemp: kelvinToCelsius(min),
       maxTemp: kelvinToCelsius(max),

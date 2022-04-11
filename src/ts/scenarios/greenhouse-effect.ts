@@ -4,7 +4,7 @@ import { SVG } from '@svgdotjs/svg.js';
 
 import { BaseScenario } from './base';
 import model from '../models/greenhouse-effect';
-import { Simulation } from '../simulation';
+import { Simulation, SimulationResult } from '../simulation';
 import {
   createSvgMorphUpdater,
   createTemperatureCelsiusExtractor,
@@ -13,10 +13,7 @@ import {
 } from '../util';
 
 import { Record, convertToBoxModelForScenario } from '../box-model-definition';
-import {
-  TemperatureVsTimeChart,
-  TemperatureVsTimeChartOptions,
-} from '../charts/temperature-vs-time';
+import { TimeVsYChart, TimeVsYChartOptions } from '../charts/x-vs-time';
 import { preprocessSvg } from '../svg-utils';
 
 const scenarioSvgUrl: URL = new URL(
@@ -29,6 +26,7 @@ export type Resources = {
 };
 
 const modelForScenario = convertToBoxModelForScenario(model);
+const yearExtractor = createYearExtractor(model);
 
 export default class GreenhouseEffectScenario extends BaseScenario {
   protected readonly svg;
@@ -54,24 +52,26 @@ export default class GreenhouseEffectScenario extends BaseScenario {
     canvas.classList.add('graph');
     this.getScene().appendChild(canvas);
 
-    const chartOptions: TemperatureVsTimeChartOptions = {
+    const chartOptions: TimeVsYChartOptions = {
       numYears: model.numSteps,
       minTemp: 10,
       maxTemp: 30,
-      tempAxisLabel: () => 'Temperature (°C)',
+      yAxisLabel: () => 'Temperature (°C)',
       timeAxisTitle: () => 'Zeit (Jahrhundert)',
       timeTickStepSize: 100,
-      toYear: createYearExtractor(model),
-      toTemperatureCelsius: createTemperatureCelsiusExtractor(
+      toYear: yearExtractor,
+      toYUnit: createTemperatureCelsiusExtractor(
         model,
         'variables',
         'gnd temperature'
       ),
     };
 
-    const chart = new TemperatureVsTimeChart(canvas, chartOptions);
+    const chart = new TimeVsYChart(canvas, chartOptions);
 
     this.updaters.push(chart, ...this.createVizUpdaters());
+
+    this.getSimulation().on('results', this.resetIfIndicated.bind(this));
   }
   /*
   prepareModelToSceneConnections(): ((record: Record) => void)[] {
@@ -127,6 +127,13 @@ export default class GreenhouseEffectScenario extends BaseScenario {
   // eslint-disable-next-line class-methods-use-this
   getName() {
     return 'Greenhouse Effect';
+  }
+
+  protected resetIfIndicated(results: ReadonlyArray<SimulationResult>): void {
+    if (results.length > 0) {
+      const lastResult = results[results.length - 1];
+      if (yearExtractor(lastResult) > model.numSteps) this.reset();
+    }
   }
 
   protected createVizUpdaters() {

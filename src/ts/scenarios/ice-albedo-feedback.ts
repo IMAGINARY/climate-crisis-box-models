@@ -1,4 +1,5 @@
 import { SVG, Element as SVGElement } from '@svgdotjs/svg.js';
+import { ConvergenceCriterion } from '@imaginary-maths/box-model';
 
 import { BaseScenario } from './base';
 import { Record, convertToBoxModelForScenario } from '../box-model-definition';
@@ -13,15 +14,13 @@ import {
 
 import { Chart } from '../chart';
 import {
-  TemperatureVsTimeChart,
-  TemperatureVsTimeChartOptions,
-} from '../charts/temperature-vs-time';
+  RealtimeVsTemperatureChart,
+  RealtimeVsTemperatureChartOptions,
+} from '../charts/temperature-vs-realtime';
 import {
   SolarEmissivityVsTemperatureChart,
   SolarEmissivityVsTemperatureChartOptions,
 } from '../charts/solar-emissivity-vs-temperature';
-import { ConvergenceCriterion } from '@imaginary-maths/box-model';
-import assert from 'assert';
 
 const scenarioSvgUrl: URL = new URL(
   './../../svg/scenario.svg',
@@ -62,7 +61,7 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     canvas1.classList.add('graph1');
     this.getScene().appendChild(canvas1);
 
-    const chart1Options: TemperatureVsTimeChartOptions = {
+    const chart1Options: RealtimeVsTemperatureChartOptions = {
       numYears: model.numSteps,
       minTemp: -70,
       maxTemp: 0,
@@ -76,7 +75,7 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
         'temperature'
       ),
     };
-    this.chart1 = new TemperatureVsTimeChart(canvas1, chart1Options);
+    this.chart1 = new RealtimeVsTemperatureChart(canvas1, chart1Options);
 
     const canvas2: HTMLCanvasElement = document.createElement('canvas');
     canvas2.width = 238;
