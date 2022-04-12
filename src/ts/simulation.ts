@@ -247,6 +247,23 @@ export class Simulation extends EventEmitter {
     return this.engine.convergeExt(record.stocks, record.t, h, criterion);
   }
 
+  public convergeRecordPrePost(
+    record: Record,
+    criterion: ConvergenceCriterion,
+    {
+      preProcess = (r) => r,
+      postProcess = (r) => r,
+    }: {
+      preProcess?: (record: Record) => Record;
+      postProcess?: (record: Record) => Record;
+    }
+  ): Record {
+    const preprocessedRecord = preProcess(record);
+    const convergedRecord = this.convergeRecord(preprocessedRecord, criterion);
+    const postProcessedRecord = postProcess(convergedRecord);
+    return postProcessedRecord;
+  }
+
   public converge(criterion: ConvergenceCriterion): SimulationResult {
     this.bootstrap();
     assert(this.lastResult !== null);
@@ -267,11 +284,31 @@ export class Simulation extends EventEmitter {
       postProcess?: (record: Record) => Record;
     }
   ): Simulation {
-    const initialModelRecord = this.getInitialModelRecord();
-    const preprocessedRecord = preProcess(initialModelRecord);
-    const convergedRecord = this.convergeRecord(preprocessedRecord, criterion);
-    const postProcessedRecord = postProcess(convergedRecord);
-    this.setInitialRecord(postProcessedRecord);
+    this.setInitialRecord(
+      this.convergeRecordPrePost(this.getInitialModelRecord(), criterion, {
+        preProcess,
+        postProcess,
+      })
+    );
+    return this;
+  }
+
+  public convergeInitialRecord(
+    criterion: ConvergenceCriterion,
+    {
+      preProcess = (r) => r,
+      postProcess = (r) => r,
+    }: {
+      preProcess?: (record: Record) => Record;
+      postProcess?: (record: Record) => Record;
+    }
+  ): Simulation {
+    this.setInitialRecord(
+      this.convergeRecordPrePost(this.getInitialRecord(), criterion, {
+        preProcess,
+        postProcess,
+      })
+    );
     return this;
   }
 }

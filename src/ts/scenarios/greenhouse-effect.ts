@@ -14,16 +14,13 @@ import {
   formatCelsiusFrac,
   formatPpmFrac,
   loadSvg,
+  secondsToYears,
+  kelvinToCelsius,
 } from '../util';
 
 import { Record, convertToBoxModelForScenario } from '../box-model-definition';
 import { TimeVsYChart, TimeVsYChartOptions } from '../charts/x-vs-time';
-import {
-  firstYear,
-  temperaturesCelsius,
-  co2CMIP6ssp245,
-  co2CMIP6ssp585,
-} from '../data';
+import { temperaturesCelsius, co2CMIP6ssp245, co2CMIP6ssp585 } from '../data';
 import { preprocessSvg } from '../svg-utils';
 
 const scenarioSvgUrl: URL = new URL(
@@ -39,6 +36,10 @@ const model = createModel();
 
 const modelForScenario = convertToBoxModelForScenario(model);
 const yearExtractor = createYearExtractor(model);
+
+const gndTemperatureIdx = model.variables
+  .map(({ id }) => id)
+  .indexOf('gnd temperature');
 
 export default class GreenhouseEffectScenario extends BaseScenario {
   protected readonly svg;
@@ -60,9 +61,7 @@ export default class GreenhouseEffectScenario extends BaseScenario {
 
     //    this.modelSceneConnections = this.prepareModelToSceneConnections();
 
-    const { min: tempMin, max: tempMax } = model.variables.filter(
-      (v) => v.id === 'gnd temperature'
-    )[0];
+    const { min: tempMin, max: tempMax } = model.variables[gndTemperatureIdx];
 
     const tempCanvas: HTMLCanvasElement = document.createElement('canvas');
     tempCanvas.width = 238;
@@ -85,10 +84,12 @@ export default class GreenhouseEffectScenario extends BaseScenario {
         'gnd temperature'
       ),
       bgData: [
-        temperaturesCelsius.map(({ year, value }) => ({
-          x: year - firstYear,
+        temperaturesCelsius.map((value, index) => ({
+          x: index,
           y: value,
         })),
+        GreenhouseEffectScenario.computeTemperatureData(co2CMIP6ssp245),
+        GreenhouseEffectScenario.computeTemperatureData(co2CMIP6ssp585),
       ],
     };
 
@@ -115,13 +116,13 @@ export default class GreenhouseEffectScenario extends BaseScenario {
       toYear: yearExtractor,
       toYUnit: createExtractor(model, 'parameters', 'co2'),
       bgData: [
-        co2CMIP6ssp245.map(({ year, ppm }) => ({
-          x: year - firstYear,
-          y: ppm,
+        co2CMIP6ssp245.map((value, index) => ({
+          x: index,
+          y: value,
         })),
-        co2CMIP6ssp585.map(({ year, ppm }) => ({
-          x: year - firstYear,
-          y: ppm,
+        co2CMIP6ssp585.map((value, index) => ({
+          x: index,
+          y: value,
         })),
       ],
     };
@@ -309,18 +310,63 @@ export default class GreenhouseEffectScenario extends BaseScenario {
   }
 
   protected static getConvergenceCriterion(eps = 0.001): ConvergenceCriterion {
-    const temperatureIdx = model.variables
-      .map(({ id }) => id)
-      .indexOf('gnd temperature');
-
     const convergenceCriterion = (record: Record, lastRecord: Record) => {
-      const temp = record.variables[temperatureIdx];
-      const lastTemp = lastRecord.variables[temperatureIdx];
+      const temp = record.variables[gndTemperatureIdx];
+      const lastTemp = lastRecord.variables[gndTemperatureIdx];
       return Math.abs(temp - lastTemp) < eps;
     };
 
     return convergenceCriterion;
   }
+
+  protected static computeTemperatureData(
+    co2: ReadonlyArray<number>
+  ): { x: number; y: number }[] {
+    const simulation = new Simulation(cloneDeep(modelForScenario));
+    if (co2.length > 0) {
+      const getCO2 = (year: number): number => {
+        const lowYear = Math.floor(year);
+        const fracYear = year - lowYear;
+        if (lowYear < co2.length - 1) {
+          const low = co2[lowYear];
+          const high = co2[lowYear + 1];
+          return low + fracYear * (high - low);
+        }
+        return co2[co2.length - 1];
+      };
+
+      const recordToData = (record: Record): { x: number; y: number } => ({
+        x: secondsToYears(record.t),
+        y: kelvinToCelsius(record.variables[gndTemperatureIdx]),
+      });
+
+      simulation.setParameter(co2[0], true);
+      simulation.convergeInitialModelRecord(
+        GreenhouseEffectScenario.getConvergenceCriterion(),
+        { postProcess: (r: Record) => ({ ...r, t: 0 }) }
+      );
+
+      const engine = simulation.getEngine();
+      const { stepSize } = simulation.getModel();
+      let { subSteps } = simulation.getModel();
+      subSteps = Math.max(0, subSteps);
+      let record = simulation.getInitialRecord();
+      const temperatures = [recordToData(record)];
+      const h = stepSize / (subSteps + 1);
+      while (secondsToYears(record.t) <= co2.length) {
+        simulation.setParameter(getCO2(secondsToYears(record.t)), true);
+        for (let i = 0; i < subSteps + 1; i += 1) {
+          const { t, stocks, flows } = record;
+          record = engine.stepExt(stocks, flows, t, h);
+        }
+        const temperatureData = recordToData(record);
+        temperatures.push(temperatureData);
+      }
+      return temperatures;
+    }
+    return [];
+  }
+
   /*
   protected update(newResults: SimulationResult[]) {
     this.chart.update(newResults);

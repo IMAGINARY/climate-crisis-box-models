@@ -34,10 +34,7 @@ const temperatureAnomaliesCelsius = [
 const temperatureAnomalyOffsetCelsius = 13.974;
 
 const temperaturesCelsius = temperatureAnomaliesCelsius.map(
-  (anomalie, index) => ({
-    year: firstYear + index,
-    value: temperatureAnomalyOffsetCelsius + anomalie,
-  })
+  (anomaly) => temperatureAnomalyOffsetCelsius + anomaly
 );
 
 /**
@@ -566,25 +563,18 @@ const greenhouseGasesCMIP6ssp245: [
   [602.78, 1683.16, 377.26],
 ];
 
-const toCo2 = (
-  [co2Ppm, ,]: [co2Ppm: number, ch4Ppb: number, n2oPpb: number],
-  index: number
-) => ({
-  year: firstYear + index,
-  ppm: co2Ppm,
-});
+const toCo2 = ([co2Ppm, ,]: [co2Ppm: number, ch4Ppb: number, n2oPpb: number]) =>
+  co2Ppm;
 
 /**
  * Cummulative radiative forcing in terms of CO2 equivalents.
  * Conversion factors based on https://www.ghgprotocol.org/sites/default/files/ghgp/Global-Warming-Potential-Values%20%28Feb%2016%202016%29_1.pdf
  */
-const toCo2Eq = (
-  [co2Ppm, ch4Ppb, n2oPpb]: [co2Ppm: number, ch4Ppb: number, n2oPpb: number],
-  index: number
-) => ({
-  year: firstYear + index,
-  ppm: co2Ppm + ch4Ppb * 0.028 + n2oPpb * 0.265,
-});
+const toCo2Eq = ([co2Ppm, ch4Ppb, n2oPpb]: [
+  co2Ppm: number,
+  ch4Ppb: number,
+  n2oPpb: number
+]) => co2Ppm + ch4Ppb * 0.028 + n2oPpb * 0.265;
 
 const co2CMIP6ssp245 = greenhouseGasesCMIP6ssp245.map(toCo2);
 
