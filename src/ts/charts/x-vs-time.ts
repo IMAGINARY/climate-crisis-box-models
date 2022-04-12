@@ -121,7 +121,6 @@ export default class TimeVsYChart implements Chart {
   }
 
   reset() {
-    console.log(this.chart.data);
     const { data } = this.chart.data.datasets[0];
     data.splice(0, data.length);
     this.update([]);
