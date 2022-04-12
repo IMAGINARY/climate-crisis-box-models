@@ -1,9 +1,10 @@
 import assert from 'assert';
+import cloneDeep from 'lodash/cloneDeep';
 import * as SvgJs from '@svgdotjs/svg.js';
 import { ConvergenceCriterion } from '@imaginary-maths/box-model';
 
 import { BaseScenario } from './base';
-import model from '../models/earth-energy-balance';
+import createModel from '../models/earth-energy-balance';
 import { Simulation } from '../simulation';
 import {
   createSvgMorphUpdater,
@@ -26,6 +27,8 @@ export type Resources = {
   svg: XMLDocument;
 };
 
+const model = createModel();
+
 export default class EarthEnergyBalanceScenario extends BaseScenario {
   protected readonly svg;
 
@@ -33,7 +36,7 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
     super(
       elem,
       new Simulation(
-        convertToBoxModelForScenario(model)
+        convertToBoxModelForScenario(cloneDeep(model))
       ).convergeInitialModelRecord(
         EarthEnergyBalanceScenario.getConvergenceCriterion(0.001),
         { postProcess: (r: Record) => ({ ...r, t: 0 }) }

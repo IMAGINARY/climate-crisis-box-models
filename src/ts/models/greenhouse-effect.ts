@@ -1,3 +1,4 @@
+import cloneDeep from 'lodash/cloneDeep';
 import {
   FlowWithRange,
   VariableWithRange,
@@ -131,4 +132,8 @@ const model: BoxModelExt = {
   subSteps,
 };
 
-export default model;
+function createModel(): BoxModelExt {
+  return cloneDeep(model);
+}
+
+export default createModel;

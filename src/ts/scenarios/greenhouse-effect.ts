@@ -1,9 +1,10 @@
 import assert from 'assert';
+import cloneDeep from 'lodash/cloneDeep';
 import { ConvergenceCriterion } from '@imaginary-maths/box-model';
 import { SVG } from '@svgdotjs/svg.js';
 
 import { BaseScenario } from './base';
-import model from '../models/greenhouse-effect';
+import createModel from '../models/greenhouse-effect';
 import { Simulation, SimulationResult } from '../simulation';
 import {
   createSvgMorphUpdater,
@@ -34,6 +35,8 @@ export type Resources = {
   svg: XMLDocument;
 };
 
+const model = createModel();
+
 const modelForScenario = convertToBoxModelForScenario(model);
 const yearExtractor = createYearExtractor(model);
 
@@ -45,7 +48,7 @@ export default class GreenhouseEffectScenario extends BaseScenario {
   constructor(elem: HTMLDivElement, resources: Resources) {
     super(
       elem,
-      new Simulation(modelForScenario).convergeInitialModelRecord(
+      new Simulation(cloneDeep(modelForScenario)).convergeInitialModelRecord(
         GreenhouseEffectScenario.getConvergenceCriterion(0.001),
         { postProcess: (r: Record) => ({ ...r, t: 0 }) }
       )

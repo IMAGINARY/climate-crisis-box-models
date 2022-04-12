@@ -1,9 +1,10 @@
+import cloneDeep from 'lodash/cloneDeep';
 import { SVG, Element as SVGElement } from '@svgdotjs/svg.js';
 import { ConvergenceCriterion } from '@imaginary-maths/box-model';
 
 import { BaseScenario } from './base';
 import { Record, convertToBoxModelForScenario } from '../box-model-definition';
-import model from '../models/ice-albedo-feedback';
+import createModel from '../models/ice-albedo-feedback';
 import { Simulation, SimulationResult } from '../simulation';
 import {
   createExtractor,
@@ -31,6 +32,7 @@ type Resources = {
   svg: XMLDocument;
 };
 
+const model = createModel();
 const modelForScenario = convertToBoxModelForScenario(model);
 
 export default class IceAlbedoFeedbackScenario extends BaseScenario {
@@ -43,7 +45,7 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
   constructor(elem: HTMLDivElement, resources: Resources) {
     super(
       elem,
-      new Simulation(modelForScenario).convergeInitialModelRecord(
+      new Simulation(cloneDeep(modelForScenario)).convergeInitialModelRecord(
         IceAlbedoFeedbackScenario.getConvergenceCriterion(0.001),
         { postProcess: (r: Record) => ({ ...r, t: 0 }) }
       )
@@ -143,7 +145,7 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     const hysteresisData: SimulationResult[] = [];
     const numSteps = 100;
 
-    const simulation = new Simulation(modelForScenario);
+    const simulation = new Simulation(cloneDeep(modelForScenario));
     const { min, max } = simulation.getParameterRange();
     const extMin = min - (max - min) * 0.1;
     const extMax = max + (max - min) * 0.1;
