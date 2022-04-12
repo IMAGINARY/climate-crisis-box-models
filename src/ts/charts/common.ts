@@ -79,7 +79,7 @@ const scatterChartOptions: ChartConfiguration<'scatter'>['options'] = {
   },
   elements: {
     line: {
-      borderColor: colors,
+      borderColor: (ctx) => (ctx.datasetIndex === 0 ? colors[0] : colors[1]),
       borderCapStyle: 'round',
       borderWidth: 4,
       borderJoinStyle: 'bevel',

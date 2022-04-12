@@ -17,7 +17,7 @@ const stocks: StockWithInitialValueAndRange[] = [
       'atm infrared radiation',
       'gnd infrared radiation not absorbed',
     ],
-    initialValue: 24261360703,
+    initialValue: 24143626937,
     min: 0,
     max: 1,
   },
@@ -25,7 +25,7 @@ const stocks: StockWithInitialValueAndRange[] = [
     id: 'ground',
     in: ['sun radiation', 'atm infrared radiation'],
     out: ['reflected sun radiation', 'gnd infrared radiation'],
-    initialValue: 4472026329130,
+    initialValue: 4450324703243,
     min: 0,
     max: 1,
   },
@@ -78,8 +78,8 @@ const variables: VariableWithRange[] = [
   {
     id: 'gnd temperature',
     formula: ({ s }: { s: LookupFunction }) => s('ground') / 1.55e10,
-    min: 0,
-    max: 1,
+    min: 12,
+    max: 18,
   },
   {
     id: 'epsilon',
@@ -94,14 +94,14 @@ const parameters: ParameterWithRange[] = [
   {
     id: 'co2',
     min: 280,
-    max: 4480,
-    value: 426,
+    max: 1340,
+    value: 284,
   },
   {
     id: 'solar emissivity',
     min: 1000,
     max: 2000,
-    value: 1367,
+    value: 1366,
   },
   {
     id: 'albedo',

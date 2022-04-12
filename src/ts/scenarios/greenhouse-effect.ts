@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { ConvergenceCriterion } from '@imaginary-maths/box-model/dist/box-model';
+import { ConvergenceCriterion } from '@imaginary-maths/box-model';
 import { SVG } from '@svgdotjs/svg.js';
 
 import { BaseScenario } from './base';
@@ -17,6 +17,12 @@ import {
 
 import { Record, convertToBoxModelForScenario } from '../box-model-definition';
 import { TimeVsYChart, TimeVsYChartOptions } from '../charts/x-vs-time';
+import {
+  firstYear,
+  temperaturesCelsius,
+  co2CMIP6ssp245,
+  co2CMIP6ssp585,
+} from '../data';
 import { preprocessSvg } from '../svg-utils';
 
 const scenarioSvgUrl: URL = new URL(
@@ -37,10 +43,12 @@ export default class GreenhouseEffectScenario extends BaseScenario {
   // protected modelSceneConnections: ((record: Record) => void)[];
 
   constructor(elem: HTMLDivElement, resources: Resources) {
-    super(elem, new Simulation(modelForScenario));
-
-    this.getSimulation().convergeInitialRecord(
-      GreenhouseEffectScenario.getConvergenceCriterion()
+    super(
+      elem,
+      new Simulation(modelForScenario).convergeInitialModelRecord(
+        GreenhouseEffectScenario.getConvergenceCriterion(0.001),
+        { postProcess: (r: Record) => ({ ...r, t: 0 }) }
+      )
     );
 
     this.svg = SVG(document.importNode(resources.svg.documentElement, true));
@@ -48,6 +56,10 @@ export default class GreenhouseEffectScenario extends BaseScenario {
     this.enableMathMode(this.isMathModeEnabled());
 
     //    this.modelSceneConnections = this.prepareModelToSceneConnections();
+
+    const { min: tempMin, max: tempMax } = model.variables.filter(
+      (v) => v.id === 'gnd temperature'
+    )[0];
 
     const tempCanvas: HTMLCanvasElement = document.createElement('canvas');
     tempCanvas.width = 238;
@@ -57,8 +69,8 @@ export default class GreenhouseEffectScenario extends BaseScenario {
 
     const tempChartOptions: TimeVsYChartOptions = {
       numYears: model.numSteps,
-      minY: 10,
-      maxY: 30,
+      minY: tempMin,
+      maxY: tempMax,
       yAxisLabel: () => 'Temperature (°C)',
       yDataFormatter: ({ y }) => formatCelsiusFrac(y),
       timeAxisTitle: () => 'Zeit (Jahrhundert)',
@@ -69,12 +81,18 @@ export default class GreenhouseEffectScenario extends BaseScenario {
         'variables',
         'gnd temperature'
       ),
+      bgData: [
+        temperaturesCelsius.map(({ year, value }) => ({
+          x: year - firstYear,
+          y: value,
+        })),
+      ],
     };
 
     const tempChart = new TimeVsYChart(tempCanvas, tempChartOptions);
 
     const { min: co2Min, max: co2Max } = model.parameters.filter(
-      (v) => v.id === 'co2'
+      (p) => p.id === 'co2'
     )[0];
 
     const co2Canvas: HTMLCanvasElement = document.createElement('canvas');
@@ -93,6 +111,16 @@ export default class GreenhouseEffectScenario extends BaseScenario {
       timeTickStepSize: 100,
       toYear: yearExtractor,
       toYUnit: createExtractor(model, 'parameters', 'co2'),
+      bgData: [
+        co2CMIP6ssp245.map(({ year, ppm }) => ({
+          x: year - firstYear,
+          y: ppm,
+        })),
+        co2CMIP6ssp585.map(({ year, ppm }) => ({
+          x: year - firstYear,
+          y: ppm,
+        })),
+      ],
     };
 
     const co2Chart = new TimeVsYChart(co2Canvas, co2ChartOptions);
@@ -277,7 +305,7 @@ export default class GreenhouseEffectScenario extends BaseScenario {
     ];
   }
 
-  protected static getConvergenceCriterion(): ConvergenceCriterion {
+  protected static getConvergenceCriterion(eps = 0.001): ConvergenceCriterion {
     const temperatureIdx = model.variables
       .map(({ id }) => id)
       .indexOf('gnd temperature');
@@ -285,7 +313,7 @@ export default class GreenhouseEffectScenario extends BaseScenario {
     const convergenceCriterion = (record: Record, lastRecord: Record) => {
       const temp = record.variables[temperatureIdx];
       const lastTemp = lastRecord.variables[temperatureIdx];
-      return Math.abs(temp - lastTemp) < 0.001;
+      return Math.abs(temp - lastTemp) < eps;
     };
 
     return convergenceCriterion;

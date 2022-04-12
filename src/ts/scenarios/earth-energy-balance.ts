@@ -1,6 +1,6 @@
 import assert from 'assert';
 import * as SvgJs from '@svgdotjs/svg.js';
-import { ConvergenceCriterion } from '@imaginary-maths/box-model/dist/box-model';
+import { ConvergenceCriterion } from '@imaginary-maths/box-model';
 
 import { BaseScenario } from './base';
 import model from '../models/earth-energy-balance';
@@ -30,10 +30,14 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
   protected readonly svg;
 
   constructor(elem: HTMLDivElement, resources: Resources) {
-    super(elem, new Simulation(convertToBoxModelForScenario(model)));
-
-    this.getSimulation().convergeInitialRecord(
-      EarthEnergyBalanceScenario.getConvergenceCriterion()
+    super(
+      elem,
+      new Simulation(
+        convertToBoxModelForScenario(model)
+      ).convergeInitialModelRecord(
+        EarthEnergyBalanceScenario.getConvergenceCriterion(0.001),
+        { postProcess: (r: Record) => ({ ...r, t: 0 }) }
+      )
     );
 
     this.svg = SvgJs.SVG(
@@ -161,7 +165,7 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
     ];
   }
 
-  protected static getConvergenceCriterion(): ConvergenceCriterion {
+  protected static getConvergenceCriterion(eps = 0.001): ConvergenceCriterion {
     const temperatureIdx = model.variables
       .map(({ id }) => id)
       .indexOf('temperature');
@@ -169,7 +173,7 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
     const convergenceCriterion = (record: Record, lastRecord: Record) => {
       const temp = record.variables[temperatureIdx];
       const lastTemp = lastRecord.variables[temperatureIdx];
-      return Math.abs(temp - lastTemp) < 0.001;
+      return Math.abs(temp - lastTemp) < eps;
     };
 
     return convergenceCriterion;

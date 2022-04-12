@@ -16,6 +16,10 @@ export type TimeVsYChartOptions = {
   timeTickStepSize: number;
   toYUnit: (result: SimulationResult) => number;
   toYear: (result: SimulationResult) => number;
+  bgData: {
+    x: number;
+    y: number;
+  }[][];
 };
 
 type TMyDataPoint = {
@@ -61,6 +65,11 @@ export default class TimeVsYChart implements Chart {
           label: 'Temperature',
           data: [] as TMyDataPoint[],
         },
+        ...options.bgData.map((bgData, i) => ({
+          label: `Background ${i}`,
+          data: bgData,
+          datalabels: { labels: { value: { display: false } } },
+        })),
       ],
     };
 
@@ -112,6 +121,7 @@ export default class TimeVsYChart implements Chart {
   }
 
   reset() {
+    console.log(this.chart.data);
     const { data } = this.chart.data.datasets[0];
     data.splice(0, data.length);
     this.update([]);

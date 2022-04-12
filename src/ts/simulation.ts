@@ -1,5 +1,7 @@
 import assert from 'assert';
 import { EventEmitter } from 'events';
+import cloneDeep from 'lodash/cloneDeep';
+
 import {
   BoxModelForScenario,
   BoxModelEngine,
@@ -24,39 +26,34 @@ export class Simulation extends EventEmitter {
 
   private simulationFrameId = 0;
 
-  protected convergenceCriterionForInitialRecord: ConvergenceCriterion | null =
-    null;
+  protected initialRecord: Record;
 
   constructor(model: BoxModelForScenario) {
     super();
     this.model = model;
     this.engine = new BoxModelEngine(model);
+    this.initialRecord = this.getInitialModelRecord();
   }
 
-  initialRecord(): Record {
+  getInitialModelRecord(): Record {
     const stocks = this.model.stocks.map(({ initialValue }) => initialValue);
     const record = this.engine.evaluateGraph(stocks, 0);
     return record;
   }
 
-  initialConvergedRecord(criterion: ConvergenceCriterion): Record {
-    return this.convergeRecord(this.initialRecord(), criterion);
+  getInitialRecord(): Record {
+    return cloneDeep(this.initialRecord);
   }
 
-  convergeInitialRecord(criterion: ConvergenceCriterion) {
-    this.convergenceCriterionForInitialRecord = criterion;
+  setInitialRecord(record: Record) {
+    this.initialRecord = cloneDeep(record);
   }
 
   bootstrap() {
     if (this.lastResult === null) {
       this.lastResult = {
         timestamp: 0,
-        record:
-          this.convergenceCriterionForInitialRecord === null
-            ? this.initialRecord()
-            : this.initialConvergedRecord(
-                this.convergenceCriterionForInitialRecord
-              ),
+        record: this.getInitialRecord(),
       };
       this.emit('results', [this.lastResult]);
     }
@@ -258,5 +255,23 @@ export class Simulation extends EventEmitter {
     const record: Record = this.convergeRecord(lastRecord, criterion);
     this.lastResult = { timestamp, record };
     return this.lastResult;
+  }
+
+  public convergeInitialModelRecord(
+    criterion: ConvergenceCriterion,
+    {
+      preProcess = (r) => r,
+      postProcess = (r) => r,
+    }: {
+      preProcess?: (record: Record) => Record;
+      postProcess?: (record: Record) => Record;
+    }
+  ): Simulation {
+    const initialModelRecord = this.getInitialModelRecord();
+    const preprocessedRecord = preProcess(initialModelRecord);
+    const convergedRecord = this.convergeRecord(preprocessedRecord, criterion);
+    const postProcessedRecord = postProcess(convergedRecord);
+    this.setInitialRecord(postProcessedRecord);
+    return this;
   }
 }

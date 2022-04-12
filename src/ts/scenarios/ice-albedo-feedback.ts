@@ -41,10 +41,12 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
   protected readonly svg;
 
   constructor(elem: HTMLDivElement, resources: Resources) {
-    super(elem, new Simulation(modelForScenario));
-
-    this.getSimulation().convergeInitialRecord(
-      IceAlbedoFeedbackScenario.getConvergenceCriterion()
+    super(
+      elem,
+      new Simulation(modelForScenario).convergeInitialModelRecord(
+        IceAlbedoFeedbackScenario.getConvergenceCriterion(0.001),
+        { postProcess: (r: Record) => ({ ...r, t: 0 }) }
+      )
     );
 
     const scenarioLabel = document.createElement('div');
@@ -120,7 +122,7 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     return 'Ice Albedo Feedback';
   }
 
-  protected static getConvergenceCriterion(): ConvergenceCriterion {
+  protected static getConvergenceCriterion(eps = 0.001): ConvergenceCriterion {
     const temperatureIdx = model.variables
       .map(({ id }) => id)
       .indexOf('temperature');
@@ -128,7 +130,7 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     const convergenceCriterion = (record: Record, lastRecord: Record) => {
       const temp = record.variables[temperatureIdx];
       const lastTemp = lastRecord.variables[temperatureIdx];
-      return Math.abs(temp - lastTemp) < 0.001;
+      return Math.abs(temp - lastTemp) < eps;
     };
 
     return convergenceCriterion;
