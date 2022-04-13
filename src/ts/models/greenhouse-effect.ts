@@ -79,8 +79,8 @@ const variables: VariableWithRange[] = [
   {
     id: 'gnd temperature',
     formula: ({ s }: { s: LookupFunction }) => s('ground') / 1.55e10,
-    min: 12,
-    max: 18,
+    min: 13,
+    max: 16.5,
   },
   {
     id: 'epsilon',
@@ -94,8 +94,8 @@ const variables: VariableWithRange[] = [
 const parameters: ParameterWithRange[] = [
   {
     id: 'co2',
-    min: 280,
-    max: 1340,
+    min: 230,
+    max: 1150,
     value: 284,
   },
   {
