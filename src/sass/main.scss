@@ -1,13 +1,6 @@
-@use '~@fontsource/share-tech-mono/scss/mixins' as ShareTechMono;
 @use '~@fontsource/roboto-condensed/scss/mixins' as RobotoCondensed;
 
 @import '~/node_modules/reseter.css/css/reseter.css';
-
-@include ShareTechMono.fontFace(
-  $weight: 400,
-  $display: fallback,
-  $fontDir: '~/node_modules/@fontsource/share-tech-mono/files'
-);
 
 @include RobotoCondensed.fontFace(
   $fontName: 'RobotoCondensed-Regular',
@@ -24,7 +17,7 @@
 );
 
 body {
-  font-family: Share Tech Mono, monospace;
+  font-family: RobotoCondensed-Regular, monospace;
   overflow: hidden;
 }
 

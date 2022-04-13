@@ -77,16 +77,6 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
   }
 
   static fixScenarioSvg(svg: XMLDocument): void {
-    // fix mapping between ice min and max polygons
-    const iceMax = svg.querySelector('[id^=ice-max_]') as SVGGElement;
-    assert(iceMax !== null);
-    const iceMaxPolygons = Array.from(iceMax.children);
-    const idxMap = [7, 8, 0, 1, 2, 3, 4, 5, 6];
-    const iceMaxPolygonsReordered = iceMaxPolygons.map(
-      (p, i) => iceMaxPolygons[idxMap[i]]
-    );
-    iceMax.replaceChildren(...iceMaxPolygonsReordered);
-
     // general fix-ups
     const parentClassName = 'earth-energy-balance-scenario';
     preprocessSvg(svg, parentClassName);
@@ -182,11 +172,16 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
     return convergenceCriterion;
   }
 
-  // eslint-disable-next-line class-methods-use-this
   getMathModeElements() {
+    const nonMathModeText = this.svg.findOne('[id^=text01]');
+    assert(nonMathModeText !== null);
+
+    const mathModeOverlay = this.svg.findOne('[id^=mathmode01]');
+    assert(mathModeOverlay !== null);
+
     return {
-      hide: [],
-      show: [],
+      hide: [nonMathModeText.node],
+      show: [mathModeOverlay.node],
     };
   }
 }

@@ -25,12 +25,12 @@ const xScaleConfig: ScaleOptions = {
   grid: xGridConfig,
   title: {
     display: true,
-    font: { family: 'Share Tech Mono' },
+    font: { family: 'RobotoCondensed-Regular' },
     color: 'black',
   },
   ticks: {
     display: false,
-    font: { family: 'Share Tech Mono' },
+    font: { family: 'RobotoCondensed-Regular' },
     color: 'black',
     stepSize: Number.POSITIVE_INFINITY,
   },
@@ -41,14 +41,14 @@ const yScaleConfig: ScaleOptions = {
   title: {
     text: 'Temperatur (°C)',
     display: true,
-    font: { family: 'Share Tech Mono' },
+    font: { family: 'RobotoCondensed-Regular' },
     color: 'black',
   },
   grid: yGridConfig,
   ticks: {
     display: false,
     callback: formatCelsiusTick,
-    font: { family: 'Share Tech Mono' },
+    font: { family: 'RobotoCondensed-Regular' },
     color: 'black',
     stepSize: Number.POSITIVE_INFINITY,
   },
