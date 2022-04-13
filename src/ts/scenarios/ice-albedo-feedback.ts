@@ -8,6 +8,7 @@ import createModel from '../models/ice-albedo-feedback';
 import { Simulation, SimulationResult } from '../simulation';
 import {
   createExtractor,
+  createSvgMorphUpdater,
   createTemperatureCelsiusExtractor,
   createYearExtractor,
   loadSvg,
@@ -22,9 +23,11 @@ import {
   SolarEmissivityVsTemperatureChart,
   SolarEmissivityVsTemperatureChartOptions,
 } from '../charts/solar-emissivity-vs-temperature';
+import assert from 'assert';
+import { preprocessSvg } from '../svg-utils';
 
 const scenarioSvgUrl: URL = new URL(
-  './../../svg/scenario.svg',
+  './../../svg/ice-albedo-feedback.svg',
   import.meta.url
 );
 
@@ -36,10 +39,6 @@ const model = createModel();
 const modelForScenario = convertToBoxModelForScenario(model);
 
 export default class IceAlbedoFeedbackScenario extends BaseScenario {
-  protected readonly chart1: Chart;
-
-  protected readonly chart2: Chart;
-
   protected readonly svg;
 
   constructor(elem: HTMLDivElement, resources: Resources) {
@@ -50,11 +49,6 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
         { postProcess: (r: Record) => ({ ...r, t: 0 }) }
       )
     );
-
-    const scenarioLabel = document.createElement('div');
-    scenarioLabel.innerText = this.getName();
-    scenarioLabel.classList.add('label');
-    this.getContainer().appendChild(scenarioLabel);
 
     this.svg = SVG(document.importNode(resources.svg.documentElement, true));
     this.getScene().appendChild(this.svg.node);
@@ -79,7 +73,7 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
         'temperature'
       ),
     };
-    this.chart1 = new RealtimeVsTemperatureChart(canvas1, chart1Options);
+    const chart1 = new RealtimeVsTemperatureChart(canvas1, chart1Options);
 
     const canvas2: HTMLCanvasElement = document.createElement('canvas');
     canvas2.width = 238;
@@ -111,11 +105,28 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
       ),
       hysteresisData: IceAlbedoFeedbackScenario.computeHysteresisData(),
     };
-    this.chart2 = new SolarEmissivityVsTemperatureChart(canvas2, chart2Options);
+    const chart2 = new SolarEmissivityVsTemperatureChart(
+      canvas2,
+      chart2Options
+    );
+
+    this.updaters.push(chart1, chart2, ...this.createVizUpdaters());
+  }
+
+  static fixScenarioSvg(svg: XMLDocument): void {
+    // general fix-ups
+    const parentClassName = 'ice-albedo-feedback-scenario';
+    preprocessSvg(svg, parentClassName);
+
+    // remove accidentally added class from non math-mode text
+    const nonMathModeText = svg.querySelector('[id^=text02]');
+    assert(nonMathModeText !== null);
+    nonMathModeText.classList.remove('st35');
   }
 
   static async loadResources(): Promise<Resources> {
     const svg = await loadSvg(scenarioSvgUrl);
+    IceAlbedoFeedbackScenario.fixScenarioSvg(svg);
     return { svg };
   }
 
@@ -162,27 +173,82 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     return hysteresisData;
   }
 
-  protected update(newData: SimulationResult[]) {
-    this.chart1.update(newData);
-    this.chart2.update(newData);
-    this.updateSolarEmissivity();
+  protected createVizUpdaters() {
+    const solarEmissivityVizUpdater = createSvgMorphUpdater(
+      model,
+      'parameters',
+      'solar emissivity',
+      this.svg,
+      '[id^=sun]',
+      '[id^=sun-min]',
+      '[id^=sun-max]',
+      'sun-in-between'
+    );
+
+    const sunRadiationVizUpdater = createSvgMorphUpdater(
+      model,
+      'flows',
+      'sun radiation',
+      this.svg,
+      '[id^=arrowL]',
+      '[id^=arrowL-min]',
+      '[id^=arrowL-max]',
+      'arrowL-in-between'
+    );
+
+    const albedoVizUpdater = createSvgMorphUpdater(
+      model,
+      'variables',
+      'albedo',
+      this.svg,
+      '[id^=ice]',
+      '[id^=ice-min]',
+      '[id^=ice-max]',
+      'ice-in-between'
+    );
+
+    const reflectedSunRadiationVizUpdater = createSvgMorphUpdater(
+      model,
+      'flows',
+      'reflected sun radiation',
+      this.svg,
+      '[id^=arrowA]',
+      '[id^=arrowA-min]',
+      '[id^=arrowA-max]',
+      'arrowA-in-between'
+    );
+
+    const earthInfraredRadiationVizUpdater = createSvgMorphUpdater(
+      model,
+      'flows',
+      'earth infrared radiation',
+      this.svg,
+      '[id^=arrowT]',
+      '[id^=arrowT-min]',
+      '[id^=arrowT-max]',
+      'arrowT-in-between'
+    );
+
+    return [
+      solarEmissivityVizUpdater,
+      sunRadiationVizUpdater,
+      albedoVizUpdater,
+      reflectedSunRadiationVizUpdater,
+      earthInfraredRadiationVizUpdater,
+    ];
   }
 
-  protected updateSolarEmissivity() {
-    const simulation = this.getSimulation();
-    const { min, max } = simulation.getParameterRange();
-    const value = simulation.getParameter();
-    const relValue = (value - min) / (max - min);
-
-    const sunRays = this.svg.findOne('#sunrays-in') as SVGElement;
-    if (sunRays) {
-      sunRays.stroke({ width: 1 + relValue * (7 - 1) });
-    }
-  }
-
-  // eslint-disable-next-line class-methods-use-this
   getMathModeElements() {
-    return { hide: [], show: [] };
+    const nonMathModeText = this.svg.findOne('[id^=text02]');
+    assert(nonMathModeText !== null);
+
+    const mathModeOverlay = this.svg.findOne('[id^=mathmode02]');
+    assert(mathModeOverlay !== null);
+
+    return {
+      hide: [nonMathModeText.node],
+      show: [mathModeOverlay.node],
+    };
   }
 }
 
