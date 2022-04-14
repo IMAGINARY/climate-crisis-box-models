@@ -25,7 +25,7 @@ import {
 
 import { Record, convertToBoxModelForScenario } from '../box-model-definition';
 import { TimeVsYChart, TimeVsYChartOptions } from '../charts/x-vs-time';
-import { temperaturesCelsius, co2CMIP6ssp245, co2CMIP6ssp585 } from '../data';
+import { temperaturesCelsius, co2EqCMIP6ssp245, co2EqCMIP6ssp585 } from '../data';
 import { preprocessSvg } from '../svg-utils';
 
 const scenarioSvgUrl: URL = new URL(
@@ -99,8 +99,8 @@ export default class GreenhouseEffectScenario extends BaseScenario {
           x: index,
           y: value,
         })),
-        GreenhouseEffectScenario.computeTemperatureData(co2CMIP6ssp245),
-        GreenhouseEffectScenario.computeTemperatureData(co2CMIP6ssp585),
+        GreenhouseEffectScenario.computeTemperatureData(co2EqCMIP6ssp245),
+        GreenhouseEffectScenario.computeTemperatureData(co2EqCMIP6ssp585),
       ],
     };
 
@@ -127,11 +127,11 @@ export default class GreenhouseEffectScenario extends BaseScenario {
       toYear: yearExtractor,
       toYUnit: createExtractor(model, 'parameters', 'co2'),
       bgData: [
-        co2CMIP6ssp245.map((value, index) => ({
+        co2EqCMIP6ssp245.map((value, index) => ({
           x: index,
           y: value,
         })),
-        co2CMIP6ssp585.map((value, index) => ({
+        co2EqCMIP6ssp585.map((value, index) => ({
           x: index,
           y: value,
         })),
