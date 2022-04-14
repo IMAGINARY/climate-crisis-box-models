@@ -142,9 +142,8 @@ export default class RealtimeVsTemperatureChart implements Chart {
           lastDataPoint.x
         );
       }
-
-      this.chart.update();
     }
+    this.chart.update();
   }
 }
 

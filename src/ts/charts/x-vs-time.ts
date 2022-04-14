@@ -137,9 +137,8 @@ export default class TimeVsYChart implements Chart {
 
     if (data) {
       data.push(...newResults.map(createDataPoint));
-
-      this.chart.update();
     }
+    this.chart.update();
   }
 }
 
