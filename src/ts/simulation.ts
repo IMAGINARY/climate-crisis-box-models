@@ -221,9 +221,9 @@ export class Simulation extends EventEmitter {
           this.simulationTimeOffset += now - this.lastSimStopTimestamp;
         }
         const cb = (timestamp: number) => {
+          this.simulationFrameId = requestAnimationFrame(cb);
           const targetSimulationTime = timestamp - this.simulationTimeOffset;
           this.stepSimulation(targetSimulationTime);
-          this.simulationFrameId = requestAnimationFrame(cb);
         };
         cb(now);
       }
