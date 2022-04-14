@@ -190,7 +190,7 @@ async function main() {
     const keyProps = { key: 'm', repeat: false };
     registerKey('keydown', keyProps, () => enableMathMode(true));
     registerKey('keyup', keyProps, () => enableMathMode(false));
-    enableMathMode(true);
+    enableMathMode(false);
   }
 
   function stepSliders(steps: number) {
