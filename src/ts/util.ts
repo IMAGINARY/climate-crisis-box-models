@@ -204,6 +204,26 @@ interface Updater {
   reset(): void;
 }
 
+function createFuncUpdater({
+  update = () => {},
+  reset = () => {},
+}: {
+  update?: Updater['update'];
+  reset?: Updater['reset'];
+}): Updater {
+  return new (class implements Updater {
+    // eslint-disable-next-line class-methods-use-this
+    update(results: SimulationResult[]) {
+      update(results);
+    }
+
+    // eslint-disable-next-line class-methods-use-this
+    reset() {
+      reset();
+    }
+  })();
+}
+
 function createSvgMorphUpdater(
   model: BoxModelExt,
   key: BoxModelElementKey,
@@ -237,6 +257,12 @@ function createSvgMorphUpdater(
   return updater;
 }
 
+async function sleep(seconds: number) {
+  await new Promise((resolve) => {
+    setTimeout(resolve, seconds * 1000);
+  });
+}
+
 export {
   loadSvg,
   kelvinToCelsius,
@@ -257,5 +283,7 @@ export {
   Morpher,
   createSvgMorpher,
   Updater,
+  createFuncUpdater,
   createSvgMorphUpdater,
+  sleep,
 };

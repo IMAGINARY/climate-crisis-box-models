@@ -126,6 +126,10 @@ export default class TimeVsYChart implements Chart {
     this.update([]);
   }
 
+  data() {
+    return this.chart.data.datasets[0].data;
+  }
+
   update(newResults: SimulationResult[]) {
     const { toYUnit, toYear } = this.options;
     const createDataPoint = (r: SimulationResult) => ({

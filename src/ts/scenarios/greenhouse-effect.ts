@@ -1,7 +1,10 @@
+/* eslint max-classes-per-file: ["error", { ignoreExpressions: true }] */
+
 import assert from 'assert';
 import cloneDeep from 'lodash/cloneDeep';
 import { ConvergenceCriterion } from '@imaginary-maths/box-model';
-import { SVG } from '@svgdotjs/svg.js';
+import { SVG, Runner, Timeline } from '@svgdotjs/svg.js';
+import { easingEffects } from 'chart.js/helpers';
 
 import { BaseScenario } from './base';
 import createModel from '../models/greenhouse-effect';
@@ -16,6 +19,8 @@ import {
   loadSvg,
   secondsToYears,
   kelvinToCelsius,
+  Updater,
+  createFuncUpdater,
 } from '../util';
 
 import { Record, convertToBoxModelForScenario } from '../box-model-definition';
@@ -44,16 +49,22 @@ const gndTemperatureIdx = model.variables
 export default class GreenhouseEffectScenario extends BaseScenario {
   protected readonly svg;
 
+  protected readonly charts: TimeVsYChart[];
+
+  protected readonly vizUpdaters: Updater[];
+
+  protected readonly resetIfIndicatedHandler: (
+    r: ReadonlyArray<SimulationResult>
+  ) => void;
+
+  protected rewindPromise: Promise<void> | null = null;
+
+  protected readonly history: SimulationResult[] = [];
+
   // protected modelSceneConnections: ((record: Record) => void)[];
 
   constructor(elem: HTMLDivElement, resources: Resources) {
-    super(
-      elem,
-      new Simulation(cloneDeep(modelForScenario)).convergeInitialModelRecord(
-        GreenhouseEffectScenario.getConvergenceCriterion(0.001),
-        { postProcess: (r: Record) => ({ ...r, t: 0 }) }
-      )
-    );
+    super(elem, new Simulation(cloneDeep(modelForScenario)));
 
     this.svg = SVG(document.importNode(resources.svg.documentElement, true));
     this.getScene().appendChild(this.svg.node);
@@ -129,10 +140,26 @@ export default class GreenhouseEffectScenario extends BaseScenario {
 
     const co2Chart = new TimeVsYChart(co2Canvas, co2ChartOptions);
 
-    this.updaters.push(tempChart, co2Chart, ...this.createVizUpdaters());
+    this.charts = [tempChart, co2Chart];
 
-    this.getSimulation().on('results', this.resetIfIndicated.bind(this));
+    this.vizUpdaters = this.createVizUpdaters();
+
+    const { history } = this;
+    const historyUpdater = createFuncUpdater({
+      reset: () => {
+        history.length = 0;
+      },
+      update: (r: ReadonlyArray<SimulationResult>) => {
+        history.push(...r);
+      },
+    });
+
+    this.updaters.push(...this.charts, ...this.vizUpdaters, historyUpdater);
+
+    this.resetIfIndicatedHandler = this.resetIfIndicated.bind(this);
+    this.getSimulation().on('results', this.resetIfIndicatedHandler);
   }
+
   /*
   prepareModelToSceneConnections(): ((record: Record) => void)[] {
     const formatter = new Intl.NumberFormat('de', {
@@ -189,11 +216,79 @@ export default class GreenhouseEffectScenario extends BaseScenario {
     return 'Greenhouse Effect';
   }
 
-  protected resetIfIndicated(results: ReadonlyArray<SimulationResult>): void {
+  protected async resetIfIndicatedAsync(
+    results: ReadonlyArray<SimulationResult>
+  ) {
     if (results.length > 0) {
       const lastResult = results[results.length - 1];
-      if (yearExtractor(lastResult) > model.numSteps) this.reset();
+      if (yearExtractor(lastResult) >= model.numSteps) {
+        this.getSimulation().off('results', this.resetIfIndicatedHandler);
+        {
+          const updaters = [...this.updaters];
+          this.updaters.splice(0, this.updaters.length);
+          await this.rewind();
+          this.getSimulation().reset();
+          this.updaters.push(...updaters);
+        }
+        this.getSimulation().on('results', this.resetIfIndicatedHandler);
+      }
     }
+  }
+
+  protected resetIfIndicated(results: ReadonlyArray<SimulationResult>) {
+    this.resetIfIndicatedAsync(results).then(
+      () => {},
+      () => {}
+    );
+  }
+
+  async rewind(
+    duration = 6000,
+    easingFunction: (amount: number) => number = easingEffects.easeInOutExpo
+  ) {
+    if (this.rewindPromise !== null) {
+      await this.rewindPromise;
+      return;
+    }
+
+    const dataWithLength = [
+      ...this.charts.map((chart) => ({
+        data: chart.data(),
+        length: chart.data().length,
+      })),
+      { data: this.history, length: this.history.length },
+    ];
+
+    this.rewindPromise = new Promise<void>((resolve) => {
+      const runner = new Runner(duration)
+        .during((t: number) => {
+          const easedT = easingFunction(t);
+          dataWithLength.forEach(({ data, length }) => {
+            // eslint-disable-next-line no-param-reassign
+            data.length = Math.min(
+              Math.floor(1 + (length - 1) * (1 - easedT)),
+              length - 1
+            );
+          });
+          this.charts.forEach((chart) => chart.update([]));
+          if (this.history.length > 0) {
+            const lastResult = this.history[this.history.length - 1];
+            this.vizUpdaters.forEach((updater) => {
+              updater.update([lastResult]);
+            });
+          }
+        })
+        .after(() => {
+          this.rewindPromise = null;
+          resolve();
+        });
+
+      const timeline = new Timeline();
+      timeline.schedule(runner);
+      timeline.play();
+    });
+
+    await this.rewindPromise;
   }
 
   protected createVizUpdaters() {
