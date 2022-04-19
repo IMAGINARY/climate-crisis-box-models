@@ -1,6 +1,5 @@
-import { AssertionError, strict as assert } from 'assert';
+import { strict as assert } from 'assert';
 import ready from 'document-ready';
-import { Key } from 'ts-key-enum';
 
 import { EarthEnergyBalanceScenario } from './scenarios/earth-energy-balance';
 import { IceAlbedoFeedbackScenario } from './scenarios/ice-albedo-feedback';
@@ -8,6 +7,7 @@ import { GreenhouseEffectScenario } from './scenarios/greenhouse-effect';
 import { ScenarioSwitcher } from './scenario-switcher';
 import { Simulation } from './simulation';
 import { ParameterWithRange } from './box-model-definition';
+import { getDefaultOptions, getOptions } from './options/options';
 
 function addSlider(
   parent: HTMLElement,
@@ -83,6 +83,10 @@ function registerKey<
 }
 
 async function main() {
+  const options = getOptions();
+  // eslint-disable-next-line no-console
+  console.log({ options, defaults: getDefaultOptions() });
+
   const scenarioContainer = document.getElementById(
     'scenario-container'
   ) as HTMLDivElement;
@@ -105,7 +109,15 @@ async function main() {
 
   const scenarioSwitcher = new ScenarioSwitcher(scenarios);
   scenarioSwitcher.getCurrentScenario().getSimulation().stop();
-  scenarioSwitcher.switchTo(2);
+
+  if (options.initialScenario === 'first') scenarioSwitcher.switchTo(0);
+  else if (options.initialScenario === 'last')
+    scenarioSwitcher.switchTo(scenarioSwitcher.getScenarios().length - 1);
+  else if (options.initialScenario === 'random')
+    scenarioSwitcher.switchTo(Math.floor(Math.random() * scenarios.length));
+  else {
+    scenarioSwitcher.switchTo(options.initialScenario);
+  }
 
   const scenarioSelectorContainer = document.getElementById(
     'scenario-selector-container'
@@ -174,21 +186,32 @@ async function main() {
   startButton.addEventListener('click', play);
   stopButton.addEventListener('click', pause);
   registerKey('keypress', { key: ' ' }, tooglePlayPause);
-  pause();
+  if (options.autoPlay) play();
+  else pause();
 
   // step/cycle through scenarios
-  registerKey('keydown', { key: Key.ArrowLeft }, () => scenarioSwitcher.prev());
-  registerKey('keydown', { key: Key.ArrowRight }, () =>
+  registerKey('keydown', { key: options.prevScenarioKey }, () =>
+    scenarioSwitcher.prev()
+  );
+  registerKey('keydown', { key: options.nextScenarioKey }, () =>
     scenarioSwitcher.next()
   );
-  registerKey('keydown', { key: 'c' }, () => scenarioSwitcher.cycleForward());
+  if (options.scenarioCycleDirection === 'forward') {
+    registerKey('keydown', { key: options.cycleScenarioKey }, () =>
+      scenarioSwitcher.cycleForward()
+    );
+  } else {
+    registerKey('keydown', { key: options.cycleScenarioKey }, () =>
+      scenarioSwitcher.cycleBackward()
+    );
+  }
 
   // toogle overlay
   {
     const enableMathMode = (visible: boolean) => {
       scenarioSwitcher.getScenarios().forEach((s) => s.enableMathMode(visible));
     };
-    const keyProps = { key: 'm', repeat: false };
+    const keyProps = { key: options.mathModeKey, repeat: false };
     registerKey('keydown', keyProps, () => enableMathMode(true));
     registerKey('keyup', keyProps, () => enableMathMode(false));
     enableMathMode(false);
@@ -202,24 +225,34 @@ async function main() {
   }
 
   // set model parameter via keys or mouse wheel
-  registerKey('keydown', { key: Key.ArrowUp, repeat: false }, () =>
-    stepSliders(+1)
+  registerKey(
+    'keydown',
+    { key: options.increaseParameterKey, repeat: false },
+    () => stepSliders(+1)
   );
-  registerKey('keydown', { key: Key.ArrowDown, repeat: false }, () =>
-    stepSliders(-1)
+  registerKey(
+    'keydown',
+    { key: options.decreaseParameterKey, repeat: false },
+    () => stepSliders(-1)
   );
-  registerKey('keydown', { key: Key.ArrowUp, repeat: true }, () =>
-    stepSliders(+10)
+  registerKey(
+    'keydown',
+    { key: options.increaseParameterKey, repeat: true },
+    () => stepSliders(+10)
   );
-  registerKey('keydown', { key: Key.ArrowDown, repeat: true }, () =>
-    stepSliders(-10)
+  registerKey(
+    'keydown',
+    { key: options.decreaseParameterKey, repeat: true },
+    () => stepSliders(-10)
   );
+  const wheelDeltaIdx = options.wheelAxis === 'y' ? 'deltaY' : 'deltaX';
+  const wheelDivisor = options.wheelDivisor * (options.wheelInvert ? -1 : 1);
   window.addEventListener(
     'wheel',
     (event) => {
       event.preventDefault();
       if (event.deltaMode === WheelEvent.DOM_DELTA_PIXEL) {
-        stepSliders(event.deltaY);
+        stepSliders(event[wheelDeltaIdx] / wheelDivisor);
       }
     },
     { passive: false }
