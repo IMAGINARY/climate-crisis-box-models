@@ -62,8 +62,8 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
       numYears: model.numSteps,
       minTemp: kelvinToCelsius(min),
       maxTemp: kelvinToCelsius(max),
-      tempAxisLabel: () => 'Temperature (°C)',
-      timeAxisTitle: () => 'Zeit (Jahrtausend)',
+      tempAxisLabel: () => 'Temperatur [T]=°C',
+      timeAxisTitle: () => 'Zeit [t]=Jahrtausend',
       timeTickStepSize: 1000,
       toYear: createYearExtractor(model),
       toTemperatureCelsius: createTemperatureCelsiusExtractor(

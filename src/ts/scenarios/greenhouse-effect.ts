@@ -25,7 +25,11 @@ import {
 
 import { Record, convertToBoxModelForScenario } from '../box-model-definition';
 import { TimeVsYChart, TimeVsYChartOptions } from '../charts/x-vs-time';
-import { temperaturesCelsius, co2EqCMIP6ssp245, co2EqCMIP6ssp585 } from '../data';
+import {
+  temperaturesCelsius,
+  co2EqCMIP6ssp245,
+  co2EqCMIP6ssp585,
+} from '../data';
 import { preprocessSvg } from '../svg-utils';
 
 const scenarioSvgUrl: URL = new URL(
@@ -84,9 +88,9 @@ export default class GreenhouseEffectScenario extends BaseScenario {
       numYears: model.numSteps,
       minY: tempMin,
       maxY: tempMax,
-      yAxisLabel: () => 'Temperature (°C)',
+      yAxisLabel: () => 'Temperatur [T]=°C',
       yDataFormatter: ({ y }) => formatCelsiusFrac(y),
-      timeAxisTitle: () => 'Zeit (Jahrhundert)',
+      timeAxisTitle: () => 'Zeit [t]=Jahrhundert',
       timeTickStepSize: 100,
       toYear: yearExtractor,
       toYUnit: createTemperatureCelsiusExtractor(
@@ -120,9 +124,9 @@ export default class GreenhouseEffectScenario extends BaseScenario {
       numYears: model.numSteps,
       minY: co2Min,
       maxY: co2Max,
-      yAxisLabel: () => 'CO₂ (ppm)',
+      yAxisLabel: () => 'CO₂ [C]=ppm',
       yDataFormatter: ({ y }) => formatPpmFrac(y),
-      timeAxisTitle: () => 'Zeit (Jahrhundert)',
+      timeAxisTitle: () => 'Zeit [t]=Jahrhundert',
       timeTickStepSize: 100,
       toYear: yearExtractor,
       toYUnit: createExtractor(model, 'parameters', 'co2'),

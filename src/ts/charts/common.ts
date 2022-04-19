@@ -39,7 +39,6 @@ const xScaleConfig: ScaleOptions = {
 const yScaleConfig: ScaleOptions = {
   type: 'linear',
   title: {
-    text: 'Temperatur (°C)',
     display: true,
     font: { family: 'RobotoCondensed-Regular' },
     color: 'black',

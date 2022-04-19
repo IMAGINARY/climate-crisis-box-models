@@ -43,12 +43,12 @@ export default class SolarEmissivityVsTemperatureChart implements Chart {
     const chartData: TMyChartData = {
       datasets: [
         {
-          label: 'Solar emissivity vs. Temperature',
+          label: 'Simulation',
           data: [] as TMyDataPoint[],
           datalabels: { labels: { value: { display: false } } },
         },
         {
-          label: 'Hysteresis',
+          label: 'Hysterese',
           data: options.hysteresisData.map((r) => ({
             x: options.toSolarEmissivity(r),
             y: options.toTemperatureCelsius(r),
@@ -65,11 +65,12 @@ export default class SolarEmissivityVsTemperatureChart implements Chart {
     const additionalChartOptions: TMyChartOptions = {
       scales: {
         x: {
-          title: { text: 'Solar Emissivity (W/m²)' },
+          title: { text: 'Emissionsgrad der Sonne [L]=W/m²' },
           min: chartXMin - 0.1 * chartXSize,
           max: chartXMax + 0.1 * chartXSize,
         },
         y: {
+          title: { text: 'Temperatur [T]=°C' },
           min: chartYMin - 0.1 * chartYSize,
           max: chartYMax + 0.1 * chartYSize,
         },
