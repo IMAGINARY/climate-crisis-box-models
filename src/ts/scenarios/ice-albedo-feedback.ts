@@ -1,3 +1,4 @@
+import assert from 'assert';
 import cloneDeep from 'lodash/cloneDeep';
 import { SVG, Element as SVGElement } from '@svgdotjs/svg.js';
 import { ConvergenceCriterion } from '@imaginary-maths/box-model';
@@ -11,19 +12,18 @@ import {
   createSvgMorphUpdater,
   createTemperatureCelsiusExtractor,
   createYearExtractor,
+  formatCelsiusFrac,
   loadSvg,
 } from '../util';
 
-import { Chart } from '../chart';
 import {
-  RealtimeVsTemperatureChart,
-  RealtimeVsTemperatureChartOptions,
-} from '../charts/temperature-vs-realtime';
+  RealtimeVsYChart,
+  RealtimeVsYChartOptions,
+} from '../charts/realtime-vs-y';
 import {
   SolarEmissivityVsTemperatureChart,
   SolarEmissivityVsTemperatureChartOptions,
 } from '../charts/solar-emissivity-vs-temperature';
-import assert from 'assert';
 import { preprocessSvg } from '../svg-utils';
 
 const scenarioSvgUrl: URL = new URL(
@@ -59,21 +59,23 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     canvas1.classList.add('graph1');
     this.getScene().appendChild(canvas1);
 
-    const chart1Options: RealtimeVsTemperatureChartOptions = {
+    const chart1Options: RealtimeVsYChartOptions = {
       numYears: model.numSteps,
-      minTemp: -70,
-      maxTemp: 0,
-      tempAxisLabel: () => 'Temperatur [T]=°C',
+      minY: -70,
+      maxY: 0,
+      yAxisLabel: () => 'Temperatur [T]=°C',
       timeAxisTitle: () => 'Zeit [t]=Jahrtausend',
       timeTickStepSize: 1000,
       toYear: createYearExtractor(model),
-      toTemperatureCelsius: createTemperatureCelsiusExtractor(
+      toYUnit: createTemperatureCelsiusExtractor(
         model,
         'variables',
         'temperature'
       ),
+      yDataFormatter: ({ y }) => formatCelsiusFrac(y),
+      bgData: [],
     };
-    const chart1 = new RealtimeVsTemperatureChart(canvas1, chart1Options);
+    const chart1 = new RealtimeVsYChart(canvas1, chart1Options);
 
     const canvas2: HTMLCanvasElement = document.createElement('canvas');
     canvas2.width = 238;

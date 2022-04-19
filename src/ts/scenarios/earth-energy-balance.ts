@@ -10,13 +10,14 @@ import {
   createSvgMorphUpdater,
   createTemperatureCelsiusExtractor,
   createYearExtractor,
+  formatCelsiusFrac,
   kelvinToCelsius,
   loadSvg,
 } from '../util';
 import { preprocessSvg } from '../svg-utils';
 
 import { convertToBoxModelForScenario, Record } from '../box-model-definition';
-import { RealtimeVsTemperatureChart } from '../charts/temperature-vs-realtime';
+import { RealtimeVsYChart } from '../charts/realtime-vs-y';
 
 const scenarioSvgUrl: URL = new URL(
   './../../svg/earth-energy-balance.svg',
@@ -58,19 +59,21 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
       (v) => v.id === 'temperature'
     )[0];
 
-    const chart = new RealtimeVsTemperatureChart(canvas, {
+    const chart = new RealtimeVsYChart(canvas, {
       numYears: model.numSteps,
-      minTemp: kelvinToCelsius(min),
-      maxTemp: kelvinToCelsius(max),
-      tempAxisLabel: () => 'Temperatur [T]=°C',
+      minY: kelvinToCelsius(min),
+      maxY: kelvinToCelsius(max),
+      yAxisLabel: () => 'Temperatur [T]=°C',
       timeAxisTitle: () => 'Zeit [t]=Jahrtausend',
       timeTickStepSize: 1000,
       toYear: createYearExtractor(model),
-      toTemperatureCelsius: createTemperatureCelsiusExtractor(
+      toYUnit: createTemperatureCelsiusExtractor(
         model,
         'variables',
         'temperature'
       ),
+      yDataFormatter: ({ y }) => formatCelsiusFrac(y),
+      bgData: [],
     });
 
     this.updaters.push(chart, ...this.createVizUpdaters());

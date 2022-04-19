@@ -6,15 +6,20 @@ import { Chart } from '../chart';
 import { SimulationResult } from '../simulation';
 import * as common from './common';
 
-export type RealtimeVsTemperatureChartOptions = {
+export type RealtimeVsYChartOptions = {
   numYears: number;
-  minTemp: number;
-  maxTemp: number;
-  tempAxisLabel: () => string;
+  minY: number;
+  maxY: number;
+  yAxisLabel: () => string;
+  yDataFormatter: ({ y }: { y: number }) => string;
   timeAxisTitle: () => string;
   timeTickStepSize: number;
-  toTemperatureCelsius: (result: SimulationResult) => number;
+  toYUnit: (result: SimulationResult) => number;
   toYear: (result: SimulationResult) => number;
+  bgData: {
+    x: number;
+    y: number;
+  }[][];
 };
 
 type TMyDataPoint = {
@@ -46,27 +51,24 @@ type TMyChartType = ChartJs<'scatter', TMyDataPoint[]>;
 type TMyChartConfiguration = ChartConfiguration<'scatter', TMyDataPoint[]>;
 type TMyChartOptions = TMyChartConfiguration['options'];
 type TMyChartData = TMyChartConfiguration['data'];
-export default class RealtimeVsTemperatureChart implements Chart {
+export default class RealtimeVsYChart implements Chart {
   protected readonly chart: TMyChartType;
 
-  protected options: RealtimeVsTemperatureChartOptions;
+  protected options: RealtimeVsYChartOptions;
 
-  constructor(
-    canvas: HTMLCanvasElement,
-    options: RealtimeVsTemperatureChartOptions
-  ) {
+  constructor(canvas: HTMLCanvasElement, options: RealtimeVsYChartOptions) {
     this.options = options;
 
     const chartData: TMyChartData = {
       datasets: [
         {
-          label: 'Temperature',
+          label: 'Simulation',
           data: [] as TMyDataPoint[],
         },
       ],
     };
 
-    const { minTemp, maxTemp } = this.options;
+    const { minY, maxY } = this.options;
     const additionalChartOptions: TMyChartOptions = {
       scales: {
         x: {
@@ -83,9 +85,9 @@ export default class RealtimeVsTemperatureChart implements Chart {
           },
         },
         y: {
-          title: { text: this.options.tempAxisLabel() },
-          min: minTemp,
-          max: maxTemp,
+          title: { text: this.options.yAxisLabel() },
+          min: minY,
+          max: maxY,
         },
       },
     };
@@ -118,10 +120,10 @@ export default class RealtimeVsTemperatureChart implements Chart {
   }
 
   update(newResults: SimulationResult[]) {
-    const { toTemperatureCelsius, toYear } = this.options;
+    const { toYUnit, toYear } = this.options;
     const createDataPoint = (r: SimulationResult) => ({
       x: toYear(r),
-      y: toTemperatureCelsius(r),
+      y: toYUnit(r),
     });
 
     const data = this.chart.data.datasets?.[0]?.data;
@@ -147,4 +149,4 @@ export default class RealtimeVsTemperatureChart implements Chart {
   }
 }
 
-export { RealtimeVsTemperatureChart };
+export { RealtimeVsYChart };
