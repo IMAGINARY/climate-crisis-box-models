@@ -68,8 +68,17 @@ export default class RealtimeVsYChart implements Chart {
       ],
     };
 
-    const { minY, maxY } = this.options;
+    const { minY, maxY, yDataFormatter } = this.options;
     const additionalChartOptions: TMyChartOptions = {
+      plugins: {
+        datalabels: {
+          labels: {
+            value: {
+              formatter: yDataFormatter,
+            },
+          },
+        },
+      },
       scales: {
         x: {
           title: { text: this.options.timeAxisTitle() },

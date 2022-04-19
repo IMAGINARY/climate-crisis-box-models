@@ -7,9 +7,12 @@ import { BaseScenario } from './base';
 import createModel from '../models/earth-energy-balance';
 import { Simulation } from '../simulation';
 import {
+  createAlbedoExtractor,
   createSvgMorphUpdater,
   createTemperatureCelsiusExtractor,
   createYearExtractor,
+  extendRangeRel,
+  formatAlbedo,
   formatCelsiusFrac,
   kelvinToCelsius,
   loadSvg,
@@ -49,20 +52,20 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
     );
     this.getScene().appendChild(this.svg.node);
 
-    const canvas: HTMLCanvasElement = document.createElement('canvas');
-    canvas.width = 238;
-    canvas.height = 176;
-    canvas.classList.add('graph');
-    this.getScene().appendChild(canvas);
+    const tempCanvas: HTMLCanvasElement = document.createElement('canvas');
+    tempCanvas.width = 238;
+    tempCanvas.height = 176;
+    tempCanvas.classList.add('graph1');
+    this.getScene().appendChild(tempCanvas);
 
-    const { min, max } = model.variables.filter(
+    const { min: minTemp, max: maxTemp } = model.variables.filter(
       (v) => v.id === 'temperature'
     )[0];
 
-    const chart = new RealtimeVsYChart(canvas, {
+    const tempChart = new RealtimeVsYChart(tempCanvas, {
       numYears: model.numSteps,
-      minY: kelvinToCelsius(min),
-      maxY: kelvinToCelsius(max),
+      minY: kelvinToCelsius(minTemp),
+      maxY: kelvinToCelsius(maxTemp),
       yAxisLabel: () => 'Temperatur [T]=°C',
       timeAxisTitle: () => 'Zeit [t]=Jahrtausend',
       timeTickStepSize: 1000,
@@ -76,7 +79,31 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
       bgData: [],
     });
 
-    this.updaters.push(chart, ...this.createVizUpdaters());
+    const albedoCanvas: HTMLCanvasElement = document.createElement('canvas');
+    albedoCanvas.width = 238;
+    albedoCanvas.height = 176;
+    albedoCanvas.classList.add('graph2');
+    this.getScene().appendChild(albedoCanvas);
+
+    const { min: minAlbedo, max: maxAlbedo } = extendRangeRel(
+      model.parameters.filter((p) => p.id === 'albedo')[0],
+      0.1
+    );
+
+    const albedoChart = new RealtimeVsYChart(albedoCanvas, {
+      numYears: model.numSteps,
+      minY: minAlbedo * 100,
+      maxY: maxAlbedo * 100,
+      yAxisLabel: () => 'Albedo [α]=%',
+      timeAxisTitle: () => 'Zeit [t]=Jahrtausend',
+      timeTickStepSize: 1000,
+      toYear: createYearExtractor(model),
+      toYUnit: createAlbedoExtractor(model, 'parameters', 'albedo'),
+      yDataFormatter: ({ y }) => formatAlbedo(y),
+      bgData: [],
+    });
+
+    this.updaters.push(tempChart, albedoChart, ...this.createVizUpdaters());
   }
 
   static fixScenarioSvg(svg: XMLDocument): void {

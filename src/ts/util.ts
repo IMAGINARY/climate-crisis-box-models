@@ -71,6 +71,15 @@ function createTemperatureCelsiusExtractor(
   return (result) => kelvinToCelsius(kelvinExtractor(result));
 }
 
+function createAlbedoExtractor(
+  model: BoxModelExt,
+  key: BoxModelElementKey,
+  id: string
+): Extractor {
+  const albedoFactorExtractor = createExtractor(model, key, id);
+  return (result) => albedoFactorExtractor(result) * 100;
+}
+
 const integralNumberFormatter = new Intl.NumberFormat('de', {
   maximumFractionDigits: 0,
 });
@@ -138,6 +147,12 @@ function formatIrradianceTick(irradiance: number | string) {
   return typeof irradiance !== 'undefined'
     ? formatIrradiance(irradiance)
     : undefined;
+}
+
+function formatAlbedo(albedo: number | string) {
+  return `${
+    typeof albedo === 'string' ? albedo : integralNumberFormatter.format(albedo)
+  }%`;
 }
 
 type Morpher<T> = (pos: number) => T;
@@ -263,6 +278,27 @@ async function sleep(seconds: number) {
   });
 }
 
+function extendRangeAbs(
+  { min, max }: { min: number; max: number },
+  offset: number
+): { min: number; max: number } {
+  return {
+    min: min - offset,
+    max: max + offset,
+  };
+}
+
+function extendRangeRel(
+  { min, max }: { min: number; max: number },
+  factor: number
+): { min: number; max: number } {
+  const size = max - min;
+  return {
+    min: min - size * factor,
+    max: max + size * factor,
+  };
+}
+
 export {
   loadSvg,
   kelvinToCelsius,
@@ -276,14 +312,18 @@ export {
   formatYearTick,
   formatIrradiance,
   formatIrradianceTick,
+  formatAlbedo,
   createExtractor,
   createRelativeExtractor,
   createTemperatureCelsiusExtractor,
   createYearExtractor,
+  createAlbedoExtractor,
   Morpher,
   createSvgMorpher,
   Updater,
   createFuncUpdater,
   createSvgMorphUpdater,
   sleep,
+  extendRangeAbs,
+  extendRangeRel,
 };

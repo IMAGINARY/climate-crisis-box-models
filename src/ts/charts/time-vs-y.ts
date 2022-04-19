@@ -62,7 +62,7 @@ export default class TimeVsYChart implements Chart {
     const chartData: TMyChartData = {
       datasets: [
         {
-          label: 'Temperature',
+          label: 'Simulation',
           data: [] as TMyDataPoint[],
         },
         ...options.bgData.map((bgData, i) => ({
