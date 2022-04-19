@@ -176,11 +176,12 @@ async function main() {
   registerKey('keypress', { key: ' ' }, tooglePlayPause);
   pause();
 
-  // step through scenarios
+  // step/cycle through scenarios
   registerKey('keydown', { key: Key.ArrowLeft }, () => scenarioSwitcher.prev());
   registerKey('keydown', { key: Key.ArrowRight }, () =>
     scenarioSwitcher.next()
   );
+  registerKey('keydown', { key: 'c' }, () => scenarioSwitcher.cycleForward());
 
   // toogle overlay
   {
