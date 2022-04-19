@@ -24,7 +24,7 @@ import {
 } from '../util';
 
 import { Record, convertToBoxModelForScenario } from '../box-model-definition';
-import { TimeVsYChart, TimeVsYChartOptions } from '../charts/x-vs-time';
+import { TimeVsYChart, TimeVsYChartOptions } from '../charts/time-vs-y';
 import {
   temperaturesCelsius,
   co2EqCMIP6ssp245,
