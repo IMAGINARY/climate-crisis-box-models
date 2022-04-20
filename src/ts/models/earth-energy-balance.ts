@@ -67,7 +67,7 @@ const parameters: ParameterWithRange[] = [
   },
 ];
 
-const divisor = 4;
+const divisor = 8;
 const subSteps = 9;
 const stepSize = ((subSteps + 1) * SECONDS_PER_YEAR) / divisor;
 const yearsPerSecond = 1000 / divisor;
