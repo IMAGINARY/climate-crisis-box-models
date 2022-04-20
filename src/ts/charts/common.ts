@@ -76,6 +76,7 @@ const scatterChartOptions: ChartConfiguration<'scatter'>['options'] = {
           formatter: ({ y }: { y: number }) => formatCelsiusFrac(y),
           anchor: 'end',
           align: 'end',
+          textAlign: 'center',
           backgroundColor: '#b8e4f3aa',
           borderRadius: 4,
           padding: 3,

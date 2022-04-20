@@ -5,6 +5,7 @@ import { ChartConfiguration } from 'chart.js';
 import { Chart } from '../chart';
 import { SimulationResult } from '../simulation';
 import * as common from './common';
+import { formatCelsiusFrac, formatIrradiance } from '../util';
 
 type TMyDataPoint = {
   x: number;
@@ -45,7 +46,16 @@ export default class SolarEmissivityVsTemperatureChart implements Chart {
         {
           label: 'Simulation',
           data: [] as TMyDataPoint[],
-          datalabels: { labels: { value: { display: false } } },
+          datalabels: {
+            labels: {
+              value: {
+                formatter: ({ x, y }: { x: number; y: number }) => [
+                  formatIrradiance(x),
+                  formatCelsiusFrac(y),
+                ],
+              },
+            },
+          },
         },
         {
           label: 'Hysterese',
@@ -54,7 +64,6 @@ export default class SolarEmissivityVsTemperatureChart implements Chart {
             y: options.toTemperatureCelsius(r),
             year: 0,
           })),
-          datalabels: { labels: { value: { display: false } } },
         },
       ],
     };

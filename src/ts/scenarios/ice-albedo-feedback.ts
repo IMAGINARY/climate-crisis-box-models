@@ -88,7 +88,7 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     const solarEmissivityIdx = model.parameters.findIndex(
       ({ id }) => id === 'solar emissivity'
     );
-    const solarEmissivityRangeFactor = 0.2;
+    const solarEmissivityRangeFactor = 0.7;
     const { min: minEmissivity, max: maxEmissivity } = extendRangeRel(
       model.parameters[solarEmissivityIdx],
       solarEmissivityRangeFactor
