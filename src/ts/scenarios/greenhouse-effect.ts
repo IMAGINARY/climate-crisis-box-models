@@ -75,7 +75,7 @@ const createRawChartOptions = (
         label1: {
           type: 'label',
           xValue: x,
-          yMax,
+          yValue: yMax,
           yAdjust: -7,
           padding: 3,
           content: 'Gegenwart',
