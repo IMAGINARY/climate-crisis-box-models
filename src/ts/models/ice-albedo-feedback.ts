@@ -47,8 +47,8 @@ const variables: VariableWithRange[] = [
     id: 'temperature',
     formula: ({ s }: { s: LookupFunction }) =>
       s('planet heat content') * 2.38e-10,
-    min: 207,
-    max: 271,
+    min: 273.15 - 65.7,
+    max: 273.15 - 3.1,
   },
   {
     id: 'albedo',

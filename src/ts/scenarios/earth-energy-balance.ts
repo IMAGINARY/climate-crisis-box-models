@@ -56,9 +56,10 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
     const tempCanvas: HTMLCanvasElement = createGraphCanvas();
     this.getScene().appendChild(tempCanvas);
 
-    const { min: minTemp, max: maxTemp } = model.variables.filter(
-      (v) => v.id === 'temperature'
-    )[0];
+    const { min: minTemp, max: maxTemp } = extendRangeRel(
+      model.variables.filter((v) => v.id === 'temperature')[0],
+      0.2
+    );
 
     const tempChart = new RealtimeVsYChart(tempCanvas, {
       numYears: model.numSteps,
@@ -82,7 +83,7 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
 
     const { min: minAlbedo, max: maxAlbedo } = extendRangeRel(
       model.parameters.filter((p) => p.id === 'albedo')[0],
-      0.1
+      0.2
     );
 
     const albedoChart = new RealtimeVsYChart(albedoCanvas, {

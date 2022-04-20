@@ -1,6 +1,6 @@
 import assert from 'assert';
 import cloneDeep from 'lodash/cloneDeep';
-import { SVG, Element as SVGElement } from '@svgdotjs/svg.js';
+import { SVG } from '@svgdotjs/svg.js';
 import { ConvergenceCriterion } from '@imaginary-maths/box-model';
 
 import { BaseScenario } from './base';
@@ -12,7 +12,9 @@ import {
   createSvgMorphUpdater,
   createTemperatureCelsiusExtractor,
   createYearExtractor,
+  extendRangeRel,
   formatCelsiusFrac,
+  kelvinToCelsius,
   loadSvg,
 } from '../util';
 import { createGraphCanvas } from '../charts/common';
@@ -54,13 +56,18 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     this.svg = SVG(document.importNode(resources.svg.documentElement, true));
     this.getScene().appendChild(this.svg.node);
 
-    const canvas1: HTMLCanvasElement = createGraphCanvas();
-    this.getScene().appendChild(canvas1);
+    const { min: minTemp, max: maxTemp } = extendRangeRel(
+      model.variables.filter((v) => v.id === 'temperature')[0],
+      0.2
+    );
 
-    const chart1Options: RealtimeVsYChartOptions = {
+    const tempCanvas: HTMLCanvasElement = createGraphCanvas();
+    this.getScene().appendChild(tempCanvas);
+
+    const tempChartOptions: RealtimeVsYChartOptions = {
       numYears: model.numSteps,
-      minY: -70,
-      maxY: 0,
+      minY: kelvinToCelsius(minTemp),
+      maxY: kelvinToCelsius(maxTemp),
       yAxisLabel: () => 'Temperatur [T]=°C',
       timeAxisTitle: () => 'Zeit [t]=Jahrtausend',
       timeTickStepSize: 1000,
@@ -73,41 +80,53 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
       yDataFormatter: ({ y }) => formatCelsiusFrac(y),
       bgData: [],
     };
-    const chart1 = new RealtimeVsYChart(canvas1, chart1Options);
+    const tempChart = new RealtimeVsYChart(tempCanvas, tempChartOptions);
 
-    const canvas2: HTMLCanvasElement = createGraphCanvas();
-    this.getScene().appendChild(canvas2);
+    const solarEmissivityVsTempCanvas: HTMLCanvasElement = createGraphCanvas();
+    this.getScene().appendChild(solarEmissivityVsTempCanvas);
 
     const solarEmissivityIdx = model.parameters.findIndex(
       ({ id }) => id === 'solar emissivity'
     );
-    const { min: minEmissivity, max: maxEmissivity } =
-      model.parameters[solarEmissivityIdx];
-    const chart2Options: SolarEmissivityVsTemperatureChartOptions = {
-      numYears: 2000,
-      minTemp: -70,
-      maxTemp: 0,
-      minEmissivity,
-      maxEmissivity,
-      toYear: createYearExtractor(model),
-      toSolarEmissivity: createExtractor(
-        model,
-        'parameters',
-        'solar emissivity'
-      ),
-      toTemperatureCelsius: createTemperatureCelsiusExtractor(
-        model,
-        'variables',
-        'temperature'
-      ),
-      hysteresisData: IceAlbedoFeedbackScenario.computeHysteresisData(),
-    };
-    const chart2 = new SolarEmissivityVsTemperatureChart(
-      canvas2,
-      chart2Options
+    const solarEmissivityRangeFactor = 0.2;
+    const { min: minEmissivity, max: maxEmissivity } = extendRangeRel(
+      model.parameters[solarEmissivityIdx],
+      solarEmissivityRangeFactor
     );
 
-    this.updaters.push(chart1, chart2, ...this.createVizUpdaters());
+    const solarEmissivityVsTempChartOptions: SolarEmissivityVsTemperatureChartOptions =
+      {
+        numYears: 2000,
+        minTemp: kelvinToCelsius(minTemp),
+        maxTemp: kelvinToCelsius(maxTemp),
+        minEmissivity,
+        maxEmissivity,
+        toYear: createYearExtractor(model),
+        toSolarEmissivity: createExtractor(
+          model,
+          'parameters',
+          'solar emissivity'
+        ),
+        toTemperatureCelsius: createTemperatureCelsiusExtractor(
+          model,
+          'variables',
+          'temperature'
+        ),
+        hysteresisData: IceAlbedoFeedbackScenario.computeHysteresisData(
+          solarEmissivityRangeFactor
+        ),
+      };
+    const solarEmissivityVsTemperatureChart =
+      new SolarEmissivityVsTemperatureChart(
+        solarEmissivityVsTempCanvas,
+        solarEmissivityVsTempChartOptions
+      );
+
+    this.updaters.push(
+      tempChart,
+      solarEmissivityVsTemperatureChart,
+      ...this.createVizUpdaters()
+    );
   }
 
   static fixScenarioSvg(svg: XMLDocument): void {
@@ -146,7 +165,9 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     return convergenceCriterion;
   }
 
-  protected static computeHysteresisData(): SimulationResult[] {
+  protected static computeHysteresisData(
+    solarEmissivityRangeFactor: number
+  ): SimulationResult[] {
     const convergenceCriterion =
       IceAlbedoFeedbackScenario.getConvergenceCriterion();
 
@@ -154,13 +175,14 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     const numSteps = 100;
 
     const simulation = new Simulation(cloneDeep(modelForScenario));
-    const { min, max } = simulation.getParameterRange();
-    const extMin = min - (max - min) * 0.1;
-    const extMax = max + (max - min) * 0.1;
+    const { min, max } = extendRangeRel(
+      simulation.getParameterRange(),
+      solarEmissivityRangeFactor
+    );
     // walk the solar emissivity parameter down and back up
     for (let step = -numSteps + 1; step < numSteps; step += 1) {
       simulation.setParameter(
-        extMin + ((extMax - extMin) * Math.abs(step)) / (numSteps - 1),
+        min + ((max - min) * Math.abs(step)) / (numSteps - 1),
         true
       );
       const result = simulation.converge(convergenceCriterion);

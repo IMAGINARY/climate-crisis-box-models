@@ -115,7 +115,7 @@ const scatterChartOptions: ChartConfiguration<'scatter'>['options'] = {
     y: yScaleConfig,
   },
   layout: { padding: canvasPadding },
-  events: [], // disable all chart interactions
+  //  events: [], // disable all chart interactions
 };
 
 function updateDataWithTrace<TMyDataPoint>(

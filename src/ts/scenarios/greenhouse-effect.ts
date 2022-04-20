@@ -24,6 +24,7 @@ import {
   kelvinToCelsius,
   Updater,
   createFuncUpdater,
+  extendRangeRel,
 } from '../util';
 import { createGraphCanvas } from '../charts/common';
 
@@ -114,15 +115,21 @@ export default class GreenhouseEffectScenario extends BaseScenario {
 
     //    this.modelSceneConnections = this.prepareModelToSceneConnections();
 
-    const { min: tempMin, max: tempMax } = model.variables[gndTemperatureIdx];
+    const { min: tempMin, max: tempMax } = extendRangeRel(
+      model.variables[gndTemperatureIdx],
+      0.2
+    );
+
+    const tempMinCelsius = kelvinToCelsius(tempMin);
+    const tempMaxCelsius = kelvinToCelsius(tempMax);
 
     const tempCanvas: HTMLCanvasElement = createGraphCanvas();
     this.getScene().appendChild(tempCanvas);
 
     const tempChartOptions: TimeVsYChartOptions = {
       numYears: model.numSteps,
-      minY: tempMin,
-      maxY: tempMax,
+      minY: tempMinCelsius,
+      maxY: tempMaxCelsius,
       yAxisLabel: () => 'Temperatur [T]=°C',
       yDataFormatter: ({ y }) => formatCelsiusFrac(y),
       timeAxisTitle: () => 'Zeit [t]=Jahrhundert',
@@ -143,16 +150,17 @@ export default class GreenhouseEffectScenario extends BaseScenario {
       ],
       rawChartOptions: createRawChartOptions(
         temperaturesCelsius.length,
-        tempMin,
-        tempMax - (tempMax - tempMin) / 6
+        tempMinCelsius,
+        tempMaxCelsius - (tempMaxCelsius - tempMinCelsius) / 6
       ),
     };
 
     const tempChart = new TimeVsYChart(tempCanvas, tempChartOptions);
 
-    const { min: co2Min, max: co2Max } = model.parameters.filter(
-      (p) => p.id === 'co2'
-    )[0];
+    const { min: co2Min, max: co2Max } = extendRangeRel(
+      model.parameters.filter((p) => p.id === 'co2')[0],
+      0.2
+    );
 
     const co2Canvas: HTMLCanvasElement = createGraphCanvas();
     this.getScene().appendChild(co2Canvas);

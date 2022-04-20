@@ -282,9 +282,10 @@ function extendRangeAbs(
   { min, max }: { min: number; max: number },
   offset: number
 ): { min: number; max: number } {
+  const halfOffset = offset / 2;
   return {
-    min: min - offset,
-    max: max + offset,
+    min: min - halfOffset,
+    max: max + halfOffset,
   };
 }
 
@@ -292,10 +293,10 @@ function extendRangeRel(
   { min, max }: { min: number; max: number },
   factor: number
 ): { min: number; max: number } {
-  const size = max - min;
+  const halfSize = (max - min) / 2;
   return {
-    min: min - size * factor,
-    max: max + size * factor,
+    min: min - halfSize * factor,
+    max: max + halfSize * factor,
   };
 }
 

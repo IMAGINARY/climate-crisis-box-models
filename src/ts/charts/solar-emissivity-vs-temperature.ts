@@ -58,21 +58,19 @@ export default class SolarEmissivityVsTemperatureChart implements Chart {
         },
       ],
     };
-    const { minEmissivity: chartXMin, maxEmissivity: chartXMax } = this.options;
-    const { minTemp: chartYMin, maxTemp: chartYMax } = this.options;
-    const chartXSize = chartXMax - chartXMin;
-    const chartYSize = chartYMax - chartYMin;
+    const { minEmissivity, maxEmissivity } = this.options;
+    const { minTemp, maxTemp } = this.options;
     const additionalChartOptions: TMyChartOptions = {
       scales: {
         x: {
           title: { text: 'Emissionsgrad der Sonne [L]=W/m²' },
-          min: chartXMin - 0.1 * chartXSize,
-          max: chartXMax + 0.1 * chartXSize,
+          min: minEmissivity,
+          max: maxEmissivity,
         },
         y: {
           title: { text: 'Temperatur [T]=°C' },
-          min: chartYMin - 0.1 * chartYSize,
-          max: chartYMax + 0.1 * chartYSize,
+          min: minTemp,
+          max: maxTemp,
         },
       },
     };
