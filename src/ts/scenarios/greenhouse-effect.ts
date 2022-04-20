@@ -24,8 +24,8 @@ import {
   kelvinToCelsius,
   Updater,
   createFuncUpdater,
-  createGraphCanvas,
 } from '../util';
+import { createGraphCanvas } from '../charts/common';
 
 import { Record, convertToBoxModelForScenario } from '../box-model-definition';
 import { TimeVsYChart, TimeVsYChartOptions } from '../charts/time-vs-y';

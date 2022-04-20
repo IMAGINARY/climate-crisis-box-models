@@ -299,14 +299,6 @@ function extendRangeRel(
   };
 }
 
-function createGraphCanvas(d: Document = window.document): HTMLCanvasElement {
-  const canvas: HTMLCanvasElement = d.createElement('canvas');
-  canvas.width = 250;
-  canvas.height = 190;
-  canvas.classList.add('graph');
-  return canvas;
-}
-
 export {
   loadSvg,
   kelvinToCelsius,
@@ -334,5 +326,4 @@ export {
   sleep,
   extendRangeAbs,
   extendRangeRel,
-  createGraphCanvas,
 };

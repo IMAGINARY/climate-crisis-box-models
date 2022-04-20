@@ -9,13 +9,13 @@ import createModel from '../models/ice-albedo-feedback';
 import { Simulation, SimulationResult } from '../simulation';
 import {
   createExtractor,
-  createGraphCanvas,
   createSvgMorphUpdater,
   createTemperatureCelsiusExtractor,
   createYearExtractor,
   formatCelsiusFrac,
   loadSvg,
 } from '../util';
+import { createGraphCanvas } from '../charts/common';
 
 import {
   RealtimeVsYChart,

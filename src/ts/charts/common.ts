@@ -56,6 +56,8 @@ const yScaleConfig: ScaleOptions = {
   },
 };
 
+const canvasPadding = { top: 100, right: 40 };
+
 const scatterChartOptions: ChartConfiguration<'scatter'>['options'] = {
   responsive: false,
   showLine: true,
@@ -112,7 +114,7 @@ const scatterChartOptions: ChartConfiguration<'scatter'>['options'] = {
     x: xScaleConfig,
     y: yScaleConfig,
   },
-  layout: { padding: { top: 40, right: 40 } },
+  layout: { padding: canvasPadding },
   events: [], // disable all chart interactions
 };
 
@@ -137,5 +139,12 @@ function updateDataWithTrace<TMyDataPoint>(
   }
 }
 
-// eslint-disable-next-line import/prefer-default-export
-export { scatterChartOptions, updateDataWithTrace };
+function createGraphCanvas(d: Document = window.document): HTMLCanvasElement {
+  const canvas: HTMLCanvasElement = d.createElement('canvas');
+  canvas.width = 210 + canvasPadding.right;
+  canvas.height = 150 + canvasPadding.top;
+  canvas.classList.add('graph');
+  return canvas;
+}
+
+export { scatterChartOptions, updateDataWithTrace, createGraphCanvas };

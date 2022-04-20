@@ -16,8 +16,8 @@ import {
   formatCelsiusFrac,
   kelvinToCelsius,
   loadSvg,
-  createGraphCanvas,
 } from '../util';
+import { createGraphCanvas } from '../charts/common';
 import { preprocessSvg } from '../svg-utils';
 
 import { convertToBoxModelForScenario, Record } from '../box-model-definition';
