@@ -7,7 +7,10 @@ import { SVG, Runner, Timeline } from '@svgdotjs/svg.js';
 import { easingEffects } from 'chart.js/helpers';
 
 import { BaseScenario } from './base';
-import createModel from '../models/greenhouse-effect';
+import createModel, {
+  epsilonFactor,
+  epsilonOffset,
+} from '../models/greenhouse-effect';
 import { Simulation, SimulationResult } from '../simulation';
 import {
   createSvgMorphUpdater,
@@ -246,6 +249,18 @@ export default class GreenhouseEffectScenario extends BaseScenario {
     // general fix-ups
     const parentClassName = 'greenhouse-effect-scenario';
     preprocessSvg(svg, parentClassName);
+
+    const epsilonFormulaTag = Array.from(
+      svg.querySelectorAll('text[id^=mathmode]')
+    ).filter((e) => e.textContent?.startsWith('є = '))[0];
+    assert(epsilonFormulaTag, 'tag of epsilon formula not found');
+    const f = new Intl.NumberFormat('de', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 3,
+    });
+    epsilonFormulaTag.textContent = `є = ${f.format(
+      epsilonFactor
+    )} ln(C) + ${f.format(epsilonOffset)}`;
   }
 
   static async loadResources(): Promise<Resources> {

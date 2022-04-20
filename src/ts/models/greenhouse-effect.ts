@@ -69,6 +69,9 @@ const flows: FlowWithRange[] = [
   },
 ];
 
+const epsilonFactor = 0.04 / Math.log(2);
+const epsilonOffset = 0.421;
+
 const variables: VariableWithRange[] = [
   {
     id: 'atm temperature',
@@ -85,7 +88,7 @@ const variables: VariableWithRange[] = [
   {
     id: 'epsilon',
     formula: ({ p }: { p: LookupFunction }) =>
-      (0.04 / Math.log(2)) * Math.log(p('co2')) + 0.421,
+      epsilonFactor * Math.log(p('co2')) + epsilonOffset,
     min: 0,
     max: 1,
   },
@@ -137,3 +140,4 @@ function createModel(): BoxModelExt {
 }
 
 export default createModel;
+export { epsilonFactor, epsilonOffset };
