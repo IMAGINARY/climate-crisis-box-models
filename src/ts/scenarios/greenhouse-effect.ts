@@ -15,12 +15,13 @@ import {
   createTemperatureCelsiusExtractor,
   createYearExtractor,
   formatCelsiusFrac,
-  formatPpmFrac,
+  formatPpm,
   loadSvg,
   secondsToYears,
   kelvinToCelsius,
   Updater,
   createFuncUpdater,
+  createGraphCanvas,
 } from '../util';
 
 import { Record, convertToBoxModelForScenario } from '../box-model-definition';
@@ -78,10 +79,7 @@ export default class GreenhouseEffectScenario extends BaseScenario {
 
     const { min: tempMin, max: tempMax } = model.variables[gndTemperatureIdx];
 
-    const tempCanvas: HTMLCanvasElement = document.createElement('canvas');
-    tempCanvas.width = 238;
-    tempCanvas.height = 176;
-    tempCanvas.classList.add('graph1');
+    const tempCanvas: HTMLCanvasElement = createGraphCanvas();
     this.getScene().appendChild(tempCanvas);
 
     const tempChartOptions: TimeVsYChartOptions = {
@@ -114,10 +112,7 @@ export default class GreenhouseEffectScenario extends BaseScenario {
       (p) => p.id === 'co2'
     )[0];
 
-    const co2Canvas: HTMLCanvasElement = document.createElement('canvas');
-    co2Canvas.width = 238;
-    co2Canvas.height = 176;
-    co2Canvas.classList.add('graph2');
+    const co2Canvas: HTMLCanvasElement = createGraphCanvas();
     this.getScene().appendChild(co2Canvas);
 
     const co2ChartOptions: TimeVsYChartOptions = {
@@ -125,7 +120,7 @@ export default class GreenhouseEffectScenario extends BaseScenario {
       minY: co2Min,
       maxY: co2Max,
       yAxisLabel: () => 'CO₂ [C]=ppm',
-      yDataFormatter: ({ y }) => formatPpmFrac(y),
+      yDataFormatter: ({ y }) => formatPpm(y),
       timeAxisTitle: () => 'Zeit [t]=Jahrhundert',
       timeTickStepSize: 100,
       toYear: yearExtractor,

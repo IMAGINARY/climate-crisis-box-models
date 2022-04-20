@@ -21,19 +21,19 @@ body {
   overflow: hidden;
 }
 
-.graph,
-.graph1 {
+.scene .graph {
   position: absolute;
-  right: 0;
-  top: 40px;
-  margin-right: 0px;
+  right: -5px;
 }
 
-.graph2 {
-  position: absolute;
-  right: 0;
-  top: 200px;
-  margin-right: 0px;
+.scene {
+  .graph:nth-of-type(1) {
+    top: 50px;
+  }
+
+  .graph:nth-of-type(2) {
+    top: 230px;
+  }
 }
 
 #aspect-ratio-box {

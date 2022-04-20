@@ -9,6 +9,7 @@ import createModel from '../models/ice-albedo-feedback';
 import { Simulation, SimulationResult } from '../simulation';
 import {
   createExtractor,
+  createGraphCanvas,
   createSvgMorphUpdater,
   createTemperatureCelsiusExtractor,
   createYearExtractor,
@@ -53,10 +54,7 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     this.svg = SVG(document.importNode(resources.svg.documentElement, true));
     this.getScene().appendChild(this.svg.node);
 
-    const canvas1: HTMLCanvasElement = document.createElement('canvas');
-    canvas1.width = 238;
-    canvas1.height = 176;
-    canvas1.classList.add('graph1');
+    const canvas1: HTMLCanvasElement = createGraphCanvas();
     this.getScene().appendChild(canvas1);
 
     const chart1Options: RealtimeVsYChartOptions = {
@@ -77,10 +75,7 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     };
     const chart1 = new RealtimeVsYChart(canvas1, chart1Options);
 
-    const canvas2: HTMLCanvasElement = document.createElement('canvas');
-    canvas2.width = 238;
-    canvas2.height = 176;
-    canvas2.classList.add('graph2');
+    const canvas2: HTMLCanvasElement = createGraphCanvas();
     this.getScene().appendChild(canvas2);
 
     const solarEmissivityIdx = model.parameters.findIndex(

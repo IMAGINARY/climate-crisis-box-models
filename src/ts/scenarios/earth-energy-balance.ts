@@ -16,6 +16,7 @@ import {
   formatCelsiusFrac,
   kelvinToCelsius,
   loadSvg,
+  createGraphCanvas,
 } from '../util';
 import { preprocessSvg } from '../svg-utils';
 
@@ -52,10 +53,7 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
     );
     this.getScene().appendChild(this.svg.node);
 
-    const tempCanvas: HTMLCanvasElement = document.createElement('canvas');
-    tempCanvas.width = 238;
-    tempCanvas.height = 176;
-    tempCanvas.classList.add('graph1');
+    const tempCanvas: HTMLCanvasElement = createGraphCanvas();
     this.getScene().appendChild(tempCanvas);
 
     const { min: minTemp, max: maxTemp } = model.variables.filter(
@@ -79,10 +77,7 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
       bgData: [],
     });
 
-    const albedoCanvas: HTMLCanvasElement = document.createElement('canvas');
-    albedoCanvas.width = 238;
-    albedoCanvas.height = 176;
-    albedoCanvas.classList.add('graph2');
+    const albedoCanvas: HTMLCanvasElement = createGraphCanvas();
     this.getScene().appendChild(albedoCanvas);
 
     const { min: minAlbedo, max: maxAlbedo } = extendRangeRel(

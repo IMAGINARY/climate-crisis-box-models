@@ -6,6 +6,7 @@ import { SimulationResult } from '../simulation';
 Chart.register(ChartDataLabels);
 
 const colors = ['#ED1C24', '#ED1C2444'];
+const dataLabelColor = '#b2151b';
 
 const xGridConfig = {
   display: true,
@@ -62,16 +63,18 @@ const scatterChartOptions: ChartConfiguration<'scatter'>['options'] = {
   plugins: {
     legend: { display: false },
     datalabels: {
-      color: colors[0],
+      color: dataLabelColor,
       labels: {
         value: {
           display: (ctx) =>
             ctx.datasetIndex === 0 &&
             ctx.dataIndex === ctx.dataset.data.length - 1,
           formatter: ({ y }: { y: number }) => formatCelsiusFrac(y),
-          anchor: 'center',
-          align: 'right',
-          rotation: 270,
+          anchor: 'end',
+          align: 'end',
+          backgroundColor: '#b8e4f3aa',
+          borderRadius: 4,
+          padding: 3,
         },
       },
     },
@@ -107,7 +110,7 @@ const scatterChartOptions: ChartConfiguration<'scatter'>['options'] = {
     x: xScaleConfig,
     y: yScaleConfig,
   },
-  layout: { padding: { top: 40, right: 22 } },
+  layout: { padding: { top: 40, right: 40 } },
 };
 
 function updateDataWithTrace<TMyDataPoint>(
