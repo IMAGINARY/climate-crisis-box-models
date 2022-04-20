@@ -5,19 +5,6 @@ import { ChartConfiguration } from 'chart.js';
 import { Chart } from '../chart';
 import { SimulationResult } from '../simulation';
 import * as common from './common';
-import { formatIrradianceTick } from '../util';
-
-export type SolarEmissivityVsTemperatureChartOptions = {
-  numYears: number;
-  minTemp: number;
-  maxTemp: number;
-  minEmissivity: number;
-  maxEmissivity: number;
-  toSolarEmissivity: (result: SimulationResult) => number;
-  toTemperatureCelsius: (result: SimulationResult) => number;
-  toYear: (result: SimulationResult) => number;
-  hysteresisData: ReadonlyArray<SimulationResult>;
-};
 
 type TMyDataPoint = {
   x: number;
@@ -29,6 +16,19 @@ type TMyChartType = ChartJs<'scatter', TMyDataPoint[]>;
 type TMyChartConfiguration = ChartConfiguration<'scatter', TMyDataPoint[]>;
 type TMyChartOptions = TMyChartConfiguration['options'];
 type TMyChartData = TMyChartConfiguration['data'];
+
+export type SolarEmissivityVsTemperatureChartOptions = {
+  numYears: number;
+  minTemp: number;
+  maxTemp: number;
+  minEmissivity: number;
+  maxEmissivity: number;
+  toSolarEmissivity: (result: SimulationResult) => number;
+  toTemperatureCelsius: (result: SimulationResult) => number;
+  toYear: (result: SimulationResult) => number;
+  hysteresisData: ReadonlyArray<SimulationResult>;
+  rawChartOptions?: TMyChartOptions;
+};
 
 export default class SolarEmissivityVsTemperatureChart implements Chart {
   protected readonly chart: TMyChartType;
@@ -79,7 +79,8 @@ export default class SolarEmissivityVsTemperatureChart implements Chart {
     const chartOptions: TMyChartOptions = merge(
       {} as TMyChartOptions,
       common.scatterChartOptions,
-      additionalChartOptions
+      additionalChartOptions,
+      options.rawChartOptions ?? {}
     );
 
     const chartConfig: TMyChartConfiguration = {

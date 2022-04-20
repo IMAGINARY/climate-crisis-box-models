@@ -51,6 +51,40 @@ const gndTemperatureIdx = model.variables
   .map(({ id }) => id)
   .indexOf('gnd temperature');
 
+const createRawChartOptions = (
+  x: number,
+  yMin: number,
+  yMax: number
+): TimeVsYChartOptions['rawChartOptions'] => ({
+  plugins: {
+    annotation: {
+      annotations: {
+        line1: {
+          type: 'line',
+          xMin: x,
+          xMax: x,
+          yMin,
+          yMax,
+          borderColor: 'rgba(0, 0, 0, 25%)',
+          borderWidth: 2,
+          drawTime: 'beforeDraw',
+        },
+        label1: {
+          type: 'label',
+          xValue: x,
+          yMax,
+          yAdjust: -7,
+          padding: 3,
+          content: 'Gegenwart',
+          color: 'rgba(0, 0, 0, 40%)',
+          font: { family: 'RobotoCondensed-Regular', size: 11 },
+          drawTime: 'beforeDraw',
+        },
+      },
+    },
+  },
+});
+
 export default class GreenhouseEffectScenario extends BaseScenario {
   protected readonly svg;
 
@@ -104,6 +138,11 @@ export default class GreenhouseEffectScenario extends BaseScenario {
         GreenhouseEffectScenario.computeTemperatureData(co2EqCMIP6ssp245),
         GreenhouseEffectScenario.computeTemperatureData(co2EqCMIP6ssp585),
       ],
+      rawChartOptions: createRawChartOptions(
+        temperaturesCelsius.length,
+        tempMin,
+        tempMax - (tempMax - tempMin) / 6
+      ),
     };
 
     const tempChart = new TimeVsYChart(tempCanvas, tempChartOptions);
@@ -135,6 +174,11 @@ export default class GreenhouseEffectScenario extends BaseScenario {
           y: value,
         })),
       ],
+      rawChartOptions: createRawChartOptions(
+        temperaturesCelsius.length,
+        co2Min,
+        co2Max - (co2Max - co2Min) / 6
+      ),
     };
 
     const co2Chart = new TimeVsYChart(co2Canvas, co2ChartOptions);

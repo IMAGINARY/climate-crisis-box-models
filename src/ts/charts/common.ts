@@ -1,9 +1,11 @@
 import { Chart, ChartConfiguration, ScaleOptions } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import annotationPlugin from 'chartjs-plugin-annotation';
 import { formatCelsiusFrac, formatCelsiusTick } from '../util';
 import { SimulationResult } from '../simulation';
 
 Chart.register(ChartDataLabels);
+Chart.register(annotationPlugin);
 
 const colors = ['#ED1C24', '#ED1C2444'];
 const dataLabelColor = '#b2151b';

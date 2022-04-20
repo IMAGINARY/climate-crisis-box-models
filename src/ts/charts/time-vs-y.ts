@@ -6,6 +6,16 @@ import { Chart } from '../chart';
 import { SimulationResult } from '../simulation';
 import * as common from './common';
 
+type TMyDataPoint = {
+  x: number;
+  y: number;
+};
+
+type TMyChartType = ChartJs<'scatter', TMyDataPoint[]>;
+type TMyChartConfiguration = ChartConfiguration<'scatter', TMyDataPoint[]>;
+type TMyChartOptions = TMyChartConfiguration['options'];
+type TMyChartData = TMyChartConfiguration['data'];
+
 export type TimeVsYChartOptions = {
   numYears: number;
   minY: number;
@@ -16,15 +26,8 @@ export type TimeVsYChartOptions = {
   timeTickStepSize: number;
   toYUnit: (result: SimulationResult) => number;
   toYear: (result: SimulationResult) => number;
-  bgData: {
-    x: number;
-    y: number;
-  }[][];
-};
-
-type TMyDataPoint = {
-  x: number;
-  y: number;
+  bgData: TMyDataPoint[][];
+  rawChartOptions?: TMyChartOptions;
 };
 
 function createYearTicks(
@@ -47,10 +50,6 @@ function createYearTicks(
   return ticks;
 }
 
-type TMyChartType = ChartJs<'scatter', TMyDataPoint[]>;
-type TMyChartConfiguration = ChartConfiguration<'scatter', TMyDataPoint[]>;
-type TMyChartOptions = TMyChartConfiguration['options'];
-type TMyChartData = TMyChartConfiguration['data'];
 export default class TimeVsYChart implements Chart {
   protected readonly chart: TMyChartType;
 
@@ -108,7 +107,8 @@ export default class TimeVsYChart implements Chart {
     const chartOptions: TMyChartOptions = merge(
       {} as TMyChartOptions,
       common.scatterChartOptions,
-      additionalChartOptions
+      additionalChartOptions,
+      options.rawChartOptions ?? {}
     );
 
     const chartConfig: TMyChartConfiguration = {
