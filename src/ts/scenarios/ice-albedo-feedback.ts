@@ -36,10 +36,14 @@ const scenarioSvgUrl: URL = new URL(
 
 type Resources = {
   svg: XMLDocument;
+  initialRecord: Record;
+  hysteresisData: SimulationResult[];
 };
 
 const model = createModel();
 const modelForScenario = convertToBoxModelForScenario(model);
+
+const SOLAR_EMISSIVITY_RANGE_FACTOR = 0.7;
 
 export default class IceAlbedoFeedbackScenario extends BaseScenario {
   protected readonly svg;
@@ -47,9 +51,8 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
   constructor(elem: HTMLDivElement, resources: Resources) {
     super(
       elem,
-      new Simulation(cloneDeep(modelForScenario)).convergeInitialModelRecord(
-        IceAlbedoFeedbackScenario.getConvergenceCriterion(0.001),
-        { postProcess: (r: Record) => ({ ...r, t: 0 }) }
+      new Simulation(cloneDeep(modelForScenario)).setInitialRecord(
+        resources.initialRecord
       )
     );
 
@@ -88,10 +91,9 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     const solarEmissivityIdx = model.parameters.findIndex(
       ({ id }) => id === 'solar emissivity'
     );
-    const solarEmissivityRangeFactor = 0.7;
     const { min: minEmissivity, max: maxEmissivity } = extendRangeRel(
       model.parameters[solarEmissivityIdx],
-      solarEmissivityRangeFactor
+      SOLAR_EMISSIVITY_RANGE_FACTOR
     );
 
     const solarEmissivityVsTempChartOptions: SolarEmissivityVsTemperatureChartOptions =
@@ -112,9 +114,7 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
           'variables',
           'temperature'
         ),
-        hysteresisData: IceAlbedoFeedbackScenario.computeHysteresisData(
-          solarEmissivityRangeFactor
-        ),
+        hysteresisData: resources.hysteresisData,
       };
     const solarEmissivityVsTemperatureChart =
       new SolarEmissivityVsTemperatureChart(
@@ -143,7 +143,19 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
   static async loadResources(): Promise<Resources> {
     const svg = await loadSvg(scenarioSvgUrl);
     IceAlbedoFeedbackScenario.fixScenarioSvg(svg);
-    return { svg };
+
+    const simulation = new Simulation(cloneDeep(modelForScenario));
+    const initialRecord = simulation.convergeRecordPrePost(
+      simulation.getInitialModelRecord(),
+      IceAlbedoFeedbackScenario.getConvergenceCriterion(0.001),
+      { postProcess: (r: Record) => ({ ...r, t: 0 }) }
+    );
+
+    const hysteresisData = IceAlbedoFeedbackScenario.computeHysteresisData(
+      SOLAR_EMISSIVITY_RANGE_FACTOR
+    );
+
+    return { svg, initialRecord, hysteresisData };
   }
 
   // eslint-disable-next-line class-methods-use-this

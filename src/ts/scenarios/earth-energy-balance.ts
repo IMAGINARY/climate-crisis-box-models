@@ -30,9 +30,11 @@ const scenarioSvgUrl: URL = new URL(
 
 export type Resources = {
   svg: XMLDocument;
+  initialRecord: Record;
 };
 
 const model = createModel();
+const modelForScenario = convertToBoxModelForScenario(model);
 
 export default class EarthEnergyBalanceScenario extends BaseScenario {
   protected readonly svg;
@@ -40,12 +42,7 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
   constructor(elem: HTMLDivElement, resources: Resources) {
     super(
       elem,
-      new Simulation(
-        convertToBoxModelForScenario(cloneDeep(model))
-      ).convergeInitialModelRecord(
-        EarthEnergyBalanceScenario.getConvergenceCriterion(0.001),
-        { postProcess: (r: Record) => ({ ...r, t: 0 }) }
-      )
+      new Simulation(modelForScenario).setInitialRecord(resources.initialRecord)
     );
 
     this.svg = SvgJs.SVG(
@@ -111,7 +108,15 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
   static async loadResources(): Promise<Resources> {
     const svg = await loadSvg(scenarioSvgUrl);
     EarthEnergyBalanceScenario.fixScenarioSvg(svg);
-    return { svg };
+
+    const simulation = new Simulation(cloneDeep(modelForScenario));
+    const initialRecord = simulation.convergeRecordPrePost(
+      simulation.getInitialModelRecord(),
+      EarthEnergyBalanceScenario.getConvergenceCriterion(0.001),
+      { postProcess: (r: Record) => ({ ...r, t: 0 }) }
+    );
+
+    return { svg, initialRecord };
   }
 
   // eslint-disable-next-line class-methods-use-this

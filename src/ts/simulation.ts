@@ -45,8 +45,9 @@ export class Simulation extends EventEmitter {
     return cloneDeep(this.initialRecord);
   }
 
-  setInitialRecord(record: Record) {
+  setInitialRecord(record: Record): this {
     this.initialRecord = cloneDeep(record);
+    return this;
   }
 
   bootstrap() {
@@ -57,6 +58,7 @@ export class Simulation extends EventEmitter {
       };
       this.emit('results', [this.lastResult]);
     }
+    return this;
   }
 
   setParameter(value: number, allowOutOfRange = false): void {
@@ -78,9 +80,10 @@ export class Simulation extends EventEmitter {
     }
   }
 
-  setParameterRelative(value: number, allowOutOfRange = false): void {
+  setParameterRelative(value: number, allowOutOfRange = false): this {
     const { min, max } = this.getParameterRange();
     this.setParameter(min + value * (max - min), allowOutOfRange);
+    return this;
   }
 
   getParameterId() {
@@ -129,7 +132,7 @@ export class Simulation extends EventEmitter {
     return this.engine;
   }
 
-  reset() {
+  reset(): this {
     const shouldPlay = this.isPlaying();
     if (shouldPlay) {
       this.simulate(false);
@@ -156,28 +159,34 @@ export class Simulation extends EventEmitter {
     if (shouldPlay) {
       this.simulate(true);
     }
+
+    return this;
   }
 
-  start() {
+  start(): this {
     this.reset();
     this.play();
+    return this;
   }
 
-  play() {
+  play(): this {
     this.emit('play');
     this.simulate(true);
+    return this;
   }
 
-  pause() {
+  pause(): this {
     this.simulate(false);
     this.emit('pause');
+    return this;
   }
 
-  stop() {
+  stop(): this {
     this.pause();
+    return this;
   }
 
-  isPlaying() {
+  isPlaying(): boolean {
     return this.simulationFrameId !== 0;
   }
 
@@ -211,7 +220,7 @@ export class Simulation extends EventEmitter {
     return results;
   }
 
-  protected simulate(on: boolean): void {
+  protected simulate(on: boolean): this {
     const now = performance.now();
     if (on) {
       if (this.simulationFrameId === 0) {
@@ -232,6 +241,7 @@ export class Simulation extends EventEmitter {
       this.simulationFrameId = 0;
       this.lastSimStopTimestamp = now;
     }
+    return this;
   }
 
   public convergeRecord(
@@ -283,7 +293,7 @@ export class Simulation extends EventEmitter {
       preProcess?: (record: Record) => Record;
       postProcess?: (record: Record) => Record;
     }
-  ): Simulation {
+  ): this {
     this.setInitialRecord(
       this.convergeRecordPrePost(this.getInitialModelRecord(), criterion, {
         preProcess,
@@ -302,7 +312,7 @@ export class Simulation extends EventEmitter {
       preProcess?: (record: Record) => Record;
       postProcess?: (record: Record) => Record;
     }
-  ): Simulation {
+  ): this {
     this.setInitialRecord(
       this.convergeRecordPrePost(this.getInitialRecord(), criterion, {
         preProcess,

@@ -92,18 +92,25 @@ async function main() {
   ) as HTMLDivElement;
   assert(scenarioContainer !== null);
 
+  const earthEnergyBalanceScenarioResources =
+    await EarthEnergyBalanceScenario.loadResources();
+  const iceAlbedoFeedbackScenarioResources =
+    await IceAlbedoFeedbackScenario.loadResources();
+  const greenhouseEffectScenarioResources =
+    await GreenhouseEffectScenario.loadResources();
+
   const scenarios = [
     new EarthEnergyBalanceScenario(
       scenarioContainer,
-      await EarthEnergyBalanceScenario.loadResources()
+      earthEnergyBalanceScenarioResources
     ),
     new IceAlbedoFeedbackScenario(
       scenarioContainer,
-      await IceAlbedoFeedbackScenario.loadResources()
+      iceAlbedoFeedbackScenarioResources
     ),
     new GreenhouseEffectScenario(
       scenarioContainer,
-      await GreenhouseEffectScenario.loadResources()
+      greenhouseEffectScenarioResources
     ),
   ];
 

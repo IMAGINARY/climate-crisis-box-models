@@ -44,6 +44,8 @@ const scenarioSvgUrl: URL = new URL(
 
 export type Resources = {
   svg: XMLDocument;
+  co2Datasets: { x: number; y: number }[][];
+  temperatureDatasets: { x: number; y: number }[][];
 };
 
 const model = createModel();
@@ -140,14 +142,7 @@ export default class GreenhouseEffectScenario extends BaseScenario {
         'variables',
         'gnd temperature'
       ),
-      bgData: [
-        temperaturesCelsius.map((value, index) => ({
-          x: index,
-          y: value,
-        })),
-        GreenhouseEffectScenario.computeTemperatureData(co2EqCMIP6ssp245),
-        GreenhouseEffectScenario.computeTemperatureData(co2EqCMIP6ssp585),
-      ],
+      bgData: resources.temperatureDatasets,
       rawChartOptions: createRawChartOptions(
         temperaturesCelsius.length,
         tempMinCelsius,
@@ -175,16 +170,7 @@ export default class GreenhouseEffectScenario extends BaseScenario {
       timeTickStepSize: 100,
       toYear: yearExtractor,
       toYUnit: createExtractor(model, 'parameters', 'co2'),
-      bgData: [
-        co2EqCMIP6ssp245.map((value, index) => ({
-          x: index,
-          y: value,
-        })),
-        co2EqCMIP6ssp585.map((value, index) => ({
-          x: index,
-          y: value,
-        })),
-      ],
+      bgData: resources.co2Datasets,
       rawChartOptions: createRawChartOptions(
         temperaturesCelsius.length,
         co2Min,
@@ -274,7 +260,28 @@ export default class GreenhouseEffectScenario extends BaseScenario {
   static async loadResources(): Promise<Resources> {
     const svg = await loadSvg(scenarioSvgUrl);
     GreenhouseEffectScenario.fixScenarioSvg(svg);
-    return { svg };
+
+    const temperatureDatasets = [
+      temperaturesCelsius.map((value, index) => ({
+        x: index,
+        y: value,
+      })),
+      GreenhouseEffectScenario.computeTemperatureData(co2EqCMIP6ssp245),
+      GreenhouseEffectScenario.computeTemperatureData(co2EqCMIP6ssp585),
+    ];
+
+    const co2Datasets = [
+      co2EqCMIP6ssp245.map((value, index) => ({
+        x: index,
+        y: value,
+      })),
+      co2EqCMIP6ssp585.map((value, index) => ({
+        x: index,
+        y: value,
+      })),
+    ];
+
+    return { svg, temperatureDatasets, co2Datasets };
   }
 
   // eslint-disable-next-line class-methods-use-this
