@@ -247,9 +247,7 @@ export default class GreenhouseEffectScenario extends BaseScenario {
     const parentClassName = 'greenhouse-effect-scenario';
     preprocessSvg(svg, parentClassName);
 
-    const epsilonFormulaTag = Array.from(
-      svg.querySelectorAll('text[id^=mathmode]')
-    ).filter((e) => e.textContent?.startsWith('є = '))[0];
+    const epsilonFormulaTag = svg.querySelector('text[id=mathmode03-epsilon]');
     assert(epsilonFormulaTag, 'tag of epsilon formula not found');
     const f = new Intl.NumberFormat('de', {
       minimumFractionDigits: 0,
@@ -258,6 +256,17 @@ export default class GreenhouseEffectScenario extends BaseScenario {
     epsilonFormulaTag.textContent = `є = ${f.format(
       epsilonFactor
     )} ln(C) + ${f.format(epsilonOffset)}`;
+
+    const actionBoxTextWithUnnecessarySpace = Array.from(
+      svg.querySelectorAll(
+        '[id=text_00000124851983935777514820000015715086385007132563_] text'
+      )
+    ).filter((e) => e.textContent === '(C) , um die Zukunft')[0];
+    assert(
+      actionBoxTextWithUnnecessarySpace,
+      'certain child tag of action box not found'
+    );
+    actionBoxTextWithUnnecessarySpace.textContent = '(C), um die Zukunft';
   }
 
   static async loadResources(): Promise<Resources> {
@@ -570,14 +579,19 @@ export default class GreenhouseEffectScenario extends BaseScenario {
 */
 
   getMathModeElements() {
-    const nonMathModeText = this.svg.findOne('[id^=text02]');
-    assert(nonMathModeText !== null);
+    const nonMathModeTexts = this.svg
+      .find(
+        '[id^=text_00000124851983935777514820000015715086385007132563_] text'
+      )
+      .filter((_, i) => i >= 4 && i <= 10)
+      .map((elem) => elem.node);
+    assert(nonMathModeTexts.length > 0);
 
-    const mathModeOverlay = this.svg.findOne('[id^=mathmode03]');
+    const mathModeOverlay = this.svg.findOne('[id^=mathmode-model03]');
     assert(mathModeOverlay !== null);
 
     return {
-      hide: [nonMathModeText.node],
+      hide: nonMathModeTexts,
       show: [mathModeOverlay.node],
     };
   }

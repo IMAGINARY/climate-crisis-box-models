@@ -28,29 +28,27 @@
 	.st22{opacity:0.7;}
 	.st23{fill:#912739;}
 	.st24{fill:#F2E9C7;}
-	.st25{fill:none;stroke:#000000;stroke-width:2;stroke-miterlimit:10;}
-	.st26{fill:none;stroke:#ED1C24;stroke-linecap:round;stroke-miterlimit:10;}
-	.st27{fill:none;stroke:#ED1C24;stroke-width:2;stroke-linecap:round;stroke-miterlimit:10;}
-	.st28{fill:#ED1C24;}
-	.st29{fill:none;stroke:#ED1C24;stroke-width:1.5;stroke-linecap:round;stroke-miterlimit:10;}
-	.st30{fill:none;stroke:#ED1C24;stroke-width:4;stroke-linecap:round;stroke-miterlimit:10;}
-	.st31{opacity:0.7;fill:#ED1C24;}
-	.st32{fill:none;}
-	.st33{font-family:'RobotoCondensed-Regular';}
-	.st34{font-size:20px;}
-	.st35{display:none;}
-	.st36{display:inline;}
-	.st37{font-size:36px;}
-	.st38{fill:none;stroke:#F7931E;stroke-width:1.5;stroke-miterlimit:10;}
-	.st39{fill:none;stroke:#FBB03B;stroke-width:1.5;stroke-miterlimit:10;}
-	.st40{letter-spacing:-3;}
-	.st41{font-size:31px;}
-	.st42{font-family:'RobotoCondensed-Bold';}
-	.st43{font-size:10px;}
-	.st44{letter-spacing:-1;}
-	.st45{letter-spacing:3;}
-	.st46{font-size:35.4977px;}
-	.st47{font-size:29.4309px;}
+	.st25{fill:none;stroke:#FBB03B;stroke-width:1.5;stroke-miterlimit:10;}
+	.st26{fill:none;stroke:#000000;stroke-width:2;stroke-miterlimit:10;}
+	.st27{fill:none;stroke:#ED1C24;stroke-linecap:round;stroke-miterlimit:10;}
+	.st28{fill:none;stroke:#ED1C24;stroke-width:2;stroke-linecap:round;stroke-miterlimit:10;}
+	.st29{fill:#ED1C24;}
+	.st30{fill:none;stroke:#ED1C24;stroke-width:1.5;stroke-linecap:round;stroke-miterlimit:10;}
+	.st31{fill:none;stroke:#ED1C24;stroke-width:4;stroke-linecap:round;stroke-miterlimit:10;}
+	.st32{opacity:0.7;fill:#ED1C24;}
+	.st33{fill:none;}
+	.st34{font-family:'RobotoCondensed-Regular';}
+	.st35{font-size:20px;}
+	.st36{font-size:36px;}
+	.st37{fill:none;stroke:#F7931E;stroke-width:1.5;stroke-miterlimit:10;}
+	.st38{letter-spacing:-3;}
+	.st39{font-size:31px;}
+	.st40{font-family:'RobotoCondensed-Bold';}
+	.st41{font-size:10px;}
+	.st42{letter-spacing:-1;}
+	.st43{letter-spacing:3;}
+	.st44{font-size:35.4977px;}
+	.st45{font-size:29.4309px;}
 </style>
 <rect id="background_00000089539180778724305870000013630753424206679193_" x="-0.04" y="0.05" class="st0" width="1024.04" height="599.87"/>
 <g id="arrowA_00000096040236117786553450000012030608807509359257_">
@@ -71,8 +69,8 @@
 			161.33,440.31 187.24,465.46 189.19,434.64 136.71,433.01 		"/>
 	</g>
 </g>
-<g id="landscape_00000058582370569291093620000016649778756596269446_">
-	<path class="st5" d="M1024,490.6c-167.67-21.25-338.56-32.2-512-32.2c-173.46,0-344.36,10.96-512.05,32.22l0.01,109.25L1024,600
+<g id="landscape_00000167380879354694252750000014819416644079861129_">
+	<path class="st5" d="M1024,490.6c-167.67-21.25-338.56-32.2-512-32.2c-173.46,0-344.36,15.03-512.05,36.29l0.01,105.18L1024,600
 		L1024,490.6z"/>
 	<polygon class="st6" points="51.17,470.62 118.95,438.95 129.26,427.9 178.62,412.43 188.93,399.9 229.45,403.59 244.92,418.32 
 		258.91,408.74 267.02,394.01 289.85,408.01 307.53,398.43 323.74,413.16 395.94,371.91 406.99,374.12 433.48,410.22 483.6,437.47 
@@ -83,7 +81,7 @@
 	<polygon class="st9" points="298.41,435.91 388.52,439.85 312.69,480.2 	"/>
 	<polygon class="st10" points="367.94,448.52 409.93,430.84 415.83,424.21 435.72,445.58 491.7,459.57 517.49,453.68 542.53,442.63 
 		555.06,450 585.26,467.68 603.68,480.94 551.37,483.15 517.49,477.99 410.67,480.94 312.69,480.2 338.48,458.84 	"/>
-	<polygon class="st10" points="43.81,474.31 96.85,482.66 0,490.41 0.01,489.47 	"/>
+	<polygon class="st10" points="43.81,474.31 96.85,482.66 0,494.69 0.01,494.69 	"/>
 	<polygon class="st10" points="129.26,427.9 127.56,447.52 118.95,438.95 	"/>
 	<polygon class="st11" points="84.57,455.33 119.41,458.92 118.95,438.95 	"/>
 	<polygon class="st12" points="178.62,412.43 186.43,402.89 186.97,427.39 	"/>
@@ -95,7 +93,7 @@
 	<polygon class="st13" points="411.46,472.78 517.49,477.99 378.7,480.17 	"/>
 	<polygon class="st11" points="244.92,418.32 277.55,441.78 258.91,408.74 	"/>
 	<polygon class="st9" points="127.56,447.52 312.69,480.2 96.85,482.66 	"/>
-	<polygon class="st12" points="183.65,486.77 -0.03,508.94 0.02,490.35 41.1,485.6 	"/>
+	<polygon class="st12" points="183.65,486.77 -0.03,508.94 0.02,494.69 41.1,485.6 	"/>
 	<polygon class="st13" points="353.26,480.36 607.1,515.11 572.94,490.26 	"/>
 	<polygon class="st14" points="120,494.25 291.71,499.98 353.26,480.36 283.26,480.36 148.62,486.6 	"/>
 	<polygon class="st11" points="242.41,429.13 202.26,448.63 277.26,473.96 	"/>
@@ -161,45 +159,45 @@
 	</g>
 	<circle id="sun-anchor_00000091725461814307178660000004052494372317636998_" class="st21" cx="72" cy="72" r="0.88"/>
 </g>
-<g id="ice_00000079486248507955507820000010910437125497211312_">
-	<g id="ice-max_00000109732960786100112910000005994364013754761634_">
-		<polygon id="ice-max09_00000155860630292192269460000003640956751422147996_" class="st4" points="728.22,493.62 1046.78,563.47 
+<g id="ice_00000007402832983156998870000009100879210602738858_">
+	<g id="ice-max_00000070817820678810610120000018041725624600841370_">
+		<polygon id="ice-max09_00000172421599474704385450000015369479697579116711_" class="st4" points="728.22,493.62 1046.78,563.47 
 			1083.75,608.45 1032.61,645.42 784.89,630.02 616.05,657.13 514.38,608.45 		"/>
-		<polygon id="ice-max08_00000141429750564561139010000011170137399440533919_" class="st4" points="557.51,459.94 776.63,467.92 
+		<polygon id="ice-max08_00000044870250650654646450000011476726262325766069_" class="st4" points="557.51,459.94 776.63,467.92 
 			1043.7,493.83 1084.37,573.94 1013.5,593.04 614.6,529.68 560.59,502.46 		"/>
-		<polygon id="ice-max07_00000070812809828983728070000005167147541516914070_" class="st4" points="515.62,449.23 543.93,443.23 
+		<polygon id="ice-max07_00000126302189756889485090000009963276452929586598_" class="st4" points="515.62,449.23 543.93,443.23 
 			739.17,541.49 757.9,588.3 607.71,619.17 415.94,564.11 413.09,400.81 		"/>
-		<polygon id="ice-max06_00000031198467955322384630000000727761084500406927_" class="st4" points="415.83,424.23 434.45,490.09 
+		<polygon id="ice-max06_00000119834507662342518070000006324227986287455411_" class="st4" points="415.83,424.23 434.45,490.09 
 			413.89,477.06 373.2,493.33 		"/>
-		<polygon id="ice-max05_00000042699753347066373960000012844414281107954328_" class="st4" points="395.94,371.93 433.48,410.23 
+		<polygon id="ice-max05_00000090267843789622139600000009133884647975240352_" class="st4" points="395.94,371.93 433.48,410.23 
 			669.42,586.27 595.84,618.09 282.11,552.96 368.45,507.49 309.46,419.21 		"/>
-		<polygon id="ice-max04_00000081639374221284706090000015706212890604378757_" class="st4" points="307.53,398.45 451.16,522.63 
-			348.24,494.93 312.94,543.51 247.31,428.16 		"/>
-		<polygon id="ice-max03_00000088825310949782381030000008901795433778327936_" class="st4" points="267.02,394.03 333.64,432.7 
-			348.24,494.93 340.84,504.58 467.57,598.2 183.04,609.38 258.87,495.32 249.26,472.85 258.91,408.74 		"/>
-		<polygon id="ice-max02_00000006682711070679389280000014534166968321908115_" class="st4" points="140.52,458.38 109.26,568.52 
+		<polygon id="ice-max04_00000038372906430476920240000005237364323197644168_" class="st4" points="307.53,398.45 451.16,522.63 
+			348.24,494.93 312.94,543.51 277.97,413.63 		"/>
+		<polygon id="ice-max03_00000047782919793027077050000000902597242178310537_" class="st4" points="267.02,394.03 336.36,436.34 
+			340.84,504.58 435.07,583.72 317.57,652.71 183.04,609.38 258.87,495.32 249.26,472.85 258.91,408.74 		"/>
+		<polygon id="ice-max02_00000161602723544411706120000015594635017309450393_" class="st4" points="140.52,458.38 109.26,568.52 
 			122.66,634.75 223.5,641.45 287.5,604.98 253.8,524.65 241.04,489.85 269.02,438.57 229.45,403.6 188.93,399.92 		"/>
-		<polygon id="ice-max01_00000014619954069174700140000007156896503905159613_" class="st4" points="178.62,412.44 104.68,435.83 
-			-16.28,497.5 -3.73,612.54 123.33,673.05 241.66,611.87 236.13,503.74 217.43,455.03 191.4,435.5 		"/>
+		<polygon id="ice-max01_00000021802546119426784210000013051263494334083729_" class="st4" points="178.62,412.44 129.26,427.9 
+			118.95,438.95 -75.97,530.28 22.85,655.61 120.47,644.77 256.24,577.68 217.43,455.03 191.4,435.5 		"/>
 	</g>
-	<g id="ice-min_00000080169974212779791040000009361586327114860429_">
-		<polygon id="ice-min09_00000047763071802332222920000008300458404537659284_" class="st4" points="735.74,503.37 739.86,504.23 
+	<g id="ice-min_00000001628868546720839480000012858161839278717104_">
+		<polygon id="ice-min09_00000037671328509431419300000013155377961825943963_" class="st4" points="735.74,503.37 739.86,504.23 
 			741.09,504.9 741.96,505.95 740.21,506.05 736.39,505.65 732.3,505.13 		"/>
-		<polygon id="ice-min08_00000160166666364154877900000015022566981452470424_" class="st4" points="674.21,473.82 678.84,473.56 
+		<polygon id="ice-min08_00000157297752555917338680000017624789015267325879_" class="st4" points="674.21,473.82 678.84,473.56 
 			683.98,475.36 686.04,478.19 681.67,478.7 674.73,477.93 668.55,477.42 		"/>
-		<polygon id="ice-min07_00000041274986032632819090000002658282038347216004_" class="st4" points="542.53,442.63 543.93,443.23 
+		<polygon id="ice-min07_00000137811087024100048980000013615812793806606240_" class="st4" points="542.53,442.63 543.93,443.23 
 			546.3,444.51 546.48,446.69 543.39,444.69 541.93,444.33 535.38,445.06 		"/>
-		<polygon id="ice-min06_00000065058791818298943640000003397961054463708087_" class="st4" points="415.83,424.23 419.73,428.27 
+		<polygon id="ice-min06_00000159439147100377649190000015270398327206534072_" class="st4" points="415.83,424.23 419.73,428.27 
 			416.3,428.02 413.23,427.07 		"/>
-		<polygon id="ice-min05_00000006700103953506068730000005853841513574809754_" class="st4" points="395.94,371.93 401.92,378.69 
+		<polygon id="ice-min05_00000083809622487301026790000015742949479738898347_" class="st4" points="395.94,371.93 401.92,378.69 
 			402.95,384.86 398.33,382.8 395.24,381.77 391.13,379.2 385.99,377.15 		"/>
-		<polygon id="ice-min04_00000131350793844878341160000010829988755622017674_" class="st4" points="307.53,398.45 308.57,399.32 
+		<polygon id="ice-min04_00000001631160517213483010000004267952300031168419_" class="st4" points="307.53,398.45 308.57,399.32 
 			308.84,400.2 306.57,400.09 305.51,399.54 		"/>
-		<polygon id="ice-min03_00000087375494421842765180000008852451951238855322_" class="st4" points="267.02,394.03 267.95,394.58 
+		<polygon id="ice-min03_00000160912195979170798210000005895621201354177703_" class="st4" points="267.02,394.03 267.95,394.58 
 			269.74,395.59 271.24,397.66 272.73,399.36 270.6,398.94 267.84,398.3 265.82,397.89 265.82,396.27 		"/>
-		<polygon id="ice-min02_00000081645595795856401640000012904425647195760314_" class="st4" points="186.43,402.91 186.63,414.16 
+		<polygon id="ice-min02_00000066501374068904595250000008983399026560105116_" class="st4" points="186.43,402.91 186.63,414.16 
 			187.17,412.94 187.58,410.31 189.6,407.41 190.14,406.47 191.29,404.31 191.76,402.02 191.48,400 188.93,399.92 		"/>
-		<polygon id="ice-min01_00000165208193559822857020000012011811520217349539_" class="st4" points="178.62,412.44 147.03,422.33 
+		<polygon id="ice-min01_00000099642225741661244980000001535196978194110143_" class="st4" points="178.62,412.44 147.03,422.33 
 			148.61,422.33 152.37,421.14 163.84,417.78 166.39,416.72 171.45,415.57 172.87,415.24 179.08,413.21 		"/>
 	</g>
 </g>
@@ -230,63 +228,72 @@
 		<polygon id="arrow-sun-high1_00000004533596642829339940000011431151303128244387_" class="st21" points="89.74,475.67 
 			61.2,497.43 35.28,472.29 33.34,180.7 85.82,180.7 		"/>
 	</g>
-	<g id="arrowL-min_00000131361213348710220020000002417845255089174170_" class="st1">
-		<polygon id="arrow-sun-low3_00000054261196945339323350000000395505508498866599_" class="st19" points="103.36,485.79 
-			57.91,518.14 16.86,485.79 16.86,485.71 103.36,485.71 		"/>
-		<polygon id="arrow-sun-low2_00000002344279676086762310000010978167061877526712_" class="st20" points="90.82,485.71 
-			58.12,512.04 32.58,485.71 32.58,485.71 90.82,485.71 		"/>
-		<polygon id="arrow-sun-low1_00000153668805288742426270000014568439467175436967_" class="st21" points="76.59,485.71 
-			61.2,497.43 49.07,485.71 49.07,485.71 76.59,485.71 		"/>
+	<g id="arrowL-min_00000097492303530380426410000009227943465021314707_" class="st1">
+		<polygon id="arrow-sun-high3_00000050654733002660589830000006112931927659820427_" class="st19" points="103.36,182.78 
+			57.91,196.19 16.86,182.78 16.86,180.7 103.36,180.7 		"/>
+		<polygon id="arrow-sun-high2_00000106832146564833544580000018270575548626745986_" class="st20" points="99.28,182.78 
+			58.12,193.14 21.33,183.63 21.29,180.7 99.36,180.7 		"/>
+		<polygon id="arrow-sun-high1_00000095312815980716444730000007859627034882365078_" class="st21" points="85.69,180.7 
+			61.2,188.55 33.38,182.44 33.34,180.7 85.82,180.7 		"/>
 	</g>
+</g>
+<g id="L_00000012437526441518773830000009559050311988753567_">
+	<g id="L2_00000013155465309626362410000011462694766487155089_">
+		<polygon class="st21" points="59.51,93.78 59.51,53.95 67.74,53.95 67.74,86.87 84.31,86.87 84.31,93.78 		"/>
+		<path class="st19" d="M66.24,55.45v32.92h16.57v3.91h-21.8V55.45H66.24 M69.24,52.45h-3h-5.23h-3v3v36.83v3h3h21.8h3v-3v-3.91v-3
+			h-3H69.24V55.45V52.45L69.24,52.45z"/>
+	</g>
+	<path id="L1_00000058588958972072859360000002083460243796092830_" class="st25" d="M61.01,92.28V55.45h5.23v32.92h16.57v3.91
+		H61.01z"/>
 </g>
 <g id="graph2">
 	
-		<line id="line-y_00000111149246759226341720000008514770752638196126_" class="st25" x1="791.2" y1="410.42" x2="791.2" y2="282.96"/>
+		<line id="line-y_00000111149246759226341720000008514770752638196126_" class="st26" x1="791.2" y1="410.42" x2="791.2" y2="282.96"/>
 	
-		<line id="line-x_00000026860176505613566910000003426070971337574030_" class="st25" x1="787.19" y1="406.42" x2="979.43" y2="406.42"/>
+		<line id="line-x_00000026860176505613566910000003426070971337574030_" class="st26" x1="787.19" y1="406.42" x2="979.43" y2="406.42"/>
 	
-		<line id="line-end-y_00000021833548672586104420000006634827016099376564_" class="st25" x1="787.19" y1="284.04" x2="791.43" y2="284.04"/>
+		<line id="line-end-y_00000021833548672586104420000006634827016099376564_" class="st26" x1="787.19" y1="284.04" x2="791.43" y2="284.04"/>
 	
-		<line id="line-end-x_00000135678029416473490920000005664529857842274459_" class="st25" x1="977.54" y1="410.1" x2="977.54" y2="405.87"/>
-	<path id="graph-form" class="st26" d="M800.84,397.58c0.06,0,0.12,0,0.18-0.01l129.62-11.72l30.37-82.05l18.25-3.65 M978.48,296.23
+		<line id="line-end-x_00000135678029416473490920000005664529857842274459_" class="st26" x1="977.54" y1="410.1" x2="977.54" y2="405.87"/>
+	<path id="graph-form" class="st27" d="M800.84,397.58c0.06,0,0.12,0,0.18-0.01l129.62-11.72l30.37-82.05l18.25-3.65 M978.48,296.23
 		l-19.26,3.85l-109.81,11.77l-11.76,78.4l-36.98,3.34 M927.77,382.09l-86.02,7.78l11.16-74.38l103.62-11.1L927.77,382.09z"/>
 	<g id="graph2-end">
-		<circle class="st27" cx="840" cy="391.8" r="4.76"/>
-		<circle class="st28" cx="840" cy="391.8" r="2.45"/>
+		<circle class="st28" cx="840" cy="391.8" r="4.76"/>
+		<circle class="st29" cx="840" cy="391.8" r="2.45"/>
 	</g>
 	
-		<line id="graph2_00000123435225900732186890000014858612397720619934_" class="st29" x1="840.06" y1="391.97" x2="800.31" y2="395.62"/>
+		<line id="graph2_00000123435225900732186890000014858612397720619934_" class="st30" x1="840.06" y1="391.97" x2="800.31" y2="395.62"/>
 </g>
 <g id="graph1_00000155125102737160938210000014095284869445795979_">
 	
-		<line id="line-y_00000059311220337118272640000001219016675752708523_" class="st25" x1="791.2" y1="233.4" x2="791.2" y2="105.94"/>
+		<line id="line-y_00000059311220337118272640000001219016675752708523_" class="st26" x1="791.2" y1="233.4" x2="791.2" y2="105.94"/>
 	
-		<line id="line-x_00000106111162438231841680000006697410916998473605_" class="st25" x1="787.19" y1="229.4" x2="979.43" y2="229.4"/>
+		<line id="line-x_00000106111162438231841680000006697410916998473605_" class="st26" x1="787.19" y1="229.4" x2="979.43" y2="229.4"/>
 	
-		<line id="line-end-y_00000088102544321428176620000008164723885228489400_" class="st25" x1="787.19" y1="107.02" x2="791.43" y2="107.02"/>
+		<line id="line-end-y_00000088102544321428176620000008164723885228489400_" class="st26" x1="787.19" y1="107.02" x2="791.43" y2="107.02"/>
 	
-		<line id="line-end-x_00000120533758190838386360000003260523150597467304_" class="st25" x1="977.54" y1="233.08" x2="977.54" y2="228.84"/>
-	<path id="graph_00000163778019321226657330000017425976355397918644_" class="st30" d="M803.47,214.07
+		<line id="line-end-x_00000120533758190838386360000003260523150597467304_" class="st26" x1="977.54" y1="233.08" x2="977.54" y2="228.84"/>
+	<path id="graph_00000163778019321226657330000017425976355397918644_" class="st31" d="M803.47,214.07
 		c0,0,26.18-110.14,78.54-83.96"/>
-	<circle id="graph-end_00000156545608437804380340000015859194010469564293_" class="st27" cx="882.01" cy="129.91" r="4.76"/>
+	<circle id="graph-end_00000156545608437804380340000015859194010469564293_" class="st28" cx="882.01" cy="129.91" r="4.76"/>
 </g>
 <g id="text_00000051354538334606409860000013808370958020888738_">
-	<path id="cta01box_00000119100387695101857770000003095207792954836628_" class="st31" d="M591.57,517.1v68.41h418.84V517.1H591.57
+	<path id="cta01box_00000119100387695101857770000003095207792954836628_" class="st32" d="M591.57,517.1v68.41h418.84V517.1H591.57
 		z"/>
 	<path id="cta-icon_00000058591432507763354240000011296282996293698486_" class="st4" d="M984.8,555.97
 		c-1.67,6.36-7.41,10.8-13.97,10.8c-7.97,0-14.46-6.48-14.46-14.46c0-7.97,6.48-14.46,14.46-14.46h6.27l3.3,3.25l-3.32,3.17h-6.26
 		c-4.43,0-8.03,3.6-8.03,8.03s3.6,8.03,8.03,8.03c3.64,0,6.83-2.46,7.76-5.99l1.04-3.97l2.24,4.02l3.91-2.17L984.8,555.97z"/>
-	<rect x="617" y="532.81" class="st32" width="455.58" height="52.7"/>
-	<text id="cta02" transform="matrix(1 0 0 1 616.9998 547.8145)"><tspan x="0" y="0" class="st4 st33 st34">Ändere die eingehende Sonnenenergie  </tspan><tspan x="0" y="24" class="st4 st33 st34">und beobachte die Temperatur!</tspan></text>
+	<rect x="617" y="532.81" class="st33" width="455.58" height="52.7"/>
+	<text id="cta02" transform="matrix(1 0 0 1 616.9998 547.8145)"><tspan x="0" y="0" class="st4 st34 st35">Ändere die eingehende Sonnenenergie (L)  </tspan><tspan x="0" y="24" class="st4 st34 st35">und beobachte die Temperatur!</tspan></text>
 	<g id="title02">
-		<g id="title02_00000067234054450644014340000004669506692374738317_">
+		<g id="title02_00000121272036531038169290000009092564106970573982_">
 		</g>
 	</g>
-	<rect x="209.32" y="70.79" class="st32" width="521.14" height="103.06"/>
-	<text id="text02" transform="matrix(1 0 0 1 209.3166 85.7912)" class="st35"><tspan x="0" y="0" class="st36 st33 st34">Wir fügen eine Beziehung zwischen Temperatur und Albedo hinzu: </tspan><tspan x="0" y="26" class="st36 st33 st34">Wenn die Erde wärmer wird, schmilzt das Eis, dann nimmt der </tspan><tspan x="0" y="52" class="st36 st33 st34">Planet mehr Energie auf und wird dadurch noch wärmer...</tspan></text>
-	<rect x="187.84" y="24.91" class="st32" width="540.52" height="42.12"/>
+	<rect x="209.32" y="70.79" class="st33" width="521.14" height="103.06"/>
+	<text id="text02" transform="matrix(1 0 0 1 209.3166 85.7912)"><tspan x="0" y="0" class="st34 st35">Wir fügen eine Beziehung zwischen Temperatur und Albedo hinzu: </tspan><tspan x="0" y="26" class="st34 st35">Wenn die Erde wärmer wird, schmilzt das Eis, dann nimmt der </tspan><tspan x="0" y="52" class="st34 st35">Planet mehr Energie auf und wird dadurch noch wärmer...</tspan></text>
+	<rect x="187.84" y="24.91" class="st33" width="540.52" height="42.12"/>
 	
-		<text id="title02_00000142134009427254194370000007255267836357420431_" transform="matrix(1 0 0 1 251.2093 51.9088)" class="st33 st37">Die Eis-Albedo-Rückkopplung</text>
+		<text id="title02_00000142134009427254194370000007255267836357420431_" transform="matrix(1 0 0 1 251.2093 51.9088)" class="st34 st36">Die Eis-Albedo-Rückkopplung</text>
 </g>
 <g id="models_00000001660497151952990970000016480873069348045999_">
 	<g id="models1">
@@ -305,7 +312,7 @@
 		<path d="M972.1,39.22v-8.47h-1.38v-1.12h4.08v1.12h-1.38v8.47h1.38v1.12h-4.08v-1.12H972.1z"/>
 	</g>
 </g>
-<g id="mathmode02">
+<g id="mathmode-model02">
 	<g id="alpha_00000034804552496383056010000016485527520683981727_">
 		<g>
 			<g id="alpha1_00000163064205732463816000000006092026438614842027_">
@@ -358,58 +365,48 @@
 			<path class="st23" d="M438.26,292.44v3.61h-12.08v30.44h-4.83v-30.44h-12.08v-3.61H438.26 M441.26,289.44h-3h-28.99h-3v3v3.61v3
 				h3h9.08v27.44v3h3h4.83h3v-3v-27.44h9.08h3v-3v-3.61V289.44L441.26,289.44z"/>
 		</g>
-		<path id="T1_00000137115140861039498840000008940668887968904621_" class="st38" d="M421.35,326.49v-30.44h-12.08v-3.61h28.99
+		<path id="T1_00000137115140861039498840000008940668887968904621_" class="st37" d="M421.35,326.49v-30.44h-12.08v-3.61h28.99
 			v3.61h-12.08v30.44H421.35z"/>
 	</g>
-	<g id="L_00000012437526441518773830000009559050311988753567_">
-		<g id="L2_00000013155465309626362410000011462694766487155089_">
-			<polygon class="st21" points="59.51,93.78 59.51,53.95 67.74,53.95 67.74,86.87 84.31,86.87 84.31,93.78 			"/>
-			<path class="st19" d="M66.24,55.45v32.92h16.57v3.91h-21.8V55.45H66.24 M69.24,52.45h-3h-5.23h-3v3v36.83v3h3h21.8h3v-3v-3.91v-3
-				h-3H69.24V55.45V52.45L69.24,52.45z"/>
-		</g>
-		<path id="L1_00000058588958972072859360000002083460243796092830_" class="st39" d="M61.01,92.28V55.45h5.23v32.92h16.57v3.91
-			H61.01z"/>
+	<rect x="46.51" y="329.09" class="st33" width="28.63" height="40.27"/>
+	<text id="mathmode01_00000112607091430132405340000012981607299955711152_" transform="matrix(1 0 0 1 56.0776 344.0937)"><tspan x="0" y="0" class="st29 st34 st35">L</tspan><tspan x="-2.03" y="12" class="st29 st34 st35">—</tspan><tspan x="-0.19" y="24" class="st29 st34 st35">4</tspan></text>
+	<rect x="148.03" y="329.09" class="st33" width="28.63" height="60.63"/>
+	<text id="mathmode02_00000018951313092444923270000004144634119943709588_" transform="matrix(1 0 0 1 152.3608 344.0946)"><tspan x="0" y="0" class="st29 st34 st35">Lα</tspan><tspan x="0.24" y="12" class="st29 st34 st35 st38">–</tspan><tspan x="8.29" y="12" class="st29 st34 st35">–</tspan><tspan x="5.05" y="24" class="st29 st34 st35">4</tspan></text>
+	<rect x="259.72" y="278.18" class="st33" width="140.09" height="19.22"/>
+	<text id="mathmode03" transform="matrix(1 0 0 1 267.4095 293.181)" class="st29 st34 st35">α = 2.8 – 0.01 T</text>
+	<g id="mathmode04_00000023960064283269998830000016062780085969418885_">
+		<rect x="383.7" y="329.09" class="st33" width="60.24" height="28.95"/>
+		<text transform="matrix(1 0 0 1 389.7682 352.3434)" class="st29 st34 st35">T = kE</text>
+		<text transform="matrix(0.583 0 0 0.583 437.8639 350.0201)" class="st29 st34 st39"> </text>
 	</g>
-	<rect x="46.51" y="329.09" class="st32" width="28.63" height="40.27"/>
-	<text id="mathmode01_00000112607091430132405340000012981607299955711152_" transform="matrix(1 0 0 1 56.0776 344.0937)"><tspan x="0" y="0" class="st28 st33 st34">L</tspan><tspan x="-2.03" y="12" class="st28 st33 st34">—</tspan><tspan x="-0.19" y="24" class="st28 st33 st34">4</tspan></text>
-	<rect x="148.03" y="329.09" class="st32" width="28.63" height="60.63"/>
-	<text id="mathmode02_00000018951313092444923270000004144634119943709588_" transform="matrix(1 0 0 1 152.3608 344.0946)"><tspan x="0" y="0" class="st28 st33 st34">Lα</tspan><tspan x="0.24" y="12" class="st28 st33 st34 st40">–</tspan><tspan x="8.29" y="12" class="st28 st33 st34">–</tspan><tspan x="5.05" y="24" class="st28 st33 st34">4</tspan></text>
-	<rect x="259.72" y="278.18" class="st32" width="140.09" height="19.22"/>
-	
-		<text id="mathmode02_00000004516697794199244630000004160375301970161846_" transform="matrix(1 0 0 1 267.4095 293.181)" class="st28 st33 st34">α = 2.8 – 0.01 T</text>
-	<g id="mathmode07_00000170970780093894396090000012185805302985186229_">
-		<rect x="383.7" y="329.09" class="st32" width="60.24" height="28.95"/>
-		<text transform="matrix(1 0 0 1 389.7682 352.3434)" class="st28 st33 st34">T = kE</text>
-		<text transform="matrix(0.583 0 0 0.583 437.8639 350.0201)" class="st28 st33 st41"> </text>
+	<g id="mathmode05_00000047054904843506058860000011873748428198307770_">
+		<rect x="540.85" y="329.09" class="st33" width="45.77" height="23.92"/>
+		<text transform="matrix(1 0 0 1 553.5514 352.3442)" class="st29 st34 st35">σT</text>
+		<text transform="matrix(0.583 0 0 0.583 573.9323 350.021)" class="st29 st34 st39"> </text>
+		<text transform="matrix(1 0 0 1 573.785 343.6505)" class="st29 st40 st41 st42">4</text>
 	</g>
-	<g id="mathmode08_00000096760055365265938000000001801048894618101398_">
-		<rect x="540.85" y="329.09" class="st32" width="45.77" height="23.92"/>
-		<text transform="matrix(1 0 0 1 553.5514 352.3442)" class="st28 st33 st34">σT</text>
-		<text transform="matrix(0.583 0 0 0.583 573.9323 350.021)" class="st28 st33 st41"> </text>
-		<text transform="matrix(1 0 0 1 573.785 343.6505)" class="st28 st42 st43 st44">4</text>
+	<g id="mathmode06_00000137123036561962390980000017399577949654304640_">
+		<text transform="matrix(1 0 0 1 112.2596 568.6807)" class="st29 st34 st35">E= </text>
+		<text transform="matrix(1 0 0 1 136.3509 568.6807)" class="st29 st34 st35 st43">——</text>
+		<text transform="matrix(1 0 0 1 169.4798 568.6807)" class="st29 st34 st35 st38">—</text>
+		<text transform="matrix(1 0 0 1 179.4442 568.6807)" class="st29 st34 st35 st43">—</text>
+		<text transform="matrix(1 0 0 1 196.0086 568.6807)" class="st29 st34 st35">— σ</text>
+		<text transform="matrix(0.8733 0 0 1 224.1234 568.6807)" class="st29 st34 st35">T</text>
+		<text transform="matrix(0.5091 0 0 0.583 233.2142 566.0205)" class="st29 st34 st44"> </text>
+		<text transform="matrix(1 0 0 1 237.3533 567.6807)" class="st29 st34 st35"> </text>
+		<rect x="79.88" y="542.4" class="st33" width="38.48" height="60.63"/>
+		<text id="mathmode02_00000129164550361361330330000002823312437384706708_" transform="matrix(1 0 0 1 94.1577 557.4009)"><tspan x="0" y="0" class="st29 st34 st35">d</tspan><tspan x="-4.78" y="12" class="st29 st34 st35 st38">–</tspan><tspan x="3.26" y="12" class="st29 st34 st35">– </tspan><tspan x="-2.95" y="24" class="st29 st34 st35">dt</tspan></text>
+		<text transform="matrix(1 0 0 1 49.2827 571.1697)" class="st29 st34 st45">E</text>
+		<rect x="128.52" y="541.75" class="st33" width="28.63" height="60.63"/>
+		<text id="mathmode01_00000158010865776746161770000008158402998783402159_" transform="matrix(1 0 0 1 138.0863 556.7524)"><tspan x="0" y="0" class="st29 st34 st35">L</tspan><tspan x="4.75" y="12" class="st29 st34 st35"> </tspan><tspan x="-0.19" y="24" class="st29 st34 st35">4</tspan></text>
+		<rect x="167.91" y="541.72" class="st33" width="28.63" height="60.63"/>
+		<text id="mathmode02_00000152962851562197731490000006429043095977329294_" transform="matrix(1 0 0 1 172.2355 556.7163)"><tspan x="0" y="0" class="st29 st34 st35">Lα</tspan><tspan x="5.05" y="24" class="st29 st34 st35">4</tspan></text>
+		<text transform="matrix(1 0 0 1 234.781 558.7173)" class="st29 st40 st41 st42">4</text>
 	</g>
-	<g id="mathmode09_00000158006964025572693080000015669675115240863632_">
-		<text transform="matrix(1 0 0 1 112.2596 568.6807)" class="st28 st33 st34">E= </text>
-		<text transform="matrix(1 0 0 1 136.3509 568.6807)" class="st28 st33 st34 st45">——</text>
-		<text transform="matrix(1 0 0 1 169.4798 568.6807)" class="st28 st33 st34 st40">—</text>
-		<text transform="matrix(1 0 0 1 179.4442 568.6807)" class="st28 st33 st34 st45">—</text>
-		<text transform="matrix(1 0 0 1 196.0086 568.6807)" class="st28 st33 st34">— σ</text>
-		<text transform="matrix(0.8733 0 0 1 224.1234 568.6807)" class="st28 st33 st34">T</text>
-		<text transform="matrix(0.5091 0 0 0.583 233.2142 566.0205)" class="st28 st33 st46"> </text>
-		<text transform="matrix(1 0 0 1 237.3533 567.6807)" class="st28 st33 st34"> </text>
-		<rect x="79.88" y="542.4" class="st32" width="38.48" height="60.63"/>
-		<text id="mathmode02_00000129164550361361330330000002823312437384706708_" transform="matrix(1 0 0 1 94.1577 557.4009)"><tspan x="0" y="0" class="st28 st33 st34">d</tspan><tspan x="-4.78" y="12" class="st28 st33 st34 st40">–</tspan><tspan x="3.26" y="12" class="st28 st33 st34">– </tspan><tspan x="-2.95" y="24" class="st28 st33 st34">dt</tspan></text>
-		<text transform="matrix(1 0 0 1 49.2827 571.1697)" class="st28 st33 st47">E</text>
-		<rect x="128.52" y="541.75" class="st32" width="28.63" height="60.63"/>
-		<text id="mathmode01_00000158010865776746161770000008158402998783402159_" transform="matrix(1 0 0 1 138.0863 556.7524)"><tspan x="0" y="0" class="st28 st33 st34">L</tspan><tspan x="4.75" y="12" class="st28 st33 st34"> </tspan><tspan x="-0.19" y="24" class="st28 st33 st34">4</tspan></text>
-		<rect x="167.91" y="541.72" class="st32" width="28.63" height="60.63"/>
-		<text id="mathmode02_00000152962851562197731490000006429043095977329294_" transform="matrix(1 0 0 1 172.2355 556.7163)"><tspan x="0" y="0" class="st28 st33 st34">Lα</tspan><tspan x="5.05" y="24" class="st28 st33 st34">4</tspan></text>
-		<text transform="matrix(1 0 0 1 234.781 558.7173)" class="st28 st42 st43 st44">4</text>
-	</g>
-	<rect x="219.32" y="70.79" class="st32" width="547.14" height="155.24"/>
-	<text id="mathmode-text_00000126290229282255946910000008892840396364717967_" transform="matrix(1 0 0 1 219.3164 85.7912)"><tspan x="0" y="0" class="st33 st34">Dieses Feedback verleiht dem System ein Gedächtnis. Ändere den </tspan><tspan x="0" y="26" class="st33 st34">Wert von L und beobachte, wie sich die L-T-Grafik bewegt. Die Tem</tspan><tspan x="524.26" y="26" class="st33 st34">-</tspan><tspan x="0" y="52" class="st33 st34">peratur des Planeten hängt nicht nur von der aktuellen Energiebilanz </tspan><tspan x="0" y="78" class="st33 st34">ab, sondern auch von den historischen Werten, die sie zuvor hatte.  </tspan><tspan x="0" y="104" class="st33 st34">Die Umkehrung der Tendenz ist viel schwieriger. Dieser Effekt wird </tspan><tspan x="0" y="130" class="st33 st34">Hysterese genannt.</tspan></text>
+	<rect x="219.32" y="70.79" class="st33" width="547.14" height="155.24"/>
+	<text id="mathmode-text_00000126290229282255946910000008892840396364717967_" transform="matrix(1 0 0 1 219.3163 85.7912)"><tspan x="0" y="0" class="st34 st35">Dieses Feedback verleiht dem System ein Gedächtnis. Ändere den </tspan><tspan x="0" y="26" class="st34 st35">Wert von L und beobachte, wie sich die L-T-Grafik bewegt. Die Tem</tspan><tspan x="524.26" y="26" class="st34 st35">-</tspan><tspan x="0" y="52" class="st34 st35">peratur des Planeten hängt nicht nur von der aktuellen Energiebilanz </tspan><tspan x="0" y="78" class="st34 st35">ab, sondern auch von den historischen Werten, die sie zuvor hatte.  </tspan><tspan x="0" y="104" class="st34 st35">Die Umkehrung der Tendenz ist viel schwieriger. Dieser Effekt wird </tspan><tspan x="0" y="130" class="st34 st35">Hysterese genannt.</tspan></text>
 	<g id="arrow-AT">
-		<path class="st28" d="M379.2,300.73l6.54,10.79l-7.66,11.72h-99.27l-7.45-11.6l8.52-10.91H379.2 M380.05,299.23h-100.9
+		<path class="st29" d="M379.2,300.73l6.54,10.79l-7.66,11.72h-99.27l-7.45-11.6l8.52-10.91H379.2 M380.05,299.23h-100.9
 			l-9.62,12.32l8.46,13.18h100.9l8.62-13.18L380.05,299.23L380.05,299.23z"/>
 	</g>
 </g>

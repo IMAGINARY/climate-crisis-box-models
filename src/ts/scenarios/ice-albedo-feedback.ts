@@ -282,7 +282,7 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     const nonMathModeText = this.svg.findOne('[id^=text02]');
     assert(nonMathModeText !== null);
 
-    const mathModeOverlay = this.svg.findOne('[id^=mathmode02]');
+    const mathModeOverlay = this.svg.findOne('[id^=mathmode-model02]');
     assert(mathModeOverlay !== null);
 
     return {

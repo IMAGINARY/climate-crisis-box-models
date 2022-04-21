@@ -209,7 +209,7 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
     const nonMathModeText = this.svg.findOne('[id^=text01]');
     assert(nonMathModeText !== null);
 
-    const mathModeOverlay = this.svg.findOne('[id^=mathmode01]');
+    const mathModeOverlay = this.svg.findOne('[id^=mathmode-model01]');
     assert(mathModeOverlay !== null);
 
     return {
