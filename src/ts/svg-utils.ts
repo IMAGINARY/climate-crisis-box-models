@@ -12,16 +12,49 @@ function repaidPaths(svg: XMLDocument): void {
   });
 }
 
-function scopeCssClasses(svg: XMLDocument, parentSelector: string): void {
+async function scopeCssClasses(
+  svg: XMLDocument,
+  parentSelector: string
+): Promise<void> {
   // prefix CSS classes for scoping purposes
   const styleElements = svg.querySelectorAll('style');
   for (let i = 0; i < styleElements.length; i += 1) {
     const styleElement = styleElements[i];
-    const styleSheet = styleElement.sheet;
-    if (styleSheet !== null) {
+
+    // create temporary <link> element for parsing the stylesheet
+    const iframe = document.createElement('iframe');
+    iframe.width = '0';
+    iframe.height = '0';
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    const styleWindow = iframe.contentWindow;
+    assert(styleWindow !== null);
+    const styleDoc = iframe.contentDocument;
+    assert(styleDoc !== null);
+    const link = styleDoc.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = URL.createObjectURL(
+      new Blob([styleElement.textContent ?? ''], { type: 'text/css' })
+    );
+    const linkPromise = new Promise((resolve) => {
+      link.onload = resolve;
+    });
+    styleDoc.head.prepend(link);
+    // eslint-disable-next-line no-await-in-loop
+    await linkPromise;
+    const styleSheet = Array.from(styleDoc.styleSheets).find(
+      (s) => s.ownerNode === link
+    );
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const CSSStyleRuleOfCtx = styleWindow.CSSStyleRule as typeof CSSStyleRule;
+
+    if (styleSheet) {
       for (let j = 0; j < styleSheet.cssRules.length; j += 1) {
         const cssRule = styleSheet.cssRules[j];
-        if (cssRule instanceof CSSStyleRule) {
+        if (cssRule instanceof CSSStyleRuleOfCtx) {
           // Prefix each selector in a CSS selector group.
           // Ignore commas inside attribute selectors,
           // because they don't separate selector group elements.
@@ -34,6 +67,8 @@ function scopeCssClasses(svg: XMLDocument, parentSelector: string): void {
         .map((r) => r.cssText)
         .join('\n');
     }
+
+    iframe.remove();
   }
 }
 
@@ -65,13 +100,16 @@ function addSunAnimation(svg: XMLDocument): void {
   });
 }
 
-function preprocessSvg(svg: XMLDocument, parentClassName: string): void {
+async function preprocessSvg(
+  svg: XMLDocument,
+  parentClassName: string
+): Promise<void> {
   repaidPaths(svg);
   hideHardcodedGraphs(svg);
   addSunAnimation(svg);
   svg.documentElement.classList.add(parentClassName);
   const parentSelector = `.${parentClassName}`;
-  scopeCssClasses(svg, parentSelector);
+  await scopeCssClasses(svg, parentSelector);
 }
 
 // eslint-disable-next-line import/prefer-default-export

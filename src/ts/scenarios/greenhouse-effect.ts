@@ -242,10 +242,10 @@ export default class GreenhouseEffectScenario extends BaseScenario {
   }
 */
 
-  static fixScenarioSvg(svg: XMLDocument): void {
+  static async fixScenarioSvg(svg: XMLDocument): Promise<void> {
     // general fix-ups
     const parentClassName = 'greenhouse-effect-scenario';
-    preprocessSvg(svg, parentClassName);
+    await preprocessSvg(svg, parentClassName);
 
     const epsilonFormulaTag = svg.querySelector('text[id=mathmode03-epsilon]');
     assert(epsilonFormulaTag, 'tag of epsilon formula not found');
@@ -271,7 +271,7 @@ export default class GreenhouseEffectScenario extends BaseScenario {
 
   static async loadResources(): Promise<Resources> {
     const svg = await loadSvg(scenarioSvgUrl);
-    GreenhouseEffectScenario.fixScenarioSvg(svg);
+    await GreenhouseEffectScenario.fixScenarioSvg(svg);
 
     const temperatureDatasets = [
       temperaturesCelsius.map((value, index) => ({

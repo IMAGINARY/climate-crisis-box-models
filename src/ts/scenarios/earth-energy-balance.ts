@@ -101,15 +101,15 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
     this.enableMathMode(false);
   }
 
-  static fixScenarioSvg(svg: XMLDocument): void {
+  static async fixScenarioSvg(svg: XMLDocument): Promise<void> {
     // general fix-ups
     const parentClassName = 'earth-energy-balance-scenario';
-    preprocessSvg(svg, parentClassName);
+    await preprocessSvg(svg, parentClassName);
   }
 
   static async loadResources(): Promise<Resources> {
     const svg = await loadSvg(scenarioSvgUrl);
-    EarthEnergyBalanceScenario.fixScenarioSvg(svg);
+    await EarthEnergyBalanceScenario.fixScenarioSvg(svg);
 
     const simulation = new Simulation(cloneDeep(modelForScenario));
     const initialRecord = simulation.convergeRecordPrePost(

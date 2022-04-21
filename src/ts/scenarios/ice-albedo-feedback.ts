@@ -132,10 +132,10 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     this.enableMathMode(false);
   }
 
-  static fixScenarioSvg(svg: XMLDocument): void {
+  static async fixScenarioSvg(svg: XMLDocument): Promise<void> {
     // general fix-ups
     const parentClassName = 'ice-albedo-feedback-scenario';
-    preprocessSvg(svg, parentClassName);
+    await preprocessSvg(svg, parentClassName);
 
     // remove accidentally added class from non math-mode text
     const nonMathModeText = svg.querySelector('[id^=text02]');
@@ -145,7 +145,7 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
 
   static async loadResources(): Promise<Resources> {
     const svg = await loadSvg(scenarioSvgUrl);
-    IceAlbedoFeedbackScenario.fixScenarioSvg(svg);
+    await IceAlbedoFeedbackScenario.fixScenarioSvg(svg);
 
     const simulation = new Simulation(cloneDeep(modelForScenario));
     const initialRecord = simulation.convergeRecordPrePost(
