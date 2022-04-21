@@ -127,6 +127,8 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
       solarEmissivityVsTemperatureChart,
       ...this.createVizUpdaters()
     );
+
+    this.enableMathMode(false);
   }
 
   static fixScenarioSvg(svg: XMLDocument): void {

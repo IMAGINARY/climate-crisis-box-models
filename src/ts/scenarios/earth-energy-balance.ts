@@ -97,6 +97,8 @@ export default class EarthEnergyBalanceScenario extends BaseScenario {
     });
 
     this.updaters.push(tempChart, albedoChart, ...this.createVizUpdaters());
+
+    this.enableMathMode(false);
   }
 
   static fixScenarioSvg(svg: XMLDocument): void {

@@ -196,6 +196,8 @@ export default class GreenhouseEffectScenario extends BaseScenario {
 
     this.updaters.push(...this.charts, ...this.vizUpdaters, historyUpdater);
 
+    this.enableMathMode(false);
+
     this.resetIfIndicatedHandler = this.resetIfIndicated.bind(this);
     this.getSimulation().on('results', this.resetIfIndicatedHandler);
   }
