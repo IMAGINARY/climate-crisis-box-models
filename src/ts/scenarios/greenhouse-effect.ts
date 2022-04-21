@@ -25,7 +25,7 @@ import {
   Updater,
   createFuncUpdater,
   extendRangeRel,
-  createInterrupter,
+  reserveTimeSlot,
 } from '../util';
 import { createGraphCanvas } from '../charts/common';
 
@@ -526,8 +526,6 @@ export default class GreenhouseEffectScenario extends BaseScenario {
         { postProcess: (r: Record) => ({ ...r, t: 0 }) }
       );
 
-      const interrupt = createInterrupter(1000 / 60 / 2);
-
       const engine = simulation.getEngine();
       const { stepSize } = simulation.getModel();
       let { subSteps } = simulation.getModel();
@@ -536,15 +534,18 @@ export default class GreenhouseEffectScenario extends BaseScenario {
       const temperatures = [recordToData(record)];
       const h = stepSize / (subSteps + 1);
       while (secondsToYears(record.t) <= co2.length) {
-        simulation.setParameter(getCO2(secondsToYears(record.t)), true);
-        for (let i = 0; i < subSteps + 1; i += 1) {
-          const { t, stocks, flows } = record;
-          record = engine.stepExt(stocks, flows, t, h);
-        }
-        const temperatureData = recordToData(record);
-        temperatures.push(temperatureData);
         // eslint-disable-next-line no-await-in-loop
-        await interrupt();
+        const idleDeadline = await reserveTimeSlot();
+        while (secondsToYears(record.t) <= co2.length) {
+          simulation.setParameter(getCO2(secondsToYears(record.t)), true);
+          for (let i = 0; i < subSteps + 1; i += 1) {
+            const { t, stocks, flows } = record;
+            record = engine.stepExt(stocks, flows, t, h);
+          }
+          const temperatureData = recordToData(record);
+          temperatures.push(temperatureData);
+          if (idleDeadline.timeRemaining() === 0) break;
+        }
       }
       return temperatures;
     }

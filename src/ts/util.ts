@@ -1,3 +1,4 @@
+// eslint-disable-next-line max-classes-per-file
 import SvgJs from '@svgdotjs/svg.js';
 import assert from 'assert';
 
@@ -278,16 +279,17 @@ async function sleep(seconds: number): Promise<void> {
   });
 }
 
-function createInterrupter(ms: number): () => Promise<void> {
-  let lastTimestamp = performance.now();
-  const interrupter = async () => {
-    const timestamp = performance.now();
-    if (timestamp - lastTimestamp > ms) {
-      lastTimestamp = timestamp;
-      await sleep(0);
-    }
-  };
-  return interrupter;
+function reserveTimeSlot(ms = 30): Promise<{ timeRemaining: () => number }> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const start = Date.now();
+      resolve({
+        timeRemaining() {
+          return Math.max(0, ms - (Date.now() - start));
+        },
+      });
+    }, 0);
+  });
 }
 
 function extendRangeAbs(
@@ -337,7 +339,7 @@ export {
   createFuncUpdater,
   createSvgMorphUpdater,
   sleep,
-  createInterrupter,
+  reserveTimeSlot,
   extendRangeAbs,
   extendRangeRel,
 };

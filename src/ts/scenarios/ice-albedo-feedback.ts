@@ -16,7 +16,7 @@ import {
   formatCelsiusFrac,
   kelvinToCelsius,
   loadSvg,
-  createInterrupter,
+  reserveTimeSlot,
 } from '../util';
 import { createGraphCanvas } from '../charts/common';
 
@@ -196,18 +196,20 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
       solarEmissivityRangeFactor
     );
 
-    const interrupt = createInterrupter(1000 / 60 / 2);
-
     // walk the solar emissivity parameter down and back up
-    for (let step = -numSteps + 1; step < numSteps; step += 1) {
-      simulation.setParameter(
-        min + ((max - min) * Math.abs(step)) / (numSteps - 1),
-        true
-      );
-      const result = simulation.converge(convergenceCriterion);
+    let step = -numSteps + 1;
+    for (; step < numSteps; ) {
       // eslint-disable-next-line no-await-in-loop
-      await interrupt();
-      hysteresisData.push(result);
+      const idleDeadline = await reserveTimeSlot();
+      for (; step < numSteps; step += 1) {
+        simulation.setParameter(
+          min + ((max - min) * Math.abs(step)) / (numSteps - 1),
+          true
+        );
+        const result = simulation.converge(convergenceCriterion);
+        hysteresisData.push(result);
+        if (idleDeadline.timeRemaining() === 0) break;
+      }
     }
 
     return hysteresisData;
