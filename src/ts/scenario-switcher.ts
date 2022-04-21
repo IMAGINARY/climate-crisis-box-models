@@ -9,9 +9,11 @@ export default class ScenarioSwitcher extends EventEmitter {
   constructor(scenarios: Scenario[]) {
     super();
     this.scenarios = scenarios;
-    scenarios.forEach((s) => ScenarioSwitcher.deselect(s));
     if (scenarios.length > 0) {
       this.currentScenarioIndex = 0;
+      scenarios
+        .filter((_, i) => i !== this.currentScenarioIndex)
+        .forEach((s) => ScenarioSwitcher.deselect(s));
       ScenarioSwitcher.select(this.scenarios[this.currentScenarioIndex]);
     }
   }
@@ -20,12 +22,12 @@ export default class ScenarioSwitcher extends EventEmitter {
     if (typeof scenario !== 'undefined' && scenario !== null) {
       scenario.setVisible(false);
       scenario.getSimulation().stop();
+      scenario.reset();
     }
   }
 
   protected static select(scenario: Scenario, autoplay = false) {
     if (typeof scenario !== 'undefined' && scenario !== null) {
-      scenario.reset();
       if (autoplay) scenario.getSimulation().play();
       scenario.setVisible(true);
     }

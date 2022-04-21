@@ -92,30 +92,27 @@ async function main() {
   ) as HTMLDivElement;
   assert(scenarioContainer !== null);
 
-  const earthEnergyBalanceScenarioResources =
-    await EarthEnergyBalanceScenario.loadResources();
-  const iceAlbedoFeedbackScenarioResources =
-    await IceAlbedoFeedbackScenario.loadResources();
-  const greenhouseEffectScenarioResources =
-    await GreenhouseEffectScenario.loadResources();
+  const earthEnergyBalanceScenario = new EarthEnergyBalanceScenario(
+    scenarioContainer,
+    await EarthEnergyBalanceScenario.loadResources()
+  );
+  earthEnergyBalanceScenario.setVisible(true);
+  earthEnergyBalanceScenario.getSimulation().bootstrap();
+  if (options.autoPlay) earthEnergyBalanceScenario.getSimulation().play();
 
   const scenarios = [
-    new EarthEnergyBalanceScenario(
-      scenarioContainer,
-      earthEnergyBalanceScenarioResources
-    ),
+    earthEnergyBalanceScenario,
     new IceAlbedoFeedbackScenario(
       scenarioContainer,
-      iceAlbedoFeedbackScenarioResources
-    ),
+      await IceAlbedoFeedbackScenario.loadResources()
+    ).setVisible(false),
     new GreenhouseEffectScenario(
       scenarioContainer,
-      greenhouseEffectScenarioResources
-    ),
+      await GreenhouseEffectScenario.loadResources()
+    ).setVisible(false),
   ];
 
   const scenarioSwitcher = new ScenarioSwitcher(scenarios);
-  scenarioSwitcher.getCurrentScenario().getSimulation().stop();
 
   if (options.initialScenario === 'first') scenarioSwitcher.switchTo(0);
   else if (options.initialScenario === 'last')

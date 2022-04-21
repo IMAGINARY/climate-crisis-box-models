@@ -30,12 +30,13 @@ export default abstract class BaseScenario implements Scenario {
     this.simulation.on('reset', this.handleReset);
   }
 
-  reset() {
+  reset(): this {
     this.updaters.forEach((u) => u.reset());
     this.simulation.off('reset', this.handleReset);
     this.simulation.reset();
     this.simulation.on('reset', this.handleReset);
     this.simulation.bootstrap();
+    return this;
   }
 
   abstract getName(): string;
@@ -61,9 +62,10 @@ export default abstract class BaseScenario implements Scenario {
     return this.simulation;
   }
 
-  setVisible(visible: boolean) {
+  setVisible(visible: boolean): this {
     if (visible) this.container.classList.remove('invisible');
     else this.container.classList.add('invisible');
+    return this;
   }
 
   isVisible() {
@@ -82,7 +84,7 @@ export default abstract class BaseScenario implements Scenario {
     return Promise.resolve();
   }
 
-  enableMathMode(enable: boolean) {
+  enableMathMode(enable: boolean): this {
     if (enable) {
       this.mathMode = true;
       this.getMathModeElements().show.forEach((e) =>
@@ -100,6 +102,7 @@ export default abstract class BaseScenario implements Scenario {
         e.classList.remove('invisible')
       );
     }
+    return this;
   }
 
   isMathModeEnabled() {
