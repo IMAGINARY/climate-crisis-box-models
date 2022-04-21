@@ -50,22 +50,22 @@ const flows: FlowWithRange[] = [
     id: 'atm infrared radiation',
     formula: ({ v }: { v: LookupFunction }) =>
       v('epsilon') * 5.67e-8 * v('atm temperature') ** 4,
-    min: 146,
-    max: 203,
+    min: 139,
+    max: 170,
   },
   {
     id: 'gnd infrared radiation',
     formula: ({ v }: { v: LookupFunction }) =>
       5.67e-8 * v('gnd temperature') ** 4,
-    min: 385,
-    max: 442,
+    min: 378,
+    max: 406,
   },
   {
     id: 'gnd infrared radiation not absorbed',
     formula: ({ v }: { v: LookupFunction }) =>
       (1 - v('epsilon')) * 5.67e-8 * v('gnd temperature') ** 4,
-    min: 36,
-    max: 93,
+    min: 62,
+    max: 100,
   },
 ];
 
