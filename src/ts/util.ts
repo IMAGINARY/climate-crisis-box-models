@@ -272,10 +272,22 @@ function createSvgMorphUpdater(
   return updater;
 }
 
-async function sleep(seconds: number) {
-  await new Promise((resolve) => {
+async function sleep(seconds: number): Promise<void> {
+  return new Promise((resolve) => {
     setTimeout(resolve, seconds * 1000);
   });
+}
+
+function createInterrupter(ms: number): () => Promise<void> {
+  let lastTimestamp = performance.now();
+  const interrupter = async () => {
+    const timestamp = performance.now();
+    if (timestamp - lastTimestamp > ms) {
+      lastTimestamp = timestamp;
+      await sleep(0);
+    }
+  };
+  return interrupter;
 }
 
 function extendRangeAbs(
@@ -325,6 +337,7 @@ export {
   createFuncUpdater,
   createSvgMorphUpdater,
   sleep,
+  createInterrupter,
   extendRangeAbs,
   extendRangeRel,
 };

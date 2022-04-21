@@ -25,6 +25,7 @@ import {
   Updater,
   createFuncUpdater,
   extendRangeRel,
+  createInterrupter,
 } from '../util';
 import { createGraphCanvas } from '../charts/common';
 
@@ -268,8 +269,8 @@ export default class GreenhouseEffectScenario extends BaseScenario {
         x: index,
         y: value,
       })),
-      GreenhouseEffectScenario.computeTemperatureData(co2EqCMIP6ssp245),
-      GreenhouseEffectScenario.computeTemperatureData(co2EqCMIP6ssp585),
+      await GreenhouseEffectScenario.computeTemperatureData(co2EqCMIP6ssp245),
+      await GreenhouseEffectScenario.computeTemperatureData(co2EqCMIP6ssp585),
     ];
 
     const co2Datasets = [
@@ -489,9 +490,9 @@ export default class GreenhouseEffectScenario extends BaseScenario {
     return convergenceCriterion;
   }
 
-  protected static computeTemperatureData(
+  protected static async computeTemperatureData(
     co2: ReadonlyArray<number>
-  ): { x: number; y: number }[] {
+  ): Promise<{ x: number; y: number }[]> {
     const simulation = new Simulation(cloneDeep(modelForScenario));
     if (co2.length > 0) {
       const getCO2 = (year: number): number => {
@@ -516,6 +517,8 @@ export default class GreenhouseEffectScenario extends BaseScenario {
         { postProcess: (r: Record) => ({ ...r, t: 0 }) }
       );
 
+      const interrupt = createInterrupter(1000 / 60 / 2);
+
       const engine = simulation.getEngine();
       const { stepSize } = simulation.getModel();
       let { subSteps } = simulation.getModel();
@@ -531,6 +534,8 @@ export default class GreenhouseEffectScenario extends BaseScenario {
         }
         const temperatureData = recordToData(record);
         temperatures.push(temperatureData);
+        // eslint-disable-next-line no-await-in-loop
+        await interrupt();
       }
       return temperatures;
     }

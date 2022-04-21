@@ -16,6 +16,7 @@ import {
   formatCelsiusFrac,
   kelvinToCelsius,
   loadSvg,
+  createInterrupter,
 } from '../util';
 import { createGraphCanvas } from '../charts/common';
 
@@ -153,9 +154,10 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
       { postProcess: (r: Record) => ({ ...r, t: 0 }) }
     );
 
-    const hysteresisData = IceAlbedoFeedbackScenario.computeHysteresisData(
-      SOLAR_EMISSIVITY_RANGE_FACTOR
-    );
+    const hysteresisData =
+      await IceAlbedoFeedbackScenario.computeHysteresisData(
+        SOLAR_EMISSIVITY_RANGE_FACTOR
+      );
 
     return { svg, initialRecord, hysteresisData };
   }
@@ -179,9 +181,9 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
     return convergenceCriterion;
   }
 
-  protected static computeHysteresisData(
+  protected static async computeHysteresisData(
     solarEmissivityRangeFactor: number
-  ): SimulationResult[] {
+  ): Promise<SimulationResult[]> {
     const convergenceCriterion =
       IceAlbedoFeedbackScenario.getConvergenceCriterion();
 
@@ -193,6 +195,9 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
       simulation.getParameterRange(),
       solarEmissivityRangeFactor
     );
+
+    const interrupt = createInterrupter(1000 / 60 / 2);
+
     // walk the solar emissivity parameter down and back up
     for (let step = -numSteps + 1; step < numSteps; step += 1) {
       simulation.setParameter(
@@ -200,6 +205,8 @@ export default class IceAlbedoFeedbackScenario extends BaseScenario {
         true
       );
       const result = simulation.converge(convergenceCriterion);
+      // eslint-disable-next-line no-await-in-loop
+      await interrupt();
       hysteresisData.push(result);
     }
 
