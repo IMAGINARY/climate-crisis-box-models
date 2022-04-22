@@ -2,8 +2,16 @@
   "name": "climate-crisis-box-models",
   "version": "0.0.0",
   "description": "Simulation of climate science box models",
-  "author": "Christian Stussak <christian.stussak@imaginary.org>",
-  "repository": "github:IMAGINARY/box-model",
+  "author": {
+    "name": "Christian Stussak",
+    "email": "christian.stussak@imaginary.org",
+    "url": "http://barnyrubble.tumblr.com/"
+  },
+  "repository": "github:IMAGINARY/climate-crisis-box-models",
+  "bugs": {
+    "url": "https://github.com/IMAGINARY/climate-crisis-box-models/issues",
+    "email": "christian.stussak@imaginary.org"
+  },
   "license": "MIT",
   "engines": {
     "npm": ">=8.0.0",
