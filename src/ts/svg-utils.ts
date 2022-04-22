@@ -12,64 +12,97 @@ function repaidPaths(svg: XMLDocument): void {
   });
 }
 
+function filterCSSStyleRules<T extends CSSRule>(
+  rules: CSSRule[],
+  ruleType: new () => T
+): CSSStyleRule[] {
+  return rules.filter((rule) => rule instanceof ruleType) as CSSStyleRule[];
+}
+
+async function extractCSSStyleRules(
+  styleElement: HTMLStyleElement
+): Promise<CSSStyleRule[]> {
+  if (styleElement.sheet) {
+    return filterCSSStyleRules(
+      Array.from(styleElement.sheet.cssRules),
+      CSSStyleRule
+    );
+  }
+
+  // The following is for web browsers that don't support the sheet property
+  // (Safari at the time of writing)
+
+  // create temporary <link> element for parsing the stylesheet
+  const iframe = document.createElement('iframe');
+  iframe.width = '0';
+  iframe.height = '0';
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+
+  const styleWindow = iframe.contentWindow;
+  assert(styleWindow !== null);
+  const styleDoc = iframe.contentDocument;
+  assert(styleDoc !== null);
+  const link = styleDoc.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = URL.createObjectURL(
+    new Blob([styleElement.textContent ?? ''], { type: 'text/css' })
+  );
+  const linkPromise = new Promise((resolve) => {
+    link.onload = resolve;
+  });
+  styleDoc.head.prepend(link);
+  // eslint-disable-next-line no-await-in-loop
+  await linkPromise;
+  const styleSheet = Array.from(styleDoc.styleSheets).find(
+    (s) => s.ownerNode === link
+  );
+  assert(styleSheet);
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const CSSStyleRuleOfCtx = styleWindow.CSSStyleRule as typeof CSSStyleRule;
+
+  const cssStyleRules = filterCSSStyleRules(
+    Array.from(styleSheet.cssRules),
+    CSSStyleRuleOfCtx
+  );
+
+  iframe.remove();
+
+  return cssStyleRules;
+}
+
 async function scopeCssClasses(
   svg: XMLDocument,
   parentSelector: string
 ): Promise<void> {
   // prefix CSS classes for scoping purposes
-  const styleElements = svg.querySelectorAll('style');
-  for (let i = 0; i < styleElements.length; i += 1) {
-    const styleElement = styleElements[i];
+  const styleElements = Array.from(svg.querySelectorAll('style'));
+  const styleElementsAndSheets = await Promise.all(
+    styleElements.map(
+      async (styleElement): Promise<[HTMLStyleElement, CSSStyleRule[]]> => [
+        styleElement,
+        await extractCSSStyleRules(styleElement),
+      ]
+    )
+  );
 
-    // create temporary <link> element for parsing the stylesheet
-    const iframe = document.createElement('iframe');
-    iframe.width = '0';
-    iframe.height = '0';
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-
-    const styleWindow = iframe.contentWindow;
-    assert(styleWindow !== null);
-    const styleDoc = iframe.contentDocument;
-    assert(styleDoc !== null);
-    const link = styleDoc.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = URL.createObjectURL(
-      new Blob([styleElement.textContent ?? ''], { type: 'text/css' })
-    );
-    const linkPromise = new Promise((resolve) => {
-      link.onload = resolve;
+  styleElementsAndSheets.forEach(([styleElement, cssStyleRules]) => {
+    cssStyleRules.forEach((cssStyleRule) => {
+      /**
+       * Prefix each selector in a CSS selector group.
+       * Ignore commas inside attribute selectors,
+       * because they don't separate selector group elements.
+       */
+      // eslint-disable-next-line no-param-reassign
+      cssStyleRule.selectorText = cssStyleRule.selectorText
+        .replace(/^/, `${parentSelector} `)
+        .replaceAll(/,(([^,[]*|\[[^\]]*])*)/g, `, ${parentSelector} $1`);
     });
-    styleDoc.head.prepend(link);
-    // eslint-disable-next-line no-await-in-loop
-    await linkPromise;
-    const styleSheet = Array.from(styleDoc.styleSheets).find(
-      (s) => s.ownerNode === link
-    );
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const CSSStyleRuleOfCtx = styleWindow.CSSStyleRule as typeof CSSStyleRule;
-
-    if (styleSheet) {
-      for (let j = 0; j < styleSheet.cssRules.length; j += 1) {
-        const cssRule = styleSheet.cssRules[j];
-        if (cssRule instanceof CSSStyleRuleOfCtx) {
-          // Prefix each selector in a CSS selector group.
-          // Ignore commas inside attribute selectors,
-          // because they don't separate selector group elements.
-          cssRule.selectorText = cssRule.selectorText
-            .replace(/^/, `${parentSelector} `)
-            .replaceAll(/,(([^,[]*|\[[^\]]*])*)/g, `, ${parentSelector} $1`);
-        }
-      }
-      styleElement.textContent = Array.from(styleSheet.cssRules)
-        .map((r) => r.cssText)
-        .join('\n');
-    }
-
-    iframe.remove();
-  }
+    // eslint-disable-next-line no-param-reassign
+    styleElement.textContent = cssStyleRules.map((r) => r.cssText).join('\n');
+  });
 }
 
 function hideHardcodedGraphs(svg: XMLDocument): void {
