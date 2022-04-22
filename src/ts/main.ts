@@ -254,7 +254,6 @@ async function main() {
   window.addEventListener(
     'wheel',
     (event) => {
-      event.preventDefault();
       if (event.deltaMode === WheelEvent.DOM_DELTA_PIXEL) {
         stepSliders(event[wheelDeltaIdx] / wheelDivisor);
       }
