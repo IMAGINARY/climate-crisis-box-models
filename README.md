@@ -35,7 +35,40 @@ Please note that this is a pedagogical project. Our model for the greenhouse eff
 
 ## Usage
 
+The repository contains the bundled app inside the [`dist`](dist) folder. This folder needs to be served by a web server.
+
+Having `npx` installed, you can serve the app via
+
+```shell
+npx reload --dir dist
+```
+
+Another possibility is to run
+
+```shell
+npm install
+npm run server
+```
+
+Note, however, that this pulls in all development dependencies, which are of considerable size.
+
+In both cases, check the CLI output for the URL of the server, that you have to open in a web browser.
+
 ### Configuration
+
+The app exposes a number of configuration options via the URL query string:
+
+- `initialScenario` (`first` | `last` | `random` | number, default: `first`): start with the given scenario/model.
+- `osc` (`true` | `false`, default: `true`): Toggle on-screen controls.
+- `autoPlay` (`true` | `false`, default: `true`): Toggle auto-play.
+- `scenarioCycleDirection` (`forward` | `backward`, default: `forward`): Cycle direction for the cycle key.
+- `prevScenarioKey` (key name, default: `ArrowLeft`): Key to go to the previous scenario/model.
+- `nextScenarioKey` (key name, default: `ArrowRight`): Key to go to the next scenario/model.
+- `cycleScenarioKey` (key name, default: `c`): Key to cycle through the scenarios/model.
+- `increaseParameterKey` (key name, default: `ArrowUp`): Key to increase the parameter value.
+- `decreaseParameterKey` (key name, default: `ArrowDown`): Key to decrease the parameter value.
+- `mathModeKey` (key name, default: `m`): Key to toggle the math mode.
+- `wheelDivisor`(number, default: `1.0`): Divisor controlling the speed with with the mouse wheel/trackpad controls the parameter. -`wheelInvert` (`true` | `false`, default: `false`): Invert the direction of the mouse wheel/trackpad controls. -`wheelAxis`(`x` | `y`, default: `y`): Let this mouse wheel/trackpad axis control the parameter.
 
 ## Building
 
