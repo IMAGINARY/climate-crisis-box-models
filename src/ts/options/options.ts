@@ -20,6 +20,7 @@ const parsers: OptionParsers = {
   initialScenario: intOrStringsParser('first', 'last', 'random') as Parser<
     number | 'first' | 'last' | 'random'
   >,
+  osc: booleanParser(),
   autoPlay: booleanParser(),
   scenarioCycleDirection: stringsParser('forward', 'backward') as Parser<
     'forward' | 'backward'

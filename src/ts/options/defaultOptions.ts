@@ -2,6 +2,7 @@ import { Options } from './types';
 
 const defaultOptions: Options = {
   initialScenario: 'first',
+  osc: true,
   autoPlay: true,
   scenarioCycleDirection: 'forward',
   prevScenarioKey: 'ArrowLeft',

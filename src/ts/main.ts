@@ -87,6 +87,13 @@ async function main() {
   // eslint-disable-next-line no-console
   console.log({ options, defaults: getDefaultOptions() });
 
+  const osc = document.getElementById('osc') as HTMLDivElement;
+  assert(osc);
+
+  if (options.osc) {
+    osc.classList.remove('display-none');
+  }
+
   const scenarioContainer = document.getElementById(
     'scenario-container'
   ) as HTMLDivElement;

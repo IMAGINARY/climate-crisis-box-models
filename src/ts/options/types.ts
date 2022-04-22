@@ -1,5 +1,6 @@
 export type Options = {
   initialScenario: number | 'first' | 'last' | 'random';
+  osc: boolean;
   autoPlay: boolean;
   scenarioCycleDirection: 'forward' | 'backward';
   prevScenarioKey: KeyboardEvent['key'];
