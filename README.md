@@ -104,6 +104,13 @@ npm run build
 
 - Wikipedia. _[Idealized greenhouse model](https://en.wikipedia.org/wiki/Idealized_greenhouse_model)_.
 
+## Contributors
+
+- Christian Stussak (Software development)
+- Daniel Ramos (Concept and theory)
+- Malte Hein (Graphic design)
+- Andreas Matt (Coordination)
+
 ## License
 
 Copyright 2022 IMAGINARY gGmbH
