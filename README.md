@@ -72,6 +72,24 @@ The app exposes a number of configuration options via the URL query string:
 
 ## Building
 
+Install the dependencies:
+
+```shell
+npm install
+```
+
+Run the development server:
+
+```shell
+npm run serve
+```
+
+Build the redistributable bundle into the `dist` folder:
+
+```shell
+npm run build
+```
+
 ## References
 
 - Archer, D. _Course [Global Warming I: The Science and Modeling of Climate Change](https://www.coursera.org/learn/global-warming)_, in Coursera.
