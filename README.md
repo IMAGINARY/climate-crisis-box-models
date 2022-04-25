@@ -60,6 +60,7 @@ The app exposes a number of configuration options via the URL query string:
 
 - `initialScenario` (`first` | `last` | `random` | number, default: `first`): start with the given scenario/model.
 - `osc` (`true` | `false`, default: `true`): Toggle on-screen controls.
+- `pauseAfter` (number | `false`, default: `60`): Automatically pause the simulation after being idle for the given number of seconds.
 - `autoPlay` (`true` | `false`, default: `true`): Toggle auto-play.
 - `scenarioCycleDirection` (`forward` | `backward`, default: `forward`): Cycle direction for the cycle key.
 - `prevScenarioKey` (key name, default: `ArrowLeft`): Key to go to the previous scenario/model.

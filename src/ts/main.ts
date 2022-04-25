@@ -1,5 +1,10 @@
 import { strict as assert } from 'assert';
 import ready from 'document-ready';
+import {
+  Idler,
+  KeyboardInterrupter,
+  EventInterrupter,
+} from '@imaginary-maths/idler';
 
 import { EarthEnergyBalanceScenario } from './scenarios/earth-energy-balance';
 import { IceAlbedoFeedbackScenario } from './scenarios/ice-albedo-feedback';
@@ -185,20 +190,57 @@ async function main() {
     shouldBePlaying = false;
   }
 
-  function tooglePlayPause() {
+  const keyboardInterrupter = new KeyboardInterrupter();
+  const wheelInterrupter = new EventInterrupter(window, ['wheel']);
+  const idler = new Idler(keyboardInterrupter, wheelInterrupter);
+
+  type IdlerCallbackOptions = Partial<Parameters<Idler['addCallback']>[0]>;
+  const idlerCallbacks: IdlerCallbackOptions[] = [] as IdlerCallbackOptions[];
+  if (typeof options.pauseAfter === 'number') {
+    const idlePauseCallbackOptions: IdlerCallbackOptions = {
+      delay: options.pauseAfter * 1000,
+      onBegin: pause,
+      onEnd: () => {
+        // delay to next frame to avoid interference with play/pause key handling
+        requestAnimationFrame(play);
+      },
+    };
+    idlerCallbacks.push(idlePauseCallbackOptions);
+  }
+
+  let idlerCallbackIds: number[] = [];
+  const addIdlerCallbacks = () => {
+    idlerCallbackIds = idlerCallbacks.map(idler.addCallback.bind(idler));
+  };
+  const removeIdlerCallbacks = () => {
+    idlerCallbackIds.forEach(idler.removeCallback.bind(idler));
+    idlerCallbackIds = [];
+  };
+
+  function playByUser() {
+    play();
+    addIdlerCallbacks();
+  }
+
+  function pauseByUser() {
+    removeIdlerCallbacks();
+    pause();
+  }
+
+  function tooglePlayPauseByUser() {
     if (shouldBePlaying) {
-      pause();
+      pauseByUser();
     } else {
-      play();
+      playByUser();
     }
   }
 
   // toggle play/pause
-  startButton.addEventListener('click', play);
-  stopButton.addEventListener('click', pause);
-  registerKey('keypress', { key: ' ' }, tooglePlayPause);
-  if (options.autoPlay) play();
-  else pause();
+  startButton.addEventListener('click', playByUser);
+  stopButton.addEventListener('click', pauseByUser);
+  registerKey('keypress', { key: ' ' }, tooglePlayPauseByUser);
+  if (options.autoPlay) playByUser();
+  else pauseByUser();
 
   // step/cycle through scenarios
   registerKey('keydown', { key: options.prevScenarioKey }, () =>

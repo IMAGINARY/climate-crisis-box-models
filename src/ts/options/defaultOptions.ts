@@ -4,6 +4,7 @@ const defaultOptions: Options = {
   initialScenario: 'first',
   osc: true,
   autoPlay: true,
+  pauseAfter: 60,
   scenarioCycleDirection: 'forward',
   prevScenarioKey: 'ArrowLeft',
   nextScenarioKey: 'ArrowRight',
