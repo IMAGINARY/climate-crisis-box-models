@@ -126,14 +126,19 @@ async function main() {
 
   const scenarioSwitcher = new ScenarioSwitcher(scenarios);
 
-  if (options.initialScenario === 'first') scenarioSwitcher.switchTo(0);
-  else if (options.initialScenario === 'last')
-    scenarioSwitcher.switchTo(scenarioSwitcher.getScenarios().length - 1);
-  else if (options.initialScenario === 'random')
-    scenarioSwitcher.switchTo(Math.floor(Math.random() * scenarios.length));
-  else {
-    scenarioSwitcher.switchTo(options.initialScenario);
-  }
+  const initialScenario: number = (() => {
+    switch (options.initialScenario) {
+      case 'first':
+        return 0;
+      case 'last':
+        return scenarioSwitcher.getScenarios().length - 1;
+      case 'random':
+        return Math.floor(Math.random() * scenarios.length);
+      default:
+        return options.initialScenario;
+    }
+  })();
+  scenarioSwitcher.switchTo(initialScenario);
 
   const scenarioSelectorContainer = document.getElementById(
     'scenario-selector-container'
@@ -206,6 +211,16 @@ async function main() {
       },
     };
     idlerCallbacks.push(idlePauseCallbackOptions);
+  }
+
+  if (typeof options.resetAfter === 'number') {
+    const idleSwitchToInitialScenarioCallbackOptions: Partial<
+      Parameters<Idler['addCallback']>[0]
+    > = {
+      delay: options.resetAfter * 1000,
+      onBegin: () => scenarioSwitcher.switchTo(initialScenario, true),
+    };
+    idlerCallbacks.push(idleSwitchToInitialScenarioCallbackOptions);
   }
 
   let idlerCallbackIds: number[] = [];

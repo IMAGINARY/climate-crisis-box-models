@@ -23,6 +23,7 @@ const parsers: OptionParsers = {
   osc: booleanParser(),
   autoPlay: booleanParser(),
   pauseAfter: intOrStringsParser('false') as Parser<number | 'false'>,
+  resetAfter: intOrStringsParser('false') as Parser<number | 'false'>,
   scenarioCycleDirection: stringsParser('forward', 'backward') as Parser<
     'forward' | 'backward'
   >,

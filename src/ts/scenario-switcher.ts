@@ -33,13 +33,13 @@ export default class ScenarioSwitcher extends EventEmitter {
     }
   }
 
-  switchTo(which: number): void {
+  switchTo(which: number, force = false): void {
     const clampedWhich = Math.min(
       this.scenarios.length - 1,
       Math.max(0, which)
     );
 
-    if (clampedWhich === this.getCurrentScenarioIndex()) return;
+    if (!force && clampedWhich === this.getCurrentScenarioIndex()) return;
 
     const wasPlaying = this.getCurrentScenario().getSimulation().isPlaying();
     ScenarioSwitcher.deselect(this.getCurrentScenario());

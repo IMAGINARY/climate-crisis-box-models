@@ -3,6 +3,7 @@ export type Options = {
   osc: boolean;
   autoPlay: boolean;
   pauseAfter: number | 'false';
+  resetAfter: number | 'false';
   scenarioCycleDirection: 'forward' | 'backward';
   prevScenarioKey: KeyboardEvent['key'];
   nextScenarioKey: KeyboardEvent['key'];
