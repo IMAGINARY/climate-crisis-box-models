@@ -45,7 +45,7 @@
   "dependencies": {
     "@fontsource/roboto-condensed": "^4.5.6",
     "@imaginary-maths/box-model": "^0.8.0",
-    "@imaginary-maths/idler": "^0.3.0",
+    "@imaginary-maths/idler": "^0.3.1",
     "@svgdotjs/svg.js": "^3.1.2",
     "chart.js": "^3.7.1",
     "chartjs-plugin-annotation": "^1.4.0",
