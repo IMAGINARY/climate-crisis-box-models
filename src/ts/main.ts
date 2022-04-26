@@ -185,6 +185,7 @@ async function main() {
     scenarioSwitcher.getCurrentScenario().getSimulation().play();
     startButton.style.display = 'none';
     stopButton.style.display = 'unset';
+    document.body.classList.remove('animation-paused');
     shouldBePlaying = true;
   }
 
@@ -192,6 +193,7 @@ async function main() {
     scenarioSwitcher.getCurrentScenario().getSimulation().pause();
     startButton.style.display = 'unset';
     stopButton.style.display = 'none';
+    document.body.classList.add('animation-paused');
     shouldBePlaying = false;
   }
 

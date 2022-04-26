@@ -128,3 +128,7 @@ body {
 svg text {
   white-space: pre;
 }
+
+.animation-paused * {
+  animation-play-state: paused !important;
+}
