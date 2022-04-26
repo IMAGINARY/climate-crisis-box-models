@@ -70,45 +70,6 @@ export default class ScenarioSwitcher extends EventEmitter {
     );
   }
 
-  protected static async deselectWithTransition(
-    scenario: Scenario
-  ): Promise<void> {
-    await scenario.tweenOut();
-    scenario.getSimulation().stop();
-  }
-
-  protected static async selectWithTransition(
-    scenario: Scenario,
-    autoplay = false
-  ): Promise<void> {
-    scenario.reset();
-    const simulation = scenario.getSimulation();
-    simulation.reset();
-    if (autoplay) simulation.play();
-    await scenario.tweenIn();
-  }
-
-  async switchToWithTransition(which: number): Promise<void> {
-    const clampedWhich = Math.min(
-      this.scenarios.length - 1,
-      Math.max(0, which)
-    );
-
-    if (clampedWhich === this.getCurrentScenarioIndex()) return;
-
-    const wasPlaying = this.getCurrentScenario().getSimulation().isPlaying();
-    await ScenarioSwitcher.deselectWithTransition(this.getCurrentScenario());
-    await ScenarioSwitcher.selectWithTransition(
-      this.scenarios[clampedWhich],
-      wasPlaying
-    );
-
-    const oldIdx = this.currentScenarioIndex;
-    this.currentScenarioIndex = clampedWhich;
-
-    this.emit('switch', oldIdx, this.currentScenarioIndex);
-  }
-
   getScenarios(): Scenario[] {
     return this.scenarios;
   }

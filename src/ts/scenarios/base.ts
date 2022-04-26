@@ -72,18 +72,6 @@ export default abstract class BaseScenario implements Scenario {
     return !this.container.classList.contains('invisible');
   }
 
-  tweenIn() {
-    // TODO: implement actual tween
-    this.setVisible(true);
-    return Promise.resolve();
-  }
-
-  tweenOut() {
-    // TODO: implement actual tween
-    this.setVisible(false);
-    return Promise.resolve();
-  }
-
   enableMathMode(enable: boolean): this {
     if (enable) {
       this.mathMode = true;
