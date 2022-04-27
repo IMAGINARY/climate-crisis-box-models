@@ -256,17 +256,6 @@ export default class GreenhouseEffectScenario extends BaseScenario {
     epsilonFormulaTag.textContent = `є = ${f.format(
       epsilonFactor
     )} ln(C) + ${f.format(epsilonOffset)}`;
-
-    const actionBoxTextWithUnnecessarySpace = Array.from(
-      svg.querySelectorAll(
-        '[id=text_00000124851983935777514820000015715086385007132563_] text'
-      )
-    ).filter((e) => e.textContent === '(C) , um die Zukunft')[0];
-    assert(
-      actionBoxTextWithUnnecessarySpace,
-      'certain child tag of action box not found'
-    );
-    actionBoxTextWithUnnecessarySpace.textContent = '(C), um die Zukunft';
   }
 
   static async loadResources(): Promise<Resources> {
@@ -580,19 +569,14 @@ export default class GreenhouseEffectScenario extends BaseScenario {
 */
 
   getMathModeElements() {
-    const nonMathModeTexts = this.svg
-      .find(
-        '[id^=text_00000124851983935777514820000015715086385007132563_] text'
-      )
-      .filter((_, i) => i >= 4 && i <= 10)
-      .map((elem) => elem.node);
-    assert(nonMathModeTexts.length > 0);
+    const nonMathModeText = this.svg.findOne('[id^=text03]');
+    assert(nonMathModeText !== null);
 
     const mathModeOverlay = this.svg.findOne('[id^=mathmode-model03]');
     assert(mathModeOverlay !== null);
 
     return {
-      hide: nonMathModeTexts,
+      hide: [nonMathModeText.node],
       show: [mathModeOverlay.node],
     };
   }

@@ -366,16 +366,18 @@
 	<rect x="617" y="532.54" class="st41" width="369.46" height="80.66"/>
 	<text transform="matrix(1 0 0 1 617.0002 547.5438)" class="st7 st42 st43">Ändere das CO</text>
 	<text transform="matrix(0.583 0 0 0.583 734.0608 553.204)" class="st7 st42 st43">2 </text>
-	<text transform="matrix(1 0 0 1 742.4871 547.5438)" class="st7 st42 st43">(C) , um die Zukunft</text>
+	<text transform="matrix(1 0 0 1 742.4871 547.5438)" class="st7 st42 st43">(C), um die Zukunft</text>
 	<text transform="matrix(1 0 0 1 617.0002 571.5438)" class="st7 st42 st43">des Klimas vorherzusagen!</text>
-	<rect x="209.34" y="70.79" class="st41" width="510.46" height="103.06"/>
-	<text transform="matrix(1 0 0 1 209.3419 85.7912)" class="st42 st43">Das </text>
-	<text transform="matrix(1 0 0 1 244.0294 85.7912)" class="st42 st43">CO</text>
-	<text transform="matrix(0.583 0 0 0.583 267.379 91.4514)" class="st42 st43">2</text>
-	<text transform="matrix(1 0 0 1 273.1348 85.7912)" class="st42 st43"> in der Atmosphäre behindert ein Entweichen der Energie </text>
-	<text transform="matrix(1 0 0 1 209.3419 111.7912)" class="st42 st43">und macht dadurch den Boden wärmer. Dieses Modell ist durch</text>
-	<text transform="matrix(1 0 0 1 707.3497 111.7912)" class="st42 st43">-</text>
-	<text transform="matrix(1 0 0 1 209.3419 137.7912)" class="st42 st43">aus realistisch und wurde anhand realer Messdaten angepasst.</text>
+	<g id="text03_00000169529541285292367260000016040917546579245238_">
+		<rect x="209.34" y="70.79" class="st41" width="510.46" height="103.06"/>
+		<text transform="matrix(1 0 0 1 209.3419 85.7912)" class="st42 st43">Das </text>
+		<text transform="matrix(1 0 0 1 244.0294 85.7912)" class="st42 st43">CO</text>
+		<text transform="matrix(0.583 0 0 0.583 267.379 91.4514)" class="st42 st43">2</text>
+		<text transform="matrix(1 0 0 1 273.1348 85.7912)" class="st42 st43"> in der Atmosphäre behindert ein Entweichen der Energie </text>
+		<text transform="matrix(1 0 0 1 209.3419 111.7912)" class="st42 st43">und macht dadurch den Boden wärmer. Dieses Modell ist durch</text>
+		<text transform="matrix(1 0 0 1 707.3497 111.7912)" class="st42 st43">-</text>
+		<text transform="matrix(1 0 0 1 209.3419 137.7912)" class="st42 st43">aus realistisch und wurde anhand realer Messdaten angepasst.</text>
+	</g>
 	<rect x="187.84" y="24.91" class="st41" width="540.52" height="42.12"/>
 	<text id="title03" transform="matrix(1 0 0 1 317.6283 51.9088)" class="st42 st44">Der Treibhauseffekt</text>
 </g>
