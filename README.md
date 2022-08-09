@@ -70,7 +70,9 @@ The app exposes a number of configuration options via the URL query string:
 - `increaseParameterKey` (key name, default: `ArrowUp`): Key to increase the parameter value.
 - `decreaseParameterKey` (key name, default: `ArrowDown`): Key to decrease the parameter value.
 - `mathModeKey` (key name, default: `m`): Key to toggle the math mode.
-- `wheelDivisor`(number, default: `1.0`): Divisor controlling the speed with with the mouse wheel/trackpad controls the parameter. -`wheelInvert` (`true` | `false`, default: `false`): Invert the direction of the mouse wheel/trackpad controls. -`wheelAxis`(`x` | `y`, default: `y`): Let this mouse wheel/trackpad axis control the parameter.
+- `wheelDivisor`(number, default: `1.0`): Divisor controlling the speed with with the mouse wheel/trackpad controls the parameter.
+- `wheelInvert` (`true` | `false`, default: `false`): Invert the direction of the mouse wheel/trackpad controls.
+- `wheelAxis`(`x` | `y`, default: `y`): Let this mouse wheel/trackpad axis control the parameter.
 
 ## Building
 
