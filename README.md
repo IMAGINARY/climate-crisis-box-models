@@ -6,7 +6,7 @@ Check out the [online demo](https://raw.githack.com/IMAGINARY/climate-crisis-box
 
 ## Background
 
-A _box model_ consist of:
+A _box model_ consists of:
 
 - A series of _stocks_ or containers of the quantity we want to model (e.g. energy, but could be money, people, etc).
 - A series of _flows_ or arrows that transfer the quantity in and out the stocks, according to some physical laws or given formulas.
