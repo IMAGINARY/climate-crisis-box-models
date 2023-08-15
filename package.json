@@ -4,7 +4,7 @@
   "description": "Simulation of climate science box models",
   "author": {
     "name": "Christian Stussak",
-    "email": "christian.stussak@imaginary.org",
+    "email": "christian.stussak@imaginary.org"
   },
   "repository": "github:IMAGINARY/climate-crisis-box-models",
   "bugs": {
