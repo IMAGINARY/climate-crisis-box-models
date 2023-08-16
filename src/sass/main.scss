@@ -83,6 +83,50 @@ body {
   }
 }
 
+#osc {
+  @include fill-box;
+
+  /**
+   * Pass through all events to the elements behind ...
+   */
+  pointer-events: none;
+
+  /**
+   * ... except for events going to the on-screen controls themselves.
+   */
+  * {
+    pointer-events: all;
+  }
+
+  > #scenario-selector-container {
+    $width: 53px;
+    $height: 53px;
+
+    > * {
+      position: absolute;
+      top: calc(34.859375px - #{$height} / 2);
+      height: $height;
+      width: $width;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+
+    > #scenario-1-button {
+      left: calc(868.609375px - #{$width} / 2);
+    }
+
+    > #scenario-2-button {
+      left: calc(915.48px - #{$width} / 2);
+    }
+
+    > #scenario-3-button {
+      left: calc(967.26px - #{$width} / 2);
+    }
+  }
+}
+
 .invisible {
   visibility: hidden;
 }

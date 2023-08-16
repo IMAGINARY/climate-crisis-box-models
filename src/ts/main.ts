@@ -140,15 +140,10 @@ async function main() {
   })();
   scenarioSwitcher.switchTo(initialScenario);
 
-  const scenarioSelectorContainer = document.getElementById(
-    'scenario-selector-container'
-  );
   scenarios.forEach((scenario, idx) => {
-    const button = document.createElement('button');
+    const button = document.getElementById(`scenario-${idx + 1}-button`);
     assert(button !== null);
-    button.innerText = scenario.getName();
     button.onclick = () => scenarioSwitcher.switchTo(idx);
-    scenarioSelectorContainer?.appendChild(button);
   });
 
   const sliders = [] as HTMLInputElement[];
