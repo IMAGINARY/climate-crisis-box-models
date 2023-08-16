@@ -168,27 +168,16 @@ async function main() {
     });
   });
 
-  const startButton = document.getElementById(
-    'playButton'
-  ) as HTMLButtonElement;
-  const stopButton = document.getElementById(
-    'pauseButton'
-  ) as HTMLButtonElement;
-
   let shouldBePlaying = false;
 
   function play() {
     scenarioSwitcher.getCurrentScenario().getSimulation().play();
-    startButton.style.display = 'none';
-    stopButton.style.display = 'unset';
     document.body.classList.remove('animation-paused');
     shouldBePlaying = true;
   }
 
   function pause() {
     scenarioSwitcher.getCurrentScenario().getSimulation().pause();
-    startButton.style.display = 'unset';
-    stopButton.style.display = 'none';
     document.body.classList.add('animation-paused');
     shouldBePlaying = false;
   }
@@ -254,8 +243,6 @@ async function main() {
   }
 
   // toggle play/pause
-  startButton.addEventListener('click', playByUser);
-  stopButton.addEventListener('click', pauseByUser);
   registerKey('keypress', { key: ' ' }, tooglePlayPauseByUser);
   if (options.autoPlay) playByUser();
   else pauseByUser();
