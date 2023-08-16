@@ -30,6 +30,7 @@ body {
   overflow: hidden;
   width: 100vw;
   height: 100vh;
+  touch-action: none;
 }
 
 .scene .graph {
@@ -96,7 +97,7 @@ body {
 #osc {
   @include fill-box;
 
-  #math-mode-button {
+  #osc-backdrop {
     @include fill-box;
   }
 

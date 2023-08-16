@@ -1,5 +1,6 @@
 import { strict as assert } from 'assert';
 import ready from 'document-ready';
+import * as Hammer from 'hammerjs';
 import {
   Idler,
   KeyboardInterrupter,
@@ -14,6 +15,7 @@ import { ScenarioSwitcher } from './scenario-switcher';
 import { Simulation } from './simulation';
 import { ParameterWithRange } from './box-model-definition';
 import { getDefaultOptions, getOptions } from './options/options';
+import { ignorePromise } from './util';
 
 function addSlider(
   parent: HTMLElement,
@@ -88,6 +90,8 @@ function registerKey<
   window.addEventListener(eventType, filterKeyCallback);
 }
 
+let appScaleFactor = 1.0;
+
 function resizeHandler() {
   const baseWidth = 1024;
   const baseHeight = 600;
@@ -102,6 +106,16 @@ function resizeHandler() {
   const aspectRatioBox = document.getElementById('aspect-ratio-box');
   assert(aspectRatioBox !== null);
   aspectRatioBox.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+
+  appScaleFactor = scale;
+}
+
+function toggleFullScreen() {
+  if (!document.fullscreenElement) {
+    ignorePromise(document.documentElement?.requestFullscreen());
+  } else if (document.exitFullscreen) {
+    ignorePromise(document.exitFullscreen());
+  }
 }
 
 async function main() {
@@ -112,12 +126,11 @@ async function main() {
   // eslint-disable-next-line no-console
   console.log({ options, defaults: getDefaultOptions() });
 
-  const osc = document.getElementById('osc') as HTMLDivElement;
-  assert(osc);
+  const oscBackdrop = document.getElementById('osc-backdrop') as HTMLDivElement;
+  assert(oscBackdrop);
 
-  if (options.osc) {
-    osc.classList.remove('display-none');
-  }
+  // create a touch gesture manager to detect gestures on the osc further down
+  const mc = new Hammer.Manager(oscBackdrop);
 
   const scenarioContainer = document.getElementById(
     'scenario-container'
@@ -297,11 +310,6 @@ async function main() {
   const keyProps = { key: options.mathModeKey, repeat: false };
   registerKey('keydown', keyProps, () => enableMathMode(true));
   registerKey('keyup', keyProps, () => enableMathMode(false));
-  const mathModeButton = document.getElementById(
-    'math-mode-button'
-  ) as HTMLDivElement;
-  assert(mathModeButton !== null);
-  mathModeButton.addEventListener('click', toggleMathMode, true);
   enableMathMode(false);
 
   function stepSliders(steps: number) {
@@ -343,6 +351,52 @@ async function main() {
     },
     { passive: false }
   );
+
+  if (options.osc) {
+    const osc = document.getElementById('osc') as HTMLDivElement;
+    assert(osc);
+    osc.classList.remove('display-none');
+
+    // Only set up the gesture recognizers if osc is enabled
+
+    // pan to to change parameter
+    {
+      const pan = new Hammer.Pan({
+        pointers: 2,
+        direction: Hammer.DIRECTION_VERTICAL,
+      });
+      mc.add(pan);
+
+      let lastDeltaY = 10.0;
+      mc.on('panstart', (e) => {
+        console.log('pan started');
+        lastDeltaY = 10.0;
+      });
+
+      mc.on('panup pandown', (e) => {
+        const perEventDeltaY = e.deltaY - lastDeltaY;
+        const steps =
+          (-perEventDeltaY / window.innerHeight / appScaleFactor) * 1500;
+        stepSliders(steps);
+        lastDeltaY = e.deltaY;
+      });
+    }
+
+    // tap to toggle math mode and fullscreen
+    {
+      // multi tap code according to https://hammerjs.github.io/require-failure/
+      const singleTap = new Hammer.Tap({ event: 'singletap' });
+      const doubleTap = new Hammer.Tap({ event: 'doubletap', taps: 2 });
+
+      mc.add([doubleTap, singleTap]);
+
+      doubleTap.recognizeWith(singleTap);
+      singleTap.requireFailure(doubleTap);
+
+      mc.on('singletap', toggleMathMode);
+      mc.on('doubletap', toggleFullScreen);
+    }
+  }
 
   function handlePageVisibilityChange() {
     switch (document.visibilityState) {
