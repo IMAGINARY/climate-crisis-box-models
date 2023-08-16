@@ -126,6 +126,12 @@ async function main() {
   ];
 
   const scenarioSwitcher = new ScenarioSwitcher(scenarios);
+  const enableMathMode = (visible: boolean) => {
+    scenarioSwitcher.getScenarios().forEach((s) => s.enableMathMode(visible));
+  };
+  const toggleMathMode = () => {
+    scenarioSwitcher.getScenarios().forEach((s) => s.toggleMathMode());
+  };
 
   const initialScenario: number = (() => {
     switch (options.initialScenario) {
@@ -144,7 +150,11 @@ async function main() {
   scenarios.forEach((scenario, idx) => {
     const button = document.getElementById(`scenario-${idx + 1}-button`);
     assert(button !== null);
-    button.onclick = () => scenarioSwitcher.switchTo(idx);
+    button.onclick = () => {
+      const currentScenarioIndex = scenarioSwitcher.getCurrentScenarioIndex();
+      scenarioSwitcher.switchTo(idx, true);
+      if (currentScenarioIndex !== idx) enableMathMode(false);
+    };
   });
 
   const sliders = [] as HTMLInputElement[];
@@ -264,16 +274,16 @@ async function main() {
     );
   }
 
-  // toogle overlay
-  {
-    const enableMathMode = (visible: boolean) => {
-      scenarioSwitcher.getScenarios().forEach((s) => s.enableMathMode(visible));
-    };
-    const keyProps = { key: options.mathModeKey, repeat: false };
-    registerKey('keydown', keyProps, () => enableMathMode(true));
-    registerKey('keyup', keyProps, () => enableMathMode(false));
-    enableMathMode(false);
-  }
+  // register event handlers for toggling math overlay
+  const keyProps = { key: options.mathModeKey, repeat: false };
+  registerKey('keydown', keyProps, () => enableMathMode(true));
+  registerKey('keyup', keyProps, () => enableMathMode(false));
+  const mathModeButton = document.getElementById(
+    'math-mode-button'
+  ) as HTMLDivElement;
+  assert(mathModeButton !== null);
+  mathModeButton.addEventListener('click', toggleMathMode, true);
+  enableMathMode(false);
 
   function stepSliders(steps: number) {
     sliders.forEach((slider) => {

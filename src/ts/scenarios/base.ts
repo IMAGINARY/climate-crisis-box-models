@@ -93,6 +93,10 @@ export default abstract class BaseScenario implements Scenario {
     return this;
   }
 
+  toggleMathMode(): this {
+    return this.enableMathMode(!this.mathMode);
+  }
+
   isMathModeEnabled() {
     return this.mathMode;
   }

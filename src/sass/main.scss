@@ -86,19 +86,12 @@ body {
 #osc {
   @include fill-box;
 
-  /**
-   * Pass through all events to the elements behind ...
-   */
-  pointer-events: none;
-
-  /**
-   * ... except for events going to the on-screen controls themselves.
-   */
-  * {
-    pointer-events: all;
+  #math-mode-button {
+    @include fill-box;
   }
 
   #slider-container {
+    position: relative;
     display: none;
   }
 
@@ -114,7 +107,7 @@ body {
       background: transparent;
       border: none;
       cursor: pointer;
-      border-radius: 50%;
+      border-radius: 25%;
     }
 
     > #scenario-1-button {
