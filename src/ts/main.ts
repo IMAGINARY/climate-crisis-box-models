@@ -3,6 +3,7 @@ import ready from 'document-ready';
 import {
   Idler,
   KeyboardInterrupter,
+  PointerInterrupter,
   EventInterrupter,
 } from '@imaginary-maths/idler';
 
@@ -193,8 +194,13 @@ async function main() {
   }
 
   const keyboardInterrupter = new KeyboardInterrupter();
+  const pointerInterrupter = new PointerInterrupter();
   const wheelInterrupter = new EventInterrupter(window, ['wheel']);
-  const idler = new Idler(keyboardInterrupter, wheelInterrupter);
+  const idler = new Idler(
+    keyboardInterrupter,
+    pointerInterrupter,
+    wheelInterrupter
+  );
 
   type IdlerCallbackOptions = Partial<Parameters<Idler['addCallback']>[0]>;
   const idlerCallbacks: IdlerCallbackOptions[] = [] as IdlerCallbackOptions[];
