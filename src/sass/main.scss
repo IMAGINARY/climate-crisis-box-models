@@ -98,6 +98,10 @@ body {
     pointer-events: all;
   }
 
+  #slider-container {
+    display: none;
+  }
+
   > #scenario-selector-container {
     $width: 53px;
     $height: 53px;
