@@ -16,12 +16,19 @@
   $fontDir: '~/node_modules/@fontsource/roboto-condensed/files'
 );
 
+html {
+  overscroll-behavior: none;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+}
+
 body {
   font-family: RobotoCondensed-Regular, monospace;
   overscroll-behavior: none;
-  overflow: scroll;
-  width: 1024px;
-  height: 600px;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
 }
 
 .scene .graph {
@@ -40,10 +47,12 @@ body {
 }
 
 #aspect-ratio-box {
-  height: 0;
+  width: 1024px;
+  height: 600px;
   overflow: hidden;
-  padding-top: calc(600 / 1024 * 100%);
   position: relative;
+  transform-origin: top left;
+  transform: scale(1); /* Will be modified via JS on window resize */
 }
 
 @mixin fill-box {

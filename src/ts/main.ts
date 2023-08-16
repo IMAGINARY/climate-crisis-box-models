@@ -88,7 +88,26 @@ function registerKey<
   window.addEventListener(eventType, filterKeyCallback);
 }
 
+function resizeHandler() {
+  const baseWidth = 1024;
+  const baseHeight = 600;
+
+  const scale =
+    window.innerWidth / window.innerHeight > baseWidth / baseHeight
+      ? window.innerHeight / baseHeight
+      : window.innerWidth / baseWidth;
+  const translateX = (window.innerWidth - baseWidth * scale) / 2;
+  const translateY = (window.innerHeight - baseHeight * scale) / 2;
+
+  const aspectRatioBox = document.getElementById('aspect-ratio-box');
+  assert(aspectRatioBox !== null);
+  aspectRatioBox.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+}
+
 async function main() {
+  resizeHandler();
+  window.addEventListener('resize', resizeHandler);
+
   const options = getOptions();
   // eslint-disable-next-line no-console
   console.log({ options, defaults: getDefaultOptions() });
