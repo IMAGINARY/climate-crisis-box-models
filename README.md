@@ -59,7 +59,7 @@ In both cases, check the CLI output for the URL of the server, that you have to 
 The app exposes a number of configuration options via the URL query string:
 
 - `initialScenario` (`first` | `last` | `random` | number, default: `first`): start with the given scenario/model.
-- `osc` (`true` | `false`, default: `true`): Toggle on-screen controls.
+- `osc` (`true` | `false`, default: `true`): Toggle [on-screen controls](#On-screen controls).
 - `pauseAfter` (number | `false`, default: `60`): Automatically pause the simulation after being idle for the given number of seconds.
 - `resetAfter` (number | `false`, default: `180`): Automatically reset to the initial scenario after being idle for the given number of seconds.
 - `autoPlay` (`true` | `false`, default: `true`): Toggle auto-play.
@@ -70,9 +70,23 @@ The app exposes a number of configuration options via the URL query string:
 - `increaseParameterKey` (key name, default: `ArrowUp`): Key to increase the parameter value.
 - `decreaseParameterKey` (key name, default: `ArrowDown`): Key to decrease the parameter value.
 - `mathModeKey` (key name, default: `m`): Key to toggle the math mode.
-- `wheelDivisor`(number, default: `1.0`): Divisor controlling the speed with with the mouse wheel/trackpad controls the parameter.
+- `wheelDivisor`(number, default: `1.0`): Divisor controlling the speed with the mouse wheel/trackpad controls the parameter.
 - `wheelInvert` (`true` | `false`, default: `false`): Invert the direction of the mouse wheel/trackpad controls.
 - `wheelAxis`(`x` | `y`, default: `y`): Let this mouse wheel/trackpad axis control the parameter.
+
+### On-screen controls
+
+When the `osc` URL parameter is set to true, certain on-screen elements become sensitive to mouse and touch input,
+which is more convenient for using the program in a workshop setting:
+
+- Clicking on a non-active scenario indicator switches to the corresponding scenario and resets math mode.
+- Clicking on the already active scenario indicator resets the scenario.
+- Two-finger dragging controls the value of the parameter in addition to controlling it with the mouse wheel.
+  Setting the `wheelInvert` URL parameter switches the direction of increase and decrease.
+  The `wheelAxis` URL parameter controls the axis that is used for the parameter control.
+  The `wheelDivisor` URL parameter controls the speed of the parameter control.
+- Tapping/clicking once onto the UI toggles math mode.
+- Tapping/clicking twice onto the UI toggles fullscreen mode.
 
 ## Building
 
