@@ -1,8 +1,10 @@
 import { strict as assert } from 'assert';
 import ready from 'document-ready';
+import * as Hammer from 'hammerjs';
 import {
   Idler,
   KeyboardInterrupter,
+  PointerInterrupter,
   EventInterrupter,
 } from '@imaginary-maths/idler';
 
@@ -13,6 +15,7 @@ import { ScenarioSwitcher } from './scenario-switcher';
 import { Simulation } from './simulation';
 import { ParameterWithRange } from './box-model-definition';
 import { getDefaultOptions, getOptions } from './options/options';
+import { ignorePromise } from './util';
 
 function addSlider(
   parent: HTMLElement,
@@ -87,17 +90,47 @@ function registerKey<
   window.addEventListener(eventType, filterKeyCallback);
 }
 
+let appScaleFactor = 1.0;
+
+function resizeHandler() {
+  const baseWidth = 1024;
+  const baseHeight = 600;
+
+  const scale =
+    window.innerWidth / window.innerHeight > baseWidth / baseHeight
+      ? window.innerHeight / baseHeight
+      : window.innerWidth / baseWidth;
+  const translateX = (window.innerWidth - baseWidth * scale) / 2;
+  const translateY = (window.innerHeight - baseHeight * scale) / 2;
+
+  const aspectRatioBox = document.getElementById('aspect-ratio-box');
+  assert(aspectRatioBox !== null);
+  aspectRatioBox.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+
+  appScaleFactor = scale;
+}
+
+function toggleFullScreen() {
+  if (!document.fullscreenElement) {
+    ignorePromise(document.documentElement?.requestFullscreen());
+  } else if (document.exitFullscreen) {
+    ignorePromise(document.exitFullscreen());
+  }
+}
+
 async function main() {
+  resizeHandler();
+  window.addEventListener('resize', resizeHandler);
+
   const options = getOptions();
   // eslint-disable-next-line no-console
   console.log({ options, defaults: getDefaultOptions() });
 
-  const osc = document.getElementById('osc') as HTMLDivElement;
-  assert(osc);
+  const oscBackdrop = document.getElementById('osc-backdrop') as HTMLDivElement;
+  assert(oscBackdrop);
 
-  if (options.osc) {
-    osc.classList.remove('display-none');
-  }
+  // create a touch gesture manager to detect gestures on the osc further down
+  const mc = new Hammer.Manager(oscBackdrop);
 
   const scenarioContainer = document.getElementById(
     'scenario-container'
@@ -125,6 +158,12 @@ async function main() {
   ];
 
   const scenarioSwitcher = new ScenarioSwitcher(scenarios);
+  const enableMathMode = (visible: boolean) => {
+    scenarioSwitcher.getScenarios().forEach((s) => s.enableMathMode(visible));
+  };
+  const toggleMathMode = () => {
+    scenarioSwitcher.getScenarios().forEach((s) => s.toggleMathMode());
+  };
 
   const initialScenario: number = (() => {
     switch (options.initialScenario) {
@@ -140,15 +179,14 @@ async function main() {
   })();
   scenarioSwitcher.switchTo(initialScenario);
 
-  const scenarioSelectorContainer = document.getElementById(
-    'scenario-selector-container'
-  );
   scenarios.forEach((scenario, idx) => {
-    const button = document.createElement('button');
+    const button = document.getElementById(`scenario-${idx + 1}-button`);
     assert(button !== null);
-    button.innerText = scenario.getName();
-    button.onclick = () => scenarioSwitcher.switchTo(idx);
-    scenarioSelectorContainer?.appendChild(button);
+    button.onclick = () => {
+      const currentScenarioIndex = scenarioSwitcher.getCurrentScenarioIndex();
+      scenarioSwitcher.switchTo(idx, true);
+      if (currentScenarioIndex !== idx) enableMathMode(false);
+    };
   });
 
   const sliders = [] as HTMLInputElement[];
@@ -172,34 +210,28 @@ async function main() {
     });
   });
 
-  const startButton = document.getElementById(
-    'playButton'
-  ) as HTMLButtonElement;
-  const stopButton = document.getElementById(
-    'pauseButton'
-  ) as HTMLButtonElement;
-
   let shouldBePlaying = false;
 
   function play() {
     scenarioSwitcher.getCurrentScenario().getSimulation().play();
-    startButton.style.display = 'none';
-    stopButton.style.display = 'unset';
     document.body.classList.remove('animation-paused');
     shouldBePlaying = true;
   }
 
   function pause() {
     scenarioSwitcher.getCurrentScenario().getSimulation().pause();
-    startButton.style.display = 'unset';
-    stopButton.style.display = 'none';
     document.body.classList.add('animation-paused');
     shouldBePlaying = false;
   }
 
   const keyboardInterrupter = new KeyboardInterrupter();
+  const pointerInterrupter = new PointerInterrupter();
   const wheelInterrupter = new EventInterrupter(window, ['wheel']);
-  const idler = new Idler(keyboardInterrupter, wheelInterrupter);
+  const idler = new Idler(
+    keyboardInterrupter,
+    pointerInterrupter,
+    wheelInterrupter
+  );
 
   type IdlerCallbackOptions = Partial<Parameters<Idler['addCallback']>[0]>;
   const idlerCallbacks: IdlerCallbackOptions[] = [] as IdlerCallbackOptions[];
@@ -253,8 +285,6 @@ async function main() {
   }
 
   // toggle play/pause
-  startButton.addEventListener('click', playByUser);
-  stopButton.addEventListener('click', pauseByUser);
   registerKey('keypress', { key: ' ' }, tooglePlayPauseByUser);
   if (options.autoPlay) playByUser();
   else pauseByUser();
@@ -276,16 +306,11 @@ async function main() {
     );
   }
 
-  // toogle overlay
-  {
-    const enableMathMode = (visible: boolean) => {
-      scenarioSwitcher.getScenarios().forEach((s) => s.enableMathMode(visible));
-    };
-    const keyProps = { key: options.mathModeKey, repeat: false };
-    registerKey('keydown', keyProps, () => enableMathMode(true));
-    registerKey('keyup', keyProps, () => enableMathMode(false));
-    enableMathMode(false);
-  }
+  // register event handlers for toggling math overlay
+  const keyProps = { key: options.mathModeKey, repeat: false };
+  registerKey('keydown', keyProps, () => enableMathMode(true));
+  registerKey('keyup', keyProps, () => enableMathMode(false));
+  enableMathMode(false);
 
   function stepSliders(steps: number) {
     sliders.forEach((slider) => {
@@ -326,6 +351,70 @@ async function main() {
     },
     { passive: false }
   );
+
+  if (options.osc) {
+    const osc = document.getElementById('osc') as HTMLDivElement;
+    assert(osc);
+    osc.classList.remove('display-none');
+
+    // Only set up the gesture recognizers if osc is enabled
+
+    // pan to change parameter
+    {
+      const panSignFactor = options.wheelInvert ? -1.0 : 1.0;
+      const { panDirection, panEvents, getSize, getPanDelta, panDeltaFactor } =
+        options.wheelAxis === 'y'
+          ? {
+              panDirection: Hammer.DIRECTION_VERTICAL,
+              panEvents: 'panup pandown',
+              getSize: () => window.innerHeight,
+              getPanDelta: (e: HammerInput) => e.deltaY,
+              panDeltaFactor: (panSignFactor * -1500) / options.wheelDivisor,
+            }
+          : {
+              panDirection: Hammer.DIRECTION_HORIZONTAL,
+              panEvents: 'panleft panright',
+              getSize: () => window.innerWidth,
+              getPanDelta: (e: HammerInput) => e.deltaX,
+              panDeltaFactor:
+                (panSignFactor * ((1500 * 1024) / 600)) / options.wheelDivisor,
+            };
+      const pan = new Hammer.Pan({
+        pointers: 2,
+        direction: panDirection,
+      });
+      mc.add(pan);
+
+      let lastDelta = 10.0;
+      mc.on('panstart', () => {
+        lastDelta = 10.0;
+      });
+
+      mc.on(panEvents, (e) => {
+        const delta = getPanDelta(e);
+        const size = getSize();
+        const perEventDelta = delta - lastDelta;
+        const steps = panDeltaFactor * (perEventDelta / size / appScaleFactor);
+        stepSliders(steps);
+        lastDelta = delta;
+      });
+    }
+
+    // tap to toggle math mode and fullscreen
+    {
+      // multi tap code according to https://hammerjs.github.io/require-failure/
+      const singleTap = new Hammer.Tap({ event: 'singletap' });
+      const doubleTap = new Hammer.Tap({ event: 'doubletap', taps: 2 });
+
+      mc.add([doubleTap, singleTap]);
+
+      doubleTap.recognizeWith(singleTap);
+      singleTap.requireFailure(doubleTap);
+
+      mc.on('singletap', toggleMathMode);
+      mc.on('doubletap', toggleFullScreen);
+    }
+  }
 
   function handlePageVisibilityChange() {
     switch (document.visibilityState) {

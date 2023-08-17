@@ -16,12 +16,21 @@
   $fontDir: '~/node_modules/@fontsource/roboto-condensed/files'
 );
 
+html {
+  overscroll-behavior: none;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  background-color: black;
+}
+
 body {
   font-family: RobotoCondensed-Regular, monospace;
   overscroll-behavior: none;
-  overflow: scroll;
-  width: 1024px;
-  height: 600px;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  touch-action: none;
 }
 
 .scene .graph {
@@ -40,10 +49,12 @@ body {
 }
 
 #aspect-ratio-box {
-  height: 0;
+  width: 1024px;
+  height: 600px;
   overflow: hidden;
-  padding-top: calc(600 / 1024 * 100%);
   position: relative;
+  transform-origin: top left;
+  transform: scale(1); /* Will be modified via JS on window resize */
 }
 
 @mixin fill-box {
@@ -79,6 +90,47 @@ body {
 
     .label {
       margin: 5px;
+    }
+  }
+}
+
+#osc {
+  @include fill-box;
+
+  #osc-backdrop {
+    @include fill-box;
+  }
+
+  #slider-container {
+    position: relative;
+    display: none;
+  }
+
+  > #scenario-selector-container {
+    $width: 53px;
+    $height: 53px;
+
+    > * {
+      position: absolute;
+      top: calc(34.859375px - #{$height} / 2);
+      height: $height;
+      width: $width;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      border-radius: 25%;
+    }
+
+    > #scenario-1-button {
+      left: calc(868.609375px - #{$width} / 2);
+    }
+
+    > #scenario-2-button {
+      left: calc(915.48px - #{$width} / 2);
+    }
+
+    > #scenario-3-button {
+      left: calc(967.26px - #{$width} / 2);
     }
   }
 }

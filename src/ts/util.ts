@@ -273,6 +273,8 @@ function createSvgMorphUpdater(
   return updater;
 }
 
+function ignorePromise(promise: Promise<unknown>): void {}
+
 async function sleep(seconds: number): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(resolve, seconds * 1000);
@@ -338,6 +340,7 @@ export {
   Updater,
   createFuncUpdater,
   createSvgMorphUpdater,
+  ignorePromise,
   sleep,
   reserveTimeSlot,
   extendRangeAbs,

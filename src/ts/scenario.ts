@@ -9,5 +9,6 @@ export interface Scenario {
   setVisible(visible: boolean): this;
   isVisible(): boolean;
   enableMathMode(visible: boolean): this;
+  toggleMathMode(): this;
   isMathModeEnabled(): boolean;
 }
