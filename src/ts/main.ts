@@ -359,26 +359,44 @@ async function main() {
 
     // Only set up the gesture recognizers if osc is enabled
 
-    // pan to to change parameter
+    // pan to change parameter
     {
+      const panSignFactor = options.wheelInvert ? -1.0 : 1.0;
+      const { panDirection, panEvents, getSize, getPanDelta, panDeltaFactor } =
+        options.wheelAxis === 'y'
+          ? {
+              panDirection: Hammer.DIRECTION_VERTICAL,
+              panEvents: 'panup pandown',
+              getSize: () => window.innerHeight,
+              getPanDelta: (e: HammerInput) => e.deltaY,
+              panDeltaFactor: (panSignFactor * -1500) / options.wheelDivisor,
+            }
+          : {
+              panDirection: Hammer.DIRECTION_HORIZONTAL,
+              panEvents: 'panleft panright',
+              getSize: () => window.innerWidth,
+              getPanDelta: (e: HammerInput) => e.deltaX,
+              panDeltaFactor:
+                (panSignFactor * ((1500 * 1024) / 600)) / options.wheelDivisor,
+            };
       const pan = new Hammer.Pan({
         pointers: 2,
-        direction: Hammer.DIRECTION_VERTICAL,
+        direction: panDirection,
       });
       mc.add(pan);
 
-      let lastDeltaY = 10.0;
-      mc.on('panstart', (e) => {
-        console.log('pan started');
-        lastDeltaY = 10.0;
+      let lastDelta = 10.0;
+      mc.on('panstart', () => {
+        lastDelta = 10.0;
       });
 
-      mc.on('panup pandown', (e) => {
-        const perEventDeltaY = e.deltaY - lastDeltaY;
-        const steps =
-          (-perEventDeltaY / window.innerHeight / appScaleFactor) * 1500;
+      mc.on(panEvents, (e) => {
+        const delta = getPanDelta(e);
+        const size = getSize();
+        const perEventDelta = delta - lastDelta;
+        const steps = panDeltaFactor * (perEventDelta / size / appScaleFactor);
         stepSliders(steps);
-        lastDeltaY = e.deltaY;
+        lastDelta = delta;
       });
     }
 
